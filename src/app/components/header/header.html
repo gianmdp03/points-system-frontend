@@ -1,0 +1,40 @@
+<header class="sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 z-50 transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2">
+                <div class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50 p-1">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <span class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Puntazos</span>
+            </a>
+
+            <!-- Nav Links (Desktop) -->
+            <nav class="hidden md:flex items-center gap-8 text-gray-600 dark:text-gray-300 font-medium text-sm">
+                <a href="#como-funciona" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Para Usuarios</a>
+                <a href="#para-empresas" class="hover:text-blue-600 dark:hover:text-blue-400 transition font-semibold text-blue-600 dark:text-blue-400">Para Empresas</a>
+                <a href="#beneficios" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Beneficios</a>
+                <a href="#precios" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Precios</a>
+            </nav>
+
+            <!-- Acciones -->
+            <div class="flex items-center gap-3">
+                <!-- Switch Modo Oscuro -->
+                <button id="theme-toggle" type="button" aria-label="Cambiar tema" class="p-2.5 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+
+                <!-- CTA B2B (Empresas) -->
+                <a href="#contacto-empresa" class="border border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950/50 rounded-full px-4 py-2 font-semibold text-xs md:text-sm transition hidden sm:inline-block">
+                    Soy Empresa
+                </a>
+
+                <!-- CTA B2C (Usuarios) -->
+                <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 font-semibold text-xs md:text-sm transition shadow-md shadow-blue-500/20">
+                    Regístrate Gratis
+                </a>
+            </div>
+        </div>
+    </header>
