@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puntazos - Fidelización para Empresas y Recompensas para Usuarios</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // Evita el parpadeo de blanco a oscuro durante la carga
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 z-50 transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2">
+                <div class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50 p-1">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <span class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Puntazos</span>
+            </a>
+
+            <!-- Nav Links (Desktop) -->
+            <nav class="hidden md:flex items-center gap-8 text-gray-600 dark:text-gray-300 font-medium text-sm">
+                <a href="#como-funciona" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Para Usuarios</a>
+                <a href="#para-empresas" class="hover:text-blue-600 dark:hover:text-blue-400 transition font-semibold text-blue-600 dark:text-blue-400">Para Empresas</a>
+                <a href="#beneficios" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Beneficios</a>
+                <a href="#precios" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Precios</a>
+            </nav>
+
+            <!-- Acciones -->
+            <div class="flex items-center gap-3">
+                <!-- Switch Modo Oscuro -->
+                <button id="theme-toggle" type="button" aria-label="Cambiar tema" class="p-2.5 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+
+                <!-- CTA B2B (Empresas) -->
+                <a href="#contacto-empresa" class="border border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950/50 rounded-full px-4 py-2 font-semibold text-xs md:text-sm transition hidden sm:inline-block">
+                    Soy Empresa
+                </a>
+
+                <!-- CTA B2C (Usuarios) -->
+                <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 font-semibold text-xs md:text-sm transition shadow-md shadow-blue-500/20">
+                    Regístrate Gratis
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 md:py-16 space-y-20 md:space-y-32">
+
+        <!-- Hero Section (Híbrida) -->
+        <section class="flex flex-col-reverse md:flex-row md:items-center gap-10 md:gap-16">
+            <div class="md:w-1/2 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 text-xs font-semibold border border-blue-200 dark:border-blue-800">
+                    <span>🚀 La plataforma #1 de puntos para negocios y usuarios</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                    Fideliza a tus clientes o <span class="text-blue-600 dark:text-blue-400">gana premios</span> por tus compras
+                </h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                    Aumenta tus ventas recurrentes si tienes un negocio, o acumula "Puntazos" en miles de tiendas asociadas si eres cliente. Todo en un solo lugar.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <a href="#contacto-empresa" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-3.5 font-semibold transition text-center shadow-lg shadow-blue-500/25">
+                        Sumar mi Empresa
+                    </a>
+                    <a href="#como-funciona" class="border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-full px-8 py-3.5 font-semibold hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400 transition text-center">
+                        Soy Usuario
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Graphic Card -->
+            <div class="md:w-1/2 flex justify-center md:justify-end">
+                <div class="relative bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800/80 p-8 rounded-3xl w-full max-w-md shadow-xl border border-blue-100 dark:border-gray-700/60">
+                    <div class="absolute -top-5 -left-5 w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
+                        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+
+                    <div class="absolute -top-4 -right-4 bg-white dark:bg-gray-900 px-4 py-3 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Retención de Clientes:</p>
+                        <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">+45% ventas</p>
+                    </div>
+
+                    <div class="text-center py-8 space-y-4">
+                        <div class="w-28 h-28 mx-auto rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-5xl shadow-inner">
+                            📈
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-gray-900 dark:text-white">Panel para Comercio</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Gestiona campañas y mide el retorno de tus puntos en tiempo real.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN B2B: Solución para Empresas -->
+        <section id="para-empresas" class="space-y-12 bg-gradient-to-b from-blue-50/50 to-white dark:from-gray-800/40 dark:to-gray-900 p-8 md:p-12 rounded-3xl border border-blue-100 dark:border-gray-800">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider text-xs">Módulo B2B / Para Negocios</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
+                    ¿Tu empresa aún no tiene un programa de puntos?
+                </h2>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Conseguir un cliente nuevo cuesta 5 veces más que mantener uno existente. Con Puntazos integras un software completo de recompensas en minutos sin costes de desarrollo.
+                </p>
+            </div>
+
+            <!-- Grid de Características B2B -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/80 space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl font-bold">🎯</div>
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">Fidelización Automática</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Asigna puntos por compras físicas o digitales automáticamente. Permite que tus clientes acumulen recompensas fácilmente.</p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/80 space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl font-bold">📊</div>
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">Dashboard de Analytics</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Accede a métricas detalladas sobre frecuencia de compra, ticket promedio y comportamiento de tus clientes habituales.</p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/80 space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl font-bold">⚡</div>
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">Integración en minutos</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Compatible con tu sistema POS actual, ecommerce (Shopify, WooCommerce) o mediante nuestra App Móvil para comercios.</p>
+                </div>
+            </div>
+
+            <!-- FORMULARIO DE CAPTURA DE EMPRESAS (LEAD CAPTURE) -->
+            <div id="contacto-empresa" class="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-blue-200 dark:border-gray-700 max-w-4xl mx-auto mt-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Prueba Puntazos para tu Negocio gratis por 30 días</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Déjanos tus datos y un especialista te ayudará a configurar tu catálogo de recompensas personalizado hoy mismo.</p>
+                        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                            <li class="flex items-center gap-2">✅ Sin tarjeta de crédito requerida</li>
+                            <li class="flex items-center gap-2">✅ Onboarding personalizado</li>
+                            <li class="flex items-center gap-2">✅ Soporte técnico prioritario</li>
+                        </ul>
+                    </div>
+
+                    <!-- Formulario Lead Capture -->
+                    <form onsubmit="event.preventDefault(); alert('¡Gracias por tu interés! Te contactaremos a la brevedad.');" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1">Nombre Completo</label>
+                            <input type="text" required placeholder="Ej. Carlos Mendoza" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1">Nombre de la Empresa / Comercio</label>
+                            <input type="text" required placeholder="Ej. Cafetería La Central" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1">Correo Corporativo o Teléfono</label>
+                            <input type="text" required placeholder="contacto@minegocio.com / +54 9..." class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-500/25">
+                            Solicitar Demo Gratis
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE PRECIOS B2B -->
+        <section id="precios" class="space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider text-xs">Planes Flexibles</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">Precios transparentes para todo tamaño de negocio</h2>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">Elige el plan que mejor se adapte a tu volumen de clientes. Cancela o cambia de plan en cualquier momento.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                <!-- Plan Inicial / Starter -->
+                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-xl text-gray-900 dark:text-white">Plan Emprendedor</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Ideal para pequeños locales o comercios en etapa inicial.</p>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-4xl font-black text-gray-900 dark:text-white">$19</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">/ mes</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <li class="flex items-center gap-2">✓ Hasta 500 usuarios activos</li>
+                            <li class="flex items-center gap-2">✓ Dashboard básico de métricas</li>
+                            <li class="flex items-center gap-2">✓ App móvil para escaneo QR</li>
+                            <li class="flex items-center gap-2">✓ Soporte por Email</li>
+                        </ul>
+                    </div>
+                    <a href="#contacto-empresa" class="w-full text-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition">
+                        Empezar Prueba
+                    </a>
+                </div>
+
+                <!-- Plan Pro / Pyme (RECOMENDADO) -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 border-2 border-blue-600 dark:border-blue-500 shadow-2xl relative flex flex-col justify-between space-y-6 transform md:-translate-y-2">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
+                        Más Popular
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-xl text-gray-900 dark:text-white">Plan Crecimiento</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Para marcas en expansión que buscan automatizar su fidelización.</p>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-4xl font-black text-blue-600 dark:text-blue-400">$49</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">/ mes</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <li class="flex items-center gap-2">✓ Hasta 5,000 usuarios activos</li>
+                            <li class="flex items-center gap-2">✓ Analytics avanzado + Exportación</li>
+                            <li class="flex items-center gap-2">✓ Integración Ecommerce / POS</li>
+                            <li class="flex items-center gap-2">✓ Campañas automáticas por Email/Push</li>
+                            <li class="flex items-center gap-2">✓ Soporte Prioritario WhatsApp</li>
+                        </ul>
+                    </div>
+                    <a href="#contacto-empresa" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-500/25">
+                        Probar 30 Días Gratis
+                    </a>
+                </div>
+
+                <!-- Plan Corporativo -->
+                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-xl text-gray-900 dark:text-white">Plan Corporativo</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Franquicias o cadenas con múltiples sucursales.</p>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-4xl font-black text-gray-900 dark:text-white">$99</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">/ mes</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <li class="flex items-center gap-2">✓ Usuarios ilimitados</li>
+                            <li class="flex items-center gap-2">✓ Multi-sucursal y Roles de empleado</li>
+                            <li class="flex items-center gap-2">✓ Marca Blanca (Tu propio logo y dominio)</li>
+                            <li class="flex items-center gap-2">✓ API custom de integración</li>
+                            <li class="flex items-center gap-2">✓ Ejecutivo de cuenta dedicado</li>
+                        </ul>
+                    </div>
+                    <a href="#contacto-empresa" class="w-full text-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition">
+                        Contactar Ventas
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN B2C: Cómo funciona para Usuarios -->
+        <section id="como-funciona" class="space-y-10 border-t border-gray-200 dark:border-gray-800 pt-16">
+            <div class="text-center space-y-2">
+                <span class="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider text-xs">Para Clientes y Usuarios</span>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white uppercase tracking-wider">
+                    ¿Cómo funciona para los usuarios?
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400 text-sm md:text-base">Acumular premios por tus compras diarias es fácil y gratis.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 border border-gray-200/80 dark:border-gray-700/60">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">📱</div>
+                    <h3 class="font-bold text-base text-gray-900 dark:text-white uppercase">Regístrate Gratis</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Crea tu cuenta en segundos desde tu teléfono o la web.</p>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 border border-gray-200/80 dark:border-gray-700/60">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">🛒</div>
+                    <h3 class="font-bold text-base text-gray-900 dark:text-white uppercase">Compra en Comercios</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Haz tus compras habituales en tiendas, restaurantes o webs asociadas.</p>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 border border-gray-200/80 dark:border-gray-700/60">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">P</div>
+                    <h3 class="font-bold text-base text-gray-900 dark:text-white uppercase">Suma Puntazos</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Muestra tu QR o código y acumula puntos con cada compra.</p>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 border border-gray-200/80 dark:border-gray-700/60">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">🎁</div>
+                    <h3 class="font-bold text-base text-gray-900 dark:text-white uppercase">Canjea Recompensas</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Elige productos gratis, gift cards o descuentos exclusivos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categorías de Premios B2C -->
+        <section id="catalogo" class="space-y-10">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-center text-gray-900 dark:text-white uppercase tracking-wider">
+                Premios disponibles en el catálogo
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-200/80 dark:border-gray-700/60 text-center space-y-3">
+                    <div class="h-28 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center text-white text-3xl font-bold shadow-inner">💳</div>
+                    <p class="font-bold text-gray-900 dark:text-white">Gift Cards</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-200/80 dark:border-gray-700/60 text-center space-y-3">
+                    <div class="h-28 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-inner">🎧</div>
+                    <p class="font-bold text-gray-900 dark:text-white">Electrónica</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-200/80 dark:border-gray-700/60 text-center space-y-3">
+                    <div class="h-28 rounded-xl bg-gradient-to-tr from-rose-400 to-red-500 flex items-center justify-center text-white text-3xl font-bold shadow-inner">🍿</div>
+                    <p class="font-bold text-gray-900 dark:text-white">Experiencias</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-200/80 dark:border-gray-700/60 text-center space-y-3">
+                    <div class="h-28 rounded-xl bg-gradient-to-tr from-emerald-400 to-teal-600 flex items-center justify-center text-white text-3xl font-bold shadow-inner">🏠</div>
+                    <p class="font-bold text-gray-900 dark:text-white">Hogar</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Call to Action Final Dual -->
+    <section class="bg-blue-600 dark:bg-blue-700 text-white py-14 mt-16 transition-colors">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold">¿Quieres Puntazos en tu negocio o como usuario?</h2>
+                <p class="text-blue-100 mt-1">Únete hoy a la red de fidelización que más rápido crece en la región.</p>
+            </div>
+            <div class="flex gap-4">
+                <a href="#contacto-empresa" class="bg-white text-blue-600 hover:bg-blue-50 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800 rounded-full px-6 py-3 font-bold transition shadow-lg">
+                    Demo Empresas
+                </a>
+                <a href="#" class="bg-blue-800 hover:bg-blue-900 text-white rounded-full px-6 py-3 font-bold transition shadow-lg">
+                    Crear Cuenta Usuario
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-950 text-gray-600 dark:text-gray-400 py-12 transition-colors border-t border-gray-200 dark:border-gray-800">
+        <div class="container mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-8">
+            <div class="col-span-1 space-y-3 text-sm">
+                <p class="font-bold text-gray-900 dark:text-white">Plataforma</p>
+                <a href="#como-funciona" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Para Usuarios</a>
+                <a href="#para-empresas" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Para Empresas</a>
+                <a href="#precios" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Planes y Precios</a>
+            </div>
+
+            <div class="col-span-1 space-y-3 text-sm">
+                <p class="font-bold text-gray-900 dark:text-white">Recursos</p>
+                <a href="#catalogo" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Catálogo</a>
+                <a href="#" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Términos B2B</a>
+                <a href="#" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Privacidad</a>
+            </div>
+
+            <div class="col-span-1 space-y-3 text-sm">
+                <p class="font-bold text-gray-900 dark:text-white">Soporte</p>
+                <a href="#contacto-empresa" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Contacto Comercial</a>
+                <a href="#" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Centro de Ayuda</a>
+                <a href="#" class="block hover:text-blue-600 dark:hover:text-blue-400 transition">Integración API</a>
+            </div>
+
+            <div class="col-span-2 md:col-span-2 space-y-4 md:text-right">
+                <p class="font-bold text-gray-900 dark:text-white">Puntazos Inc.</p>
+                <p class="text-xs text-gray-500">Transformando la relación entre comercios y sus clientes habituales.</p>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 mt-8 border-t border-gray-200 dark:border-gray-800 pt-6 text-center text-xs text-gray-500 dark:text-gray-400">
+            © 2026 Puntazos. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <!-- Script Lógica Modo Oscuro Toggle -->
+    <script>
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        function updateIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleLightIcon.classList.remove('hidden');
+                themeToggleDarkIcon.classList.add('hidden');
+            } else {
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
+            }
+        }
+
+        updateIcons();
+
+        themeToggleBtn.addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+            updateIcons();
+        });
+    </script>
+</body>
+</html>
