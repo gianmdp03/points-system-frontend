@@ -1,12 +1,19 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth-service';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header implements OnInit {
+  protected readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  
   isDarkMode = signal<boolean>(false);
 
   ngOnInit(): void {
@@ -30,5 +37,9 @@ export class Header implements OnInit {
       }
     }
   }
-}
 
+  async logout(): Promise<void> {
+    await this.authService.logout();
+    this.router.navigate(['/']);
+  }
+}

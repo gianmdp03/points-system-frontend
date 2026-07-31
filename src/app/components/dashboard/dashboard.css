@@ -1,0 +1,5 @@
+/* CSS styles for Dashboard Component */
+:host {
+  display: block;
+  width: 100%;
+}

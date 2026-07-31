@@ -1,37 +1,69 @@
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { isPlatformServer } from '@angular/common';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { inject, Injectable } from '@angular/core';
+import { createClient, SupabaseClient, AuthChangeEvent, Session } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
-  private apiKey: string | undefined;
-  private platformId = inject(PLATFORM_ID);
 
   constructor() {
-    if (isPlatformServer(this.platformId)) {
-      this.apiKey = process.env['SUPABASE_API_KEY'];
-    }
     this.supabase = createClient(
       'https://jpwwsfkwwsxtmwjvzyva.supabase.co',
-      this.apiKey || ''
+      environment.supabaseKey
     );
   }
 
-  async signUp(email: string, pass: string) {
-    return await this.supabase.auth.signUp({ email, password: pass });
+  async signUp(email: string, pass: string, userMetadata?: { name?: string; dni?: string; role?: string }) {
+    return await this.supabase.auth.signUp({
+      email,
+      password: pass,
+      options: {
+        data: userMetadata || {}
+      }
+    });
   }
 
   async signIn(email: string, pass: string) {
     return await this.supabase.auth.signInWithPassword({ email, password: pass });
   }
 
-  async getToken() {
+  async signInWithOAuth(provider: 'google' | 'github') {
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'http://localhost:4200/dashboard';
+    return await this.supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: redirectUrl
+      }
+    });
+  }
+
+  async signInWithMagicLink(email: string) {
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'http://localhost:4200/dashboard';
+    return await this.supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
+    });
+  }
+
+  async signOut() {
+    return await this.supabase.auth.signOut();
+  }
+
+  async getSession() {
     const { data } = await this.supabase.auth.getSession();
-    return data.session?.access_token;
+    return data.session;
+  }
+
+  async getToken() {
+    const session = await this.getSession();
+    return session?.access_token;
+  }
+
+  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
+    return this.supabase.auth.onAuthStateChange(callback);
   }
 }
-
-
