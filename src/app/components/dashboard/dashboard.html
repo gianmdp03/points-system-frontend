@@ -144,9 +144,9 @@
               </div>
 
               <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-2">
-                <button class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded-xl shadow-md shadow-blue-500/20 transition-all cursor-pointer text-center">
-                  Ver Mis Puntos
-                </button>
+                <a [routerLink]="['/companies', company.id]" class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded-xl shadow-md shadow-blue-500/20 transition-all cursor-pointer text-center">
+                  Ver Detalle y Puntos
+                </a>
               </div>
             </div>
           }
@@ -232,10 +232,13 @@
               </div>
 
               <div class="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-700/50">
+                <a [routerLink]="['/companies', company.id]" class="flex-1 py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all text-center cursor-pointer shadow-sm">
+                  Ver Detalle
+                </a>
                 <button 
                   (click)="toggleCompanyStatus(company)"
                   [class]="company.isEnabled ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-950/50'"
-                  class="flex-1 py-2 px-3 font-bold text-xs rounded-xl transition-all text-center cursor-pointer">
+                  class="py-2 px-3 font-bold text-xs rounded-xl transition-all text-center cursor-pointer">
                   {{ company.isEnabled ? 'Deshabilitar' : 'Habilitar' }}
                 </button>
               </div>
@@ -311,7 +314,10 @@
                         {{ company.isEnabled ? 'Habilitada' : 'Deshabilitada' }}
                       </span>
                     </td>
-                    <td class="p-4 text-right">
+                    <td class="p-4 text-right flex items-center justify-end gap-2">
+                      <a [routerLink]="['/companies', company.id]" class="px-3 py-1 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950 dark:hover:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-semibold transition-all cursor-pointer">
+                        Ver Detalle
+                      </a>
                       <button 
                         (click)="toggleCompanyStatus(company)"
                         class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg text-xs font-semibold transition-all cursor-pointer">
