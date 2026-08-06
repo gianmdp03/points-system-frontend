@@ -82,13 +82,26 @@
               </div>
             </div>
 
-            <!-- Regla de Puntos Card -->
-            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center">
-              <span class="text-xs uppercase font-bold tracking-wider text-blue-200 mb-1">Regla de Puntos</span>
-              <div class="text-xl sm:text-2xl font-black text-amber-300">
-                ${{ comp.amountStep }} &rarr; {{ comp.pointsPerStep }} pts
+            <!-- Regla de Puntos Card & Botón Editar -->
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+              <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center">
+                <span class="text-xs uppercase font-bold tracking-wider text-blue-200 mb-1">Regla de Puntos</span>
+                <div class="text-xl sm:text-2xl font-black text-amber-300">
+                  ${{ comp.amountStep }} &rarr; {{ comp.pointsPerStep }} pts
+                </div>
+                <span class="text-[11px] text-blue-100 mt-1 opacity-90">Por cada ${{ comp.amountStep }} invertidos obtienes {{ comp.pointsPerStep }} puntos</span>
               </div>
-              <span class="text-[11px] text-blue-100 mt-1 opacity-90">Por cada ${{ comp.amountStep }} invertidos obtienes {{ comp.pointsPerStep }} puntos</span>
+
+              @if (currentRole() !== RoleEnum.USER) {
+                <button 
+                  (click)="openEditCompanyModal()"
+                  class="px-4 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/40 text-white font-bold text-xs rounded-2xl shadow-lg transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Editar Empresa
+                </button>
+              }
             </div>
           </div>
         </div>
@@ -140,6 +153,15 @@
               {{ comp.rewards?.length || 0 }}
             </span>
           </button>
+          <button 
+            (click)="setTab('sales')" 
+            [class.bg-blue-600]="activeTab() === 'sales'"
+            [class.text-white]="activeTab() === 'sales'"
+            [class.text-gray-700]="activeTab() !== 'sales'"
+            [class.dark:text-gray-300]="activeTab() !== 'sales'"
+            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
+            <span>Ventas & Puntos</span>
+          </button>
         </div>
 
         <!-- ==================== TAB 1: RESUMEN GENERAL ==================== -->
@@ -148,16 +170,26 @@
             
             <!-- Detalles de Ubicación & Contacto -->
             <div class="md:col-span-2 bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-sm space-y-6">
-              <div class="flex items-center gap-3">
-                <div class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0h-4" />
-                  </svg>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0h-4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Información Comercial</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Datos registrados en el sistema de puntos</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 class="text-xl font-bold text-gray-900 dark:text-white">Información Comercial</h3>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">Datos registrados en el sistema de puntos</p>
-                </div>
+
+                @if (currentRole() !== RoleEnum.USER) {
+                  <button 
+                    (click)="openEditCompanyModal()" 
+                    class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+                    Editar Datos
+                  </button>
+                }
               </div>
 
               @if (comp.companyDetails; as details) {
@@ -232,8 +264,21 @@
         @if (activeTab() === 'products') {
           <div class="space-y-6">
             <div class="flex items-center justify-between">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Catálogo de Productos</h3>
-              <span class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.products?.length || 0 }} ítems</span>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Catálogo de Productos</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.products?.length || 0 }} ítems</p>
+              </div>
+
+              @if (currentRole() !== RoleEnum.USER) {
+                <button 
+                  (click)="openAddProductModal()"
+                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  + Agregar Producto
+                </button>
+              }
             </div>
 
             @if (!comp.products || comp.products.length === 0) {
@@ -244,7 +289,14 @@
                   </svg>
                 </div>
                 <h4 class="font-bold text-gray-900 dark:text-white">Sin productos cargados</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Esta empresa aún no ha añadido productos a su catálogo.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">Esta empresa aún no ha añadido productos a su catálogo.</p>
+                @if (currentRole() !== RoleEnum.USER) {
+                  <button 
+                    (click)="openAddProductModal()"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
+                    + Crear Primer Producto
+                  </button>
+                }
               </div>
             } @else {
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -267,7 +319,16 @@
 
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                       <span class="text-xs text-gray-400">Precio</span>
-                      <span class="text-base font-extrabold text-blue-600 dark:text-blue-400">${{ product.price }}</span>
+                      <div class="flex items-center gap-2">
+                        <span class="text-base font-extrabold text-blue-600 dark:text-blue-400">${{ product.price }}</span>
+                        @if (currentRole() !== RoleEnum.USER) {
+                          <button 
+                            (click)="openEditProductModal()"
+                            class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
+                            Editar
+                          </button>
+                        }
+                      </div>
                     </div>
                   </div>
                 }
@@ -280,8 +341,21 @@
         @if (activeTab() === 'promotions') {
           <div class="space-y-6">
             <div class="flex items-center justify-between">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Promociones Especiales</h3>
-              <span class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.promotions?.length || 0 }} promociones</span>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Promociones Especiales</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.promotions?.length || 0 }} promociones</p>
+              </div>
+
+              @if (currentRole() !== RoleEnum.USER) {
+                <button 
+                  (click)="openAddPromotionModal()"
+                  class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  + Agregar Promoción
+                </button>
+              }
             </div>
 
             @if (!comp.promotions || comp.promotions.length === 0) {
@@ -292,7 +366,14 @@
                   </svg>
                 </div>
                 <h4 class="font-bold text-gray-900 dark:text-white">Sin promociones activas</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Actualmente no hay campañas promocionales vigentes en esta empresa.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">Actualmente no hay campañas promocionales vigentes en esta empresa.</p>
+                @if (currentRole() !== RoleEnum.USER) {
+                  <button 
+                    (click)="openAddPromotionModal()"
+                    class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
+                    + Crear Primera Promoción
+                  </button>
+                }
               </div>
             } @else {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -310,10 +391,15 @@
                     </div>
 
                     <div class="pt-3 border-t border-purple-100 dark:border-purple-900/40 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                      <span>Vigencia:</span>
-                      <span class="font-semibold text-purple-700 dark:text-purple-300">
-                        {{ promo.startDate | date:'shortDate' }} - {{ promo.endDate | date:'shortDate' }}
-                      </span>
+                      <span>Vigencia: <strong class="text-purple-700 dark:text-purple-300">{{ promo.startDate | date:'shortDate' }} - {{ promo.endDate | date:'shortDate' }}</strong></span>
+                      
+                      @if (currentRole() !== RoleEnum.USER) {
+                        <button 
+                          (click)="openEditPromotionModal()"
+                          class="px-3 py-1 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/60 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-200 font-bold rounded-lg transition cursor-pointer">
+                          Editar
+                        </button>
+                      }
                     </div>
                   </div>
                 }
@@ -326,8 +412,21 @@
         @if (activeTab() === 'rewards') {
           <div class="space-y-6">
             <div class="flex items-center justify-between">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Premios Canjeables por Puntos</h3>
-              <span class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.rewards?.length || 0 }} premios</span>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Premios Canjeables por Puntos</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.rewards?.length || 0 }} premios</p>
+              </div>
+
+              @if (currentRole() !== RoleEnum.USER) {
+                <button 
+                  (click)="openAddRewardModal()"
+                  class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  + Agregar Premio
+                </button>
+              }
             </div>
 
             @if (!comp.rewards || comp.rewards.length === 0) {
@@ -338,7 +437,14 @@
                   </svg>
                 </div>
                 <h4 class="font-bold text-gray-900 dark:text-white">Sin premios definidos</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">No hay recompensas registradas aún para canjear en esta empresa.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">No hay recompensas registradas aún para canjear en esta empresa.</p>
+                @if (currentRole() !== RoleEnum.USER) {
+                  <button 
+                    (click)="openAddRewardModal()"
+                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
+                    + Crear Primer Premio
+                  </button>
+                }
               </div>
             } @else {
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -354,9 +460,18 @@
 
                     <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                       <span class="text-xs text-gray-400">Costo</span>
-                      <span class="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 rounded-full font-black text-xs text-emerald-700 dark:text-emerald-300">
-                        {{ reward.costInPoints }} Puntos
-                      </span>
+                      <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 rounded-full font-black text-xs text-emerald-700 dark:text-emerald-300">
+                          {{ reward.costInPoints }} Puntos
+                        </span>
+                        @if (currentRole() !== RoleEnum.USER) {
+                          <button 
+                            (click)="openEditRewardModal()"
+                            class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
+                            Editar
+                          </button>
+                        }
+                      </div>
                     </div>
                   </div>
                 }
@@ -365,8 +480,751 @@
           </div>
         }
 
+        <!-- ==================== TAB 5: VENTAS & REGISTRO DE TRANSACCIONES ==================== -->
+        @if (activeTab() === 'sales') {
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Registro de Ventas y Otorgamiento de Puntos</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Historial y alta de ventas de la sucursal</p>
+              </div>
+
+              @if (currentRole() !== RoleEnum.USER) {
+                <button 
+                  (click)="openAddSaleModal()"
+                  class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  + Registrar Venta
+                </button>
+              }
+            </div>
+
+            <!-- Tabla Visual de Ventas Demo -->
+            <div class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-600 dark:text-gray-300">
+                  <thead class="bg-gray-50 dark:bg-gray-800/60 text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
+                    <tr>
+                      <th class="p-4">ID Venta</th>
+                      <th class="p-4">Cliente (DNI / Email)</th>
+                      <th class="p-4">Monto ($)</th>
+                      <th class="p-4">Puntos Generados</th>
+                      <th class="p-4">Fecha</th>
+                      <th class="p-4 text-right">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
+                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
+                      <td class="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">#V-1001</td>
+                      <td class="p-4 font-bold text-gray-900 dark:text-white">cliente@correo.com</td>
+                      <td class="p-4 font-semibold text-emerald-600 dark:text-emerald-400">$1,500.00</td>
+                      <td class="p-4 font-extrabold text-amber-500">+150 pts</td>
+                      <td class="p-4 text-gray-400">06/08/2026</td>
+                      <td class="p-4 text-right">
+                        @if (currentRole() !== RoleEnum.USER) {
+                          <button 
+                            (click)="openEditSaleModal()"
+                            class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-lg transition cursor-pointer">
+                            Editar
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
+                      <td class="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">#V-1002</td>
+                      <td class="p-4 font-bold text-gray-900 dark:text-white">juan.perez&#64;gmail.com</td>
+                      <td class="p-4 font-semibold text-emerald-600 dark:text-emerald-400">$2,400.00</td>
+                      <td class="p-4 font-extrabold text-amber-500">+240 pts</td>
+                      <td class="p-4 text-gray-400">05/08/2026</td>
+                      <td class="p-4 text-right">
+                        @if (currentRole() !== RoleEnum.USER) {
+                          <button 
+                            (click)="openEditSaleModal()"
+                            class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-lg transition cursor-pointer">
+                            Editar
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        }
+
       </div>
     }
 
   </div>
 </div>
+
+<!-- ========================================================================= -->
+<!-- MODALES VISUALES HTML (SIN LÓGICA TS, LISTOS PARA BINDING) -->
+<!-- ========================================================================= -->
+
+<!-- 1. MODAL: EDITAR EMPRESA -->
+@if (showEditCompanyModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeEditCompanyModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+      <button 
+        (click)="closeEditCompanyModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-blue-100 dark:bg-blue-950/80 rounded-2xl text-blue-600 dark:text-blue-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Empresa</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Actualiza los datos de la sucursal y regla de puntos.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre Comercial</label>
+            <input type="text" [value]="company()?.name || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto por Paso ($)</label>
+            <input type="number" [value]="company()?.amountStep || 100" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos por Paso</label>
+            <input type="number" [value]="company()?.pointsPerStep || 10" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">Ubicación</h4>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dirección</label>
+              <input type="text" [value]="company()?.companyDetails?.address || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ciudad</label>
+              <input type="text" [value]="company()?.companyDetails?.city || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Provincia</label>
+              <input type="text" [value]="company()?.companyDetails?.province || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">País</label>
+              <input type="text" [value]="company()?.companyDetails?.country || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Código Postal</label>
+              <input type="text" [value]="company()?.companyDetails?.zipCode || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeEditCompanyModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 2. MODAL: AGREGAR PRODUCTO -->
+@if (showAddProductModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeAddProductModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeAddProductModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-blue-100 dark:bg-blue-950/80 rounded-2xl text-blue-600 dark:text-blue-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Agregar Producto</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Carga un nuevo ítem al catálogo de la empresa.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto *</label>
+          <input type="text" placeholder="Ej. Café Espresso 250g" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea rows="3" placeholder="Descripción detallada del producto..." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($) *</label>
+            <input type="number" placeholder="Ej. 1200" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock Inicial</label>
+            <input type="number" placeholder="Ej. 50" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">URL de Imagen</label>
+          <input type="text" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeAddProductModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Guardar Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 3. MODAL: EDITAR PRODUCTO -->
+@if (showEditProductModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeEditProductModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeEditProductModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-blue-100 dark:bg-blue-950/80 rounded-2xl text-blue-600 dark:text-blue-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Producto</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica la información y precio del producto.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto</label>
+          <input type="text" value="Producto Seleccionado" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea rows="3" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">Descripción actual del producto</textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($)</label>
+            <input type="number" value="1500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock Disponible</label>
+            <input type="number" value="25" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">URL de Imagen</label>
+          <input type="text" value="https://ejemplo.com/imagen.jpg" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeEditProductModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Actualizar Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 4. MODAL: AGREGAR PROMOCIÓN -->
+@if (showAddPromotionModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeAddPromotionModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeAddPromotionModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-purple-100 dark:bg-purple-950/80 rounded-2xl text-purple-600 dark:text-purple-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 13C10.832 21 2 20 2 12V6a2 2 0 012-2h16a2 2 0 012 2v6c0 8-8.832 9-10 9z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Agregar Promoción</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Crea una nueva campaña multiplicadora de puntos.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre de la Promoción *</label>
+          <input type="text" placeholder="Ej. Fin de Semana Doble Puntos" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea rows="2" placeholder="Detalle de la promoción..." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Multiplicador de Puntos *</label>
+          <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="1.5">1.5x Puntos</option>
+            <option value="2" selected>2x Puntos (Doble)</option>
+            <option value="3">3x Puntos (Triple)</option>
+            <option value="5">5x Puntos</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio *</label>
+            <input type="date" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Fin *</label>
+            <input type="date" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeAddPromotionModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Guardar Promoción
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 5. MODAL: EDITAR PROMOCIÓN -->
+@if (showEditPromotionModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeEditPromotionModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeEditPromotionModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-purple-100 dark:bg-purple-950/80 rounded-2xl text-purple-600 dark:text-purple-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Promoción</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica los parámetros de la campaña.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre de la Promoción</label>
+          <input type="text" value="Promoción Seleccionada" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea rows="2" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">Descripción promocional actual</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Multiplicador de Puntos</label>
+          <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="1.5">1.5x Puntos</option>
+            <option value="2" selected>2x Puntos (Doble)</option>
+            <option value="3">3x Puntos (Triple)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio</label>
+            <input type="date" value="2026-08-01" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Fin</label>
+            <input type="date" value="2026-08-31" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeEditPromotionModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Actualizar Promoción
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 6. MODAL: AGREGAR PREMIO / RECOMPENSA -->
+@if (showAddRewardModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeAddRewardModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeAddRewardModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-emerald-100 dark:bg-emerald-950/80 rounded-2xl text-emerald-600 dark:text-emerald-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Agregar Premio</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Crea una nueva recompensa canjeable por puntos.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Premio *</label>
+          <input type="text" placeholder="Ej. Voucher $2000 o Remera Oficial" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea rows="2" placeholder="Condiciones del canje..." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos *</label>
+            <input type="number" placeholder="Ej. 500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock de Premios</label>
+            <input type="number" placeholder="Ej. 10" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeAddRewardModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Guardar Premio
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 7. MODAL: EDITAR PREMIO / RECOMPENSA -->
+@if (showEditRewardModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeEditRewardModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeEditRewardModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-emerald-100 dark:bg-emerald-950/80 rounded-2xl text-emerald-600 dark:text-emerald-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Premio</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica el costo en puntos y stock del premio.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Premio</label>
+          <input type="text" value="Premio Seleccionado" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea rows="2" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">Descripción actual del premio</textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos</label>
+            <input type="number" value="350" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock de Premios</label>
+            <input type="number" value="5" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeEditRewardModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Actualizar Premio
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 8. MODAL: REGISTRAR VENTA -->
+@if (showAddSaleModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeAddSaleModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeAddSaleModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-indigo-100 dark:bg-indigo-950/80 rounded-2xl text-indigo-600 dark:text-indigo-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Registrar Venta</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Registra una compra y otorga puntos al cliente.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">DNI / Email del Cliente *</label>
+          <input type="text" placeholder="Ej. cliente@correo.com o 38123456" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de la Venta ($) *</label>
+            <input type="number" placeholder="Ej. 2500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos a Otorgar *</label>
+            <input type="number" placeholder="Ej. 250" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha de la Transacción</label>
+          <input type="date" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Observaciones / Factura</label>
+          <textarea rows="2" placeholder="Ej. Factura N° 0001-000456" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeAddSaleModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Confirmar Venta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 9. MODAL: EDITAR VENTA -->
+@if (showEditSaleModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeEditSaleModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
+      <button 
+        (click)="closeEditSaleModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-indigo-100 dark:bg-indigo-950/80 rounded-2xl text-indigo-600 dark:text-indigo-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Registro de Venta</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica los detalles de una transacción realizada.</p>
+        </div>
+      </div>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">DNI / Email del Cliente</label>
+          <input type="text" value="cliente@correo.com" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de la Venta ($)</label>
+            <input type="number" value="1500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos Otorgados</label>
+            <input type="number" value="150" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Estado de la Transacción</label>
+          <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="COMPLETED" selected>Completada</option>
+            <option value="PENDING">Pendiente</option>
+            <option value="CANCELLED">Anulada / Devuelta</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
+          <textarea rows="2" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">Ajuste de puntos registrado</textarea>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeEditSaleModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Actualizar Venta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

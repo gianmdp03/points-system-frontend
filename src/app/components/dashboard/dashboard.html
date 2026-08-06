@@ -169,6 +169,14 @@
         </div>
 
         <div class="flex items-center gap-3">
+          <button 
+            (click)="openAddCompanyModal()" 
+            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            + Nueva Empresa
+          </button>
           <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300">
             Total: {{ adminCompanies().length }} sucursales
           </span>
@@ -188,9 +196,14 @@
             </svg>
           </div>
           <h4 class="text-base font-bold text-gray-900 dark:text-white mb-1">No tienes empresas asociadas a tu cuenta admin</h4>
-          <p class="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+          <p class="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-4">
             Actualmente la API no devolvió empresas asociadas a tu DNI / ID de administrador.
           </p>
+          <button 
+            (click)="openAddCompanyModal()"
+            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            + Crear Primera Empresa
+          </button>
         </div>
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -236,6 +249,11 @@
                   Ver Detalle
                 </a>
                 <button 
+                  (click)="openEditCompanyModal()"
+                  class="py-2 px-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition-all text-center cursor-pointer">
+                  Editar
+                </button>
+                <button 
                   (click)="toggleCompanyStatus(company)"
                   [class]="company.isEnabled ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-950/50'"
                   class="py-2 px-3 font-bold text-xs rounded-xl transition-all text-center cursor-pointer">
@@ -262,9 +280,19 @@
           <p class="text-sm text-gray-500 dark:text-gray-400">Vista global administrada mediante `listCompanies()`.</p>
         </div>
 
-        <span class="px-3 py-1 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-xs rounded-xl border border-purple-200 dark:border-purple-800">
-          Registros Totales: {{ totalElements() }}
-        </span>
+        <div class="flex items-center gap-3">
+          <button 
+            (click)="openAddCompanyModal()" 
+            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            + Nueva Empresa
+          </button>
+          <span class="px-3 py-1 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-xs rounded-xl border border-purple-200 dark:border-purple-800">
+            Registros Totales: {{ totalElements() }}
+          </span>
+        </div>
       </div>
 
       @if (isLoading()) {
@@ -280,9 +308,14 @@
             </svg>
           </div>
           <h4 class="text-base font-bold text-gray-900 dark:text-white mb-1">Sin empresas registradas</h4>
-          <p class="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+          <p class="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-4">
             La llamada a `GET /api/companies` devolvió un listado vacío de empresas en el sistema.
           </p>
+          <button 
+            (click)="openAddCompanyModal()"
+            class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg cursor-pointer">
+            + Crear Nueva Empresa
+          </button>
         </div>
       } @else {
         <div class="bg-white dark:bg-gray-800/90 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-md overflow-hidden">
@@ -319,6 +352,11 @@
                         Ver Detalle
                       </a>
                       <button 
+                        (click)="openEditCompanyModal()"
+                        class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg text-xs font-semibold transition-all cursor-pointer">
+                        Editar
+                      </button>
+                      <button 
                         (click)="toggleCompanyStatus(company)"
                         class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg text-xs font-semibold transition-all cursor-pointer">
                         Cambiar Estado
@@ -334,3 +372,213 @@
     </div>
   }
 </section>
+
+<!-- ========================================================================= -->
+<!-- MODAL 1: FORMULARIO CREAR COMPAÑÍA (VISUAL SOLAMENTE) -->
+<!-- ========================================================================= -->
+@if (showAddCompanyModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeAddCompanyModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+      <button 
+        (click)="closeAddCompanyModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-indigo-100 dark:bg-indigo-950/80 rounded-2xl text-indigo-600 dark:text-indigo-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0h-4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Registrar Nueva Empresa</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Completa los campos para dar de alta la compañía y sus reglas de puntos.</p>
+        </div>
+      </div>
+
+      <!-- Formulario HTML (Sólo visual, listo para TS logic) -->
+      <form class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre Comercial de la Empresa *</label>
+            <input type="text" placeholder="Ej. Mi Comercio S.A." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de Inversión / Paso ($) *</label>
+            <input type="number" placeholder="Ej. 100" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos Otorgados por Paso *</label>
+            <input type="number" placeholder="Ej. 10" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Email / DNI del Administrador Asignado</label>
+            <input type="text" placeholder="Ej. admin@empresa.com" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-3">Detalles de Ubicación y Sucursal</h4>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dirección Calle y Número</label>
+              <input type="text" placeholder="Ej. Av. Siempreviva 742" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ciudad</label>
+              <input type="text" placeholder="Ej. Rosario" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Provincia / Estado</label>
+              <input type="text" placeholder="Ej. Santa Fe" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">País</label>
+              <input type="text" placeholder="Ej. Argentina" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Código Postal</label>
+              <input type="text" placeholder="Ej. S2000" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <input type="checkbox" id="addCompanyEnabled" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" />
+          <label for="addCompanyEnabled" class="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer">Habilitar empresa inmediatamente tras creación</label>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeAddCompanyModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Guardar Empresa
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ========================================================================= -->
+<!-- MODAL 2: FORMULARIO EDITAR COMPAÑÍA (VISUAL SOLAMENTE) -->
+<!-- ========================================================================= -->
+@if (showEditCompanyModal()) {
+  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div (click)="closeEditCompanyModal()" class="absolute inset-0"></div>
+
+    <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+      <button 
+        (click)="closeEditCompanyModal()"
+        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-3 bg-purple-100 dark:bg-purple-950/80 rounded-2xl text-purple-600 dark:text-purple-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Información de Empresa</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Actualiza los datos del comercio, reglas de conversión y ubicación.</p>
+        </div>
+      </div>
+
+      <!-- Formulario HTML (Sólo visual, listo para TS logic) -->
+      <form class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre Comercial de la Empresa</label>
+            <input type="text" value="Empresa Ejemplo" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de Inversión / Paso ($)</label>
+            <input type="number" value="100" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos Otorgados por Paso</label>
+            <input type="number" value="10" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Estado Operativo</label>
+            <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+              <option value="true" selected>Habilitada / Activa</option>
+              <option value="false">Deshabilitada / Inactiva</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">Detalles de Ubicación y Contacto</h4>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dirección Calle y Número</label>
+              <input type="text" value="Av. San Martín 456" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ciudad</label>
+              <input type="text" value="Córdoba" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Provincia</label>
+              <input type="text" value="Córdoba" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">País</label>
+              <input type="text" value="Argentina" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Código Postal</label>
+              <input type="text" value="X5000" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
+          <button 
+            type="button"
+            (click)="closeEditCompanyModal()"
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+            Actualizar Empresa
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

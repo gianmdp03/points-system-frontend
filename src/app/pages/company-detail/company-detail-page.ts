@@ -21,7 +21,41 @@ export class CompanyDetailPage implements OnInit {
   readonly company = signal<CompanyDetailDTO | null>(null);
   readonly isLoading = signal<boolean>(true);
   readonly errorMessage = signal<string | null>(null);
-  readonly activeTab = signal<'overview' | 'products' | 'promotions' | 'rewards'>('overview');
+  readonly activeTab = signal<'overview' | 'products' | 'promotions' | 'rewards' | 'sales'>('overview');
+
+  // Modales visuales (sin lógica de submit)
+  readonly showEditCompanyModal = signal<boolean>(false);
+  readonly showAddProductModal = signal<boolean>(false);
+  readonly showEditProductModal = signal<boolean>(false);
+  readonly showAddPromotionModal = signal<boolean>(false);
+  readonly showEditPromotionModal = signal<boolean>(false);
+  readonly showAddRewardModal = signal<boolean>(false);
+  readonly showEditRewardModal = signal<boolean>(false);
+  readonly showAddSaleModal = signal<boolean>(false);
+  readonly showEditSaleModal = signal<boolean>(false);
+
+  openEditCompanyModal(): void { this.showEditCompanyModal.set(true); }
+  closeEditCompanyModal(): void { this.showEditCompanyModal.set(false); }
+
+  openAddProductModal(): void { this.showAddProductModal.set(true); }
+  closeAddProductModal(): void { this.showAddProductModal.set(false); }
+  openEditProductModal(): void { this.showEditProductModal.set(true); }
+  closeEditProductModal(): void { this.showEditProductModal.set(false); }
+
+  openAddPromotionModal(): void { this.showAddPromotionModal.set(true); }
+  closeAddPromotionModal(): void { this.showAddPromotionModal.set(false); }
+  openEditPromotionModal(): void { this.showEditPromotionModal.set(true); }
+  closeEditPromotionModal(): void { this.showEditPromotionModal.set(false); }
+
+  openAddRewardModal(): void { this.showAddRewardModal.set(true); }
+  closeAddRewardModal(): void { this.showAddRewardModal.set(false); }
+  openEditRewardModal(): void { this.showEditRewardModal.set(true); }
+  closeEditRewardModal(): void { this.showEditRewardModal.set(false); }
+
+  openAddSaleModal(): void { this.showAddSaleModal.set(true); }
+  closeAddSaleModal(): void { this.showAddSaleModal.set(false); }
+  openEditSaleModal(): void { this.showEditSaleModal.set(true); }
+  closeEditSaleModal(): void { this.showEditSaleModal.set(false); }
 
   readonly currentRole = this.authService.currentRole;
   readonly RoleEnum = Role;
@@ -76,11 +110,14 @@ export class CompanyDetailPage implements OnInit {
     });
   }
 
-  setTab(tab: 'overview' | 'products' | 'promotions' | 'rewards'): void {
+  setTab(tab: 'overview' | 'products' | 'promotions' | 'rewards' | 'sales'): void {
     this.activeTab.set(tab);
   }
 
   goBack(): void {
     this.router.navigate(['/dashboard']);
   }
+
+  //FORMULARIOS
+  
 }

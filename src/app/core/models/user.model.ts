@@ -10,4 +10,7 @@ export interface UserDetailDTO {
   name: string;
   dni: string;
   role: Role;
+  isFreeTrialOver?: boolean;
+  freeTrialStartTime?: string;
+  freeTrialEndTime?: string;
 }

@@ -34,6 +34,15 @@ export class Dashboard implements OnInit {
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
 
+  // Modales visuales (sin lógica de submit)
+  readonly showAddCompanyModal = signal<boolean>(false);
+  readonly showEditCompanyModal = signal<boolean>(false);
+
+  openAddCompanyModal(): void { this.showAddCompanyModal.set(true); }
+  closeAddCompanyModal(): void { this.showAddCompanyModal.set(false); }
+  openEditCompanyModal(): void { this.showEditCompanyModal.set(true); }
+  closeEditCompanyModal(): void { this.showEditCompanyModal.set(false); }
+
   constructor() {
     // Re-fetch data whenever active role or logged in status changes
     effect(() => {

@@ -27,6 +27,7 @@ export interface CompanyDetailDTO {
   amountStep: number;
   pointsPerStep: number;
   isEnabled: boolean;
+  appAdminOwner?: string;
   pointsAccounts?: PointsAccountDetailDTO[];
   products?: ProductListDTO[];
   promotions?: PromotionListDTO[];
