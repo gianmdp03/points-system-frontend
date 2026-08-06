@@ -14,7 +14,6 @@ export class AuthService {
   readonly currentRole = signal<Role>(Role.USER);
   readonly userEmail = signal<string | null>(null);
   readonly userId = signal<string | null>(null);
-  readonly userProfile = signal<UserDetailDTO | null>(null);
 
   readonly isLoginModalOpen = signal<boolean>(false);
 
@@ -55,7 +54,6 @@ export class AuthService {
     // Fetch exact role and profile from Spring Boot Backend
     this.userService.getMyProfile().subscribe({
       next: (profile: UserDetailDTO) => {
-        this.userProfile.set(profile);
         if (profile?.role && Object.values(Role).includes(profile.role)) {
           this.currentRole.set(profile.role);
         }
@@ -70,7 +68,6 @@ export class AuthService {
     this.isLoggedIn.set(false);
     this.userEmail.set(null);
     this.userId.set(null);
-    this.userProfile.set(null);
     this.currentRole.set(Role.USER);
   }
 

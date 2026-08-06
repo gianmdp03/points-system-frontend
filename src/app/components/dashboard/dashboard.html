@@ -15,27 +15,16 @@
       </p>
     </div>
 
-    <!-- Badge de Rol Asignado Automáticamente y Botón Crear Empresa -->
+    <!-- Badge de Rol Asignado Automáticamente -->
     @if (isLoggedIn()) {
-      <div class="flex flex-wrap items-center gap-3">
-        <button 
-          (click)="openCreateModal()" 
-          class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-2xl shadow-lg shadow-blue-500/20 hover:-translate-y-0.5 transition-all cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          <span>Nueva Empresa</span>
-        </button>
-
-        <div class="flex items-center gap-2.5 px-4 py-2 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-2xl text-xs font-bold text-blue-700 dark:text-blue-300">
-          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          <span>Rol Asignado:</span>
-          <span class="px-2.5 py-0.5 bg-blue-600 text-white rounded-lg font-mono text-[11px] uppercase shadow-xs">
-            {{ currentRole() }}
-          </span>
-        </div>
+      <div class="flex items-center gap-2.5 px-4 py-2 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-2xl text-xs font-bold text-blue-700 dark:text-blue-300">
+        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <span>Rol Asignado:</span>
+        <span class="px-2.5 py-0.5 bg-blue-600 text-white rounded-lg font-mono text-[11px] uppercase shadow-xs">
+          {{ currentRole() }}
+        </span>
       </div>
     }
   </div>
@@ -342,166 +331,6 @@
           </div>
         </div>
       }
-    </div>
-  }
-
-  <!-- Modal Crear Empresa -->
-  @if (isCreateModalOpen()) {
-    <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-opacity animate-fade-in">
-      <!-- Backdrop Click -->
-      <div (click)="closeCreateModal()" class="absolute inset-0"></div>
-
-      <!-- Modal Box -->
-      <div class="relative w-full max-w-xl bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-2xl z-10 transition-all max-h-[90vh] overflow-y-auto">
-        <button 
-          (click)="closeCreateModal()"
-          class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <div class="text-left mb-6">
-          <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            Registrar Nueva Empresa
-          </h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Ingresa los datos comerciales y de conversión de puntos para dar de alta la empresa en el sistema.
-          </p>
-        </div>
-
-        @if (createError()) {
-          <div class="mb-4 p-3.5 bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 rounded-2xl text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
-            <svg class="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{{ createError() }}</span>
-          </div>
-        }
-
-        <form (ngSubmit)="submitCreateCompany()" class="space-y-4 text-left">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="sm:col-span-2">
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                Nombre Comercial *
-              </label>
-              <input 
-                type="text" 
-                [formField]="createCompanyForm.name"
-                placeholder="Ej: Tienda Puntazos S.A." 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                DNI Propietario/Admin *
-              </label>
-              <input 
-                type="text" 
-                [formField]="createCompanyForm.userDni"
-                placeholder="Ej: 12345678" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                Dirección
-              </label>
-              <input 
-                type="text" 
-                [formField]="createCompanyForm.address"
-                placeholder="Ej: Av. Corrientes 1234" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                Ciudad
-              </label>
-              <input 
-                type="text" 
-                [formField]="createCompanyForm.city"
-                placeholder="Ej: Buenos Aires" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                Provincia
-              </label>
-              <input 
-                type="text" 
-                [formField]="createCompanyForm.province"
-                placeholder="Ej: CABA" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                País
-              </label>
-              <input 
-                type="text" 
-                [formField]="createCompanyForm.country"
-                placeholder="Ej: Argentina" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                Código Postal
-              </label>
-              <input 
-                type="text" 
-                [formField]="createCompanyForm.zipCode"
-                placeholder="Ej: C1043" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                Paso de Monto ($)
-              </label>
-              <input 
-                type="number" 
-                [formField]="createCompanyForm.amountStep"
-                placeholder="100" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
-                Puntos por Paso
-              </label>
-              <input 
-                type="number" 
-                [formField]="createCompanyForm.pointsPerStep"
-                placeholder="10" 
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-          </div>
-
-          <div class="pt-4 flex items-center justify-end gap-3">
-            <button 
-              type="button" 
-              (click)="closeCreateModal()"
-              class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xs rounded-xl transition cursor-pointer">
-              Cancelar
-            </button>
-            <button 
-              type="submit" 
-              [disabled]="createLoading()"
-              class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer disabled:opacity-50 flex items-center gap-2">
-              @if (createLoading()) {
-                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Guardando...</span>
-              } @else {
-                <span>Crear Empresa</span>
-              }
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   }
 </section>

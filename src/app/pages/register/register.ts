@@ -1,14 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { form, required, email, minLength, FormField } from '@angular/forms/signals';
 import { AuthService } from '../../core/services/auth-service';
 import { Role } from '../../core/models';
 
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormField],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
@@ -18,59 +18,41 @@ export class Register {
 
   readonly RoleEnum = Role;
 
-  readonly registerModel = signal({
-    selectedRole: Role.USER,
-    name: '',
-    dni: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    acceptTerms: false
-  });
+  // Form Signals
+  selectedRole = signal<Role>(Role.USER);
+  name = signal<string>('');
+  dni = signal<string>('');
+  email = signal<string>('');
+  password = signal<string>('');
+  confirmPassword = signal<string>('');
+  acceptTerms = signal<boolean>(false);
 
-  readonly registerForm = form(this.registerModel, (f) => {
-    required(f.name);
-    required(f.dni);
-    required(f.email);
-    email(f.email);
-    required(f.password);
-    minLength(f.password, 6);
-    required(f.confirmPassword);
-  });
-
-  readonly magicModel = signal({ magicEmail: '' });
-  readonly magicForm = form(this.magicModel, (f) => {
-    required(f.magicEmail);
-    email(f.magicEmail);
-  });
-
+  // Magic Link Signal
+  magicEmail = signal<string>('');
   activeTab = signal<'email' | 'magic'>('email');
+
+  // UI state
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
 
   selectRole(role: Role): void {
-    this.registerModel.update(m => ({ ...m, selectedRole: role }));
-  }
-
-  get selectedRole(): Role {
-    return this.registerModel().selectedRole;
+    this.selectedRole.set(role);
   }
 
   async onSubmit(): Promise<void> {
-    const val = this.registerModel();
-    if (val.password !== val.confirmPassword) {
+    if (!this.name() || !this.dni() || !this.email() || !this.password() || !this.confirmPassword()) {
+      this.errorMessage.set('Por favor completa todos los campos obligatorios.');
+      return;
+    }
+
+    if (this.password() !== this.confirmPassword()) {
       this.errorMessage.set('Las contraseñas no coinciden.');
       return;
     }
 
-    if (!val.acceptTerms) {
+    if (!this.acceptTerms()) {
       this.errorMessage.set('Debes aceptar los términos y condiciones.');
-      return;
-    }
-
-    if (this.registerForm().invalid()) {
-      this.errorMessage.set('Por favor completa todos los campos obligatorios correctamente.');
       return;
     }
 
@@ -79,11 +61,11 @@ export class Register {
     this.successMessage.set(null);
 
     const result = await this.authService.register(
-      val.email,
-      val.password,
-      val.name,
-      val.dni,
-      val.selectedRole
+      this.email(),
+      this.password(),
+      this.name(),
+      this.dni(),
+      this.selectedRole()
     );
 
     this.isLoading.set(false);
@@ -111,16 +93,15 @@ export class Register {
   }
 
   async onMagicLink(): Promise<void> {
-    if (this.magicForm().invalid()) {
-      this.errorMessage.set('Por favor ingresa un correo válido.');
+    if (!this.magicEmail()) {
+      this.errorMessage.set('Por favor ingresa tu correo para enviarte el enlace mágico.');
       return;
     }
 
-    const { magicEmail } = this.magicModel();
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const result = await this.authService.loginWithMagicLink(magicEmail);
+    const result = await this.authService.loginWithMagicLink(this.magicEmail());
     this.isLoading.set(false);
 
     if (result.success) {

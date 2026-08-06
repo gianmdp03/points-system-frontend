@@ -44,18 +44,18 @@
                     </div>
 
                     <!-- Formulario Lead Capture -->
-                    <form (ngSubmit)="onSubmit()" class="space-y-4">
+                    <form onsubmit="event.preventDefault(); alert('¡Gracias por tu interés! Te contactaremos a la brevedad.');" class="space-y-4">
                         <div>
                             <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1">Nombre Completo</label>
-                            <input type="text" [formField]="contactForm.fullName" placeholder="Ej. Carlos Mendoza" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" required placeholder="Ej. Carlos Mendoza" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1">Nombre de la Empresa / Comercio</label>
-                            <input type="text" [formField]="contactForm.companyName" placeholder="Ej. Cafetería La Central" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" required placeholder="Ej. Cafetería La Central" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1">Correo Corporativo o Teléfono</label>
-                            <input type="text" [formField]="contactForm.contact" placeholder="contacto@minegocio.com / +54 9..." class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" required placeholder="contacto@minegocio.com / +54 9..." class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-500/25">
                             Solicitar Demo Gratis
