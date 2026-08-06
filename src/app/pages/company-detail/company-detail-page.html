@@ -323,7 +323,7 @@
                         <span class="text-base font-extrabold text-blue-600 dark:text-blue-400">${{ product.price }}</span>
                         @if (currentRole() !== RoleEnum.USER) {
                           <button 
-                            (click)="openEditProductModal()"
+                            (click)="openEditProductModal(product)"
                             class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
                             Editar
                           </button>
@@ -395,7 +395,7 @@
                       
                       @if (currentRole() !== RoleEnum.USER) {
                         <button 
-                          (click)="openEditPromotionModal()"
+                          (click)="openEditPromotionModal(promo)"
                           class="px-3 py-1 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/60 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-200 font-bold rounded-lg transition cursor-pointer">
                           Editar
                         </button>
@@ -466,9 +466,15 @@
                         </span>
                         @if (currentRole() !== RoleEnum.USER) {
                           <button 
-                            (click)="openEditRewardModal()"
+                            (click)="openEditRewardModal(reward)"
                             class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
                             Editar
+                          </button>
+                        } @else {
+                          <button 
+                            (click)="onRedeemReward(reward.id)"
+                            class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition cursor-pointer shadow">
+                            Canjear
                           </button>
                         }
                       </div>
@@ -561,8 +567,8 @@
   </div>
 </div>
 
-<!-- ========================================================================= -->
-<!-- MODALES VISUALES HTML (SIN LÓGICA TS, LISTOS PARA BINDING) -->
+<!-- ==============================================<!-- ========================================================================= -->
+<!-- MODALES REACTIVOS EN PUNTASOS (CON VALIDACIONES Y MENSAJES DINÁMICOS) -->
 <!-- ========================================================================= -->
 
 <!-- 1. MODAL: EDITAR EMPRESA -->
@@ -591,21 +597,51 @@
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="editCompanyForm" (ngSubmit)="onEditCompanySubmit()" class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="sm:col-span-2">
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre Comercial</label>
-            <input type="text" [value]="company()?.name || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre Comercial *</label>
+            <input 
+              type="text" 
+              formControlName="name" 
+              [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'name', isEditCompanySubmitted())"
+              [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'name', isEditCompanySubmitted())"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            @if (isFieldInvalid(editCompanyForm, 'name', isEditCompanySubmitted())) {
+              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'name') }}</p>
+            }
           </div>
 
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto por Paso ($)</label>
-            <input type="number" [value]="company()?.amountStep || 100" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto por Paso ($) *</label>
+            <input 
+              type="number" 
+              formControlName="amountStep" 
+              [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'amountStep', isEditCompanySubmitted())"
+              [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'amountStep', isEditCompanySubmitted())"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            @if (isFieldInvalid(editCompanyForm, 'amountStep', isEditCompanySubmitted())) {
+              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'amountStep') }}</p>
+            }
           </div>
 
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos por Paso</label>
-            <input type="number" [value]="company()?.pointsPerStep || 10" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos por Paso *</label>
+            <input 
+              type="number" 
+              formControlName="pointsPerStep" 
+              [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'pointsPerStep', isEditCompanySubmitted())"
+              [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'pointsPerStep', isEditCompanySubmitted())"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            @if (isFieldInvalid(editCompanyForm, 'pointsPerStep', isEditCompanySubmitted())) {
+              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'pointsPerStep') }}</p>
+            }
           </div>
         </div>
 
@@ -614,28 +650,68 @@
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="sm:col-span-2">
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dirección</label>
-              <input type="text" [value]="company()?.companyDetails?.address || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dirección *</label>
+              <input 
+                type="text" 
+                formControlName="address" 
+                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'address', isEditCompanySubmitted())"
+                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'address', isEditCompanySubmitted())"
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              @if (isFieldInvalid(editCompanyForm, 'address', isEditCompanySubmitted())) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'address') }}</p>
+              }
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ciudad</label>
-              <input type="text" [value]="company()?.companyDetails?.city || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ciudad *</label>
+              <input 
+                type="text" 
+                formControlName="city" 
+                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'city', isEditCompanySubmitted())"
+                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'city', isEditCompanySubmitted())"
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              @if (isFieldInvalid(editCompanyForm, 'city', isEditCompanySubmitted())) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'city') }}</p>
+              }
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Provincia</label>
-              <input type="text" [value]="company()?.companyDetails?.province || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Provincia *</label>
+              <input 
+                type="text" 
+                formControlName="province" 
+                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'province', isEditCompanySubmitted())"
+                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'province', isEditCompanySubmitted())"
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              @if (isFieldInvalid(editCompanyForm, 'province', isEditCompanySubmitted())) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'province') }}</p>
+              }
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">País</label>
-              <input type="text" [value]="company()?.companyDetails?.country || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">País *</label>
+              <input 
+                type="text" 
+                formControlName="country" 
+                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'country', isEditCompanySubmitted())"
+                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'country', isEditCompanySubmitted())"
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              @if (isFieldInvalid(editCompanyForm, 'country', isEditCompanySubmitted())) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'country') }}</p>
+              }
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Código Postal</label>
-              <input type="text" [value]="company()?.companyDetails?.zipCode || ''" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Código Postal *</label>
+              <input 
+                type="text" 
+                formControlName="zipCode" 
+                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'zipCode', isEditCompanySubmitted())"
+                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'zipCode', isEditCompanySubmitted())"
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              @if (isFieldInvalid(editCompanyForm, 'zipCode', isEditCompanySubmitted())) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'zipCode') }}</p>
+              }
             </div>
           </div>
         </div>
@@ -684,31 +760,57 @@
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="addProductForm" (ngSubmit)="onAddProductSubmit()" class="space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto *</label>
-          <input type="text" placeholder="Ej. Café Espresso 250g" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input 
+            type="text" 
+            formControlName="name"
+            placeholder="Ej. Café Espresso 250g" 
+            [class.border-rose-500]="isFieldInvalid(addProductForm, 'name', isAddProductSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addProductForm, 'name', isAddProductSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          @if (isFieldInvalid(addProductForm, 'name', isAddProductSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addProductForm, 'name') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea rows="3" placeholder="Descripción detallada del producto..." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <textarea 
+            rows="3" 
+            formControlName="description"
+            placeholder="Descripción detallada del producto..." 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($) *</label>
-            <input type="number" placeholder="Ej. 1200" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock Inicial</label>
-            <input type="number" placeholder="Ej. 50" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($) *</label>
+          <input 
+            type="number" 
+            formControlName="price"
+            placeholder="Ej. 1200" 
+            [class.border-rose-500]="isFieldInvalid(addProductForm, 'price', isAddProductSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addProductForm, 'price', isAddProductSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          @if (isFieldInvalid(addProductForm, 'price', isAddProductSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addProductForm, 'price') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">URL de Imagen</label>
-          <input type="text" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input 
+            type="text" 
+            formControlName="image"
+            placeholder="https://ejemplo.com/imagen.jpg" 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
         <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
@@ -755,31 +857,53 @@
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="editProductForm" (ngSubmit)="onEditProductSubmit()" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto</label>
-          <input type="text" value="Producto Seleccionado" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto *</label>
+          <input 
+            type="text" 
+            formControlName="name" 
+            [class.border-rose-500]="isFieldInvalid(editProductForm, 'name', isEditProductSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(editProductForm, 'name', isEditProductSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          @if (isFieldInvalid(editProductForm, 'name', isEditProductSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editProductForm, 'name') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea rows="3" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">Descripción actual del producto</textarea>
+          <textarea 
+            rows="3" 
+            formControlName="description" 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($)</label>
-            <input type="number" value="1500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock Disponible</label>
-            <input type="number" value="25" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($) *</label>
+          <input 
+            type="number" 
+            formControlName="price" 
+            [class.border-rose-500]="isFieldInvalid(editProductForm, 'price', isEditProductSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(editProductForm, 'price', isEditProductSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          @if (isFieldInvalid(editProductForm, 'price', isEditProductSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editProductForm, 'price') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">URL de Imagen</label>
-          <input type="text" value="https://ejemplo.com/imagen.jpg" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input 
+            type="text" 
+            formControlName="image" 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
         <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
@@ -826,35 +950,74 @@
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="addPromotionForm" (ngSubmit)="onAddPromotionSubmit()" class="space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre de la Promoción *</label>
-          <input type="text" placeholder="Ej. Fin de Semana Doble Puntos" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          <input 
+            type="text" 
+            formControlName="name" 
+            placeholder="Ej. Fin de Semana Doble Puntos" 
+            [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'name', isAddPromotionSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'name', isAddPromotionSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          @if (isFieldInvalid(addPromotionForm, 'name', isAddPromotionSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'name') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea rows="2" placeholder="Detalle de la promoción..." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+          <textarea 
+            rows="2" 
+            formControlName="description" 
+            placeholder="Detalle de la promoción..." 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Multiplicador de Puntos *</label>
-          <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
-            <option value="1.5">1.5x Puntos</option>
-            <option value="2" selected>2x Puntos (Doble)</option>
-            <option value="3">3x Puntos (Triple)</option>
-            <option value="5">5x Puntos</option>
-          </select>
+          <input 
+            type="number" 
+            formControlName="multiplier" 
+            placeholder="Ej. 2" 
+            [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'multiplier', isAddPromotionSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'multiplier', isAddPromotionSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          @if (isFieldInvalid(addPromotionForm, 'multiplier', isAddPromotionSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'multiplier') }}</p>
+          }
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio *</label>
-            <input type="date" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            <input 
+              type="date" 
+              formControlName="startDate" 
+              [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'startDate', isAddPromotionSubmitted())"
+              [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'startDate', isAddPromotionSubmitted())"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            @if (isFieldInvalid(addPromotionForm, 'startDate', isAddPromotionSubmitted())) {
+              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'startDate') }}</p>
+            }
           </div>
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Fin *</label>
-            <input type="date" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            <input 
+              type="date" 
+              formControlName="endDate" 
+              [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'endDate', isAddPromotionSubmitted())"
+              [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'endDate', isAddPromotionSubmitted())"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            @if (isFieldInvalid(addPromotionForm, 'endDate', isAddPromotionSubmitted())) {
+              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'endDate') }}</p>
+            }
           </div>
         </div>
 
@@ -902,34 +1065,71 @@
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="editPromotionForm" (ngSubmit)="onEditPromotionSubmit()" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre de la Promoción</label>
-          <input type="text" value="Promoción Seleccionada" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre de la Promoción *</label>
+          <input 
+            type="text" 
+            formControlName="name" 
+            [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'name', isEditPromotionSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'name', isEditPromotionSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          @if (isFieldInvalid(editPromotionForm, 'name', isEditPromotionSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'name') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea rows="2" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">Descripción promocional actual</textarea>
+          <textarea 
+            rows="2" 
+            formControlName="description" 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Multiplicador de Puntos</label>
-          <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
-            <option value="1.5">1.5x Puntos</option>
-            <option value="2" selected>2x Puntos (Doble)</option>
-            <option value="3">3x Puntos (Triple)</option>
-          </select>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Multiplicador de Puntos *</label>
+          <input 
+            type="number" 
+            formControlName="multiplier" 
+            [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'multiplier', isEditPromotionSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'multiplier', isEditPromotionSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          @if (isFieldInvalid(editPromotionForm, 'multiplier', isEditPromotionSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'multiplier') }}</p>
+          }
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio</label>
-            <input type="date" value="2026-08-01" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio *</label>
+            <input 
+              type="date" 
+              formControlName="startDate" 
+              [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'startDate', isEditPromotionSubmitted())"
+              [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'startDate', isEditPromotionSubmitted())"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            @if (isFieldInvalid(editPromotionForm, 'startDate', isEditPromotionSubmitted())) {
+              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'startDate') }}</p>
+            }
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Fin</label>
-            <input type="date" value="2026-08-31" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Fin *</label>
+            <input 
+              type="date" 
+              formControlName="endDate" 
+              [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'endDate', isEditPromotionSubmitted())"
+              [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'endDate', isEditPromotionSubmitted())"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            @if (isFieldInvalid(editPromotionForm, 'endDate', isEditPromotionSubmitted())) {
+              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'endDate') }}</p>
+            }
           </div>
         </div>
 
@@ -977,26 +1177,48 @@
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="addRewardForm" (ngSubmit)="onAddRewardSubmit()" class="space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Premio *</label>
-          <input type="text" placeholder="Ej. Voucher $2000 o Remera Oficial" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <input 
+            type="text" 
+            formControlName="name" 
+            placeholder="Ej. Voucher $2000 o Remera Oficial" 
+            [class.border-rose-500]="isFieldInvalid(addRewardForm, 'name', isAddRewardSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addRewardForm, 'name', isAddRewardSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          @if (isFieldInvalid(addRewardForm, 'name', isAddRewardSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addRewardForm, 'name') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea rows="2" placeholder="Condiciones del canje..." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+          <textarea 
+            rows="2" 
+            formControlName="description" 
+            placeholder="Condiciones del canje..." 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos *</label>
-            <input type="number" placeholder="Ej. 500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock de Premios</label>
-            <input type="number" placeholder="Ej. 10" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos *</label>
+          <input 
+            type="number" 
+            formControlName="costInPoints" 
+            placeholder="Ej. 500" 
+            [class.border-rose-500]="isFieldInvalid(addRewardForm, 'costInPoints', isAddRewardSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addRewardForm, 'costInPoints', isAddRewardSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          @if (isFieldInvalid(addRewardForm, 'costInPoints', isAddRewardSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addRewardForm, 'costInPoints') }}</p>
+          }
         </div>
 
         <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
@@ -1039,30 +1261,49 @@
         </div>
         <div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Premio</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica el costo en puntos y stock del premio.</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica el costo en puntos y detalles del premio.</p>
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="editRewardForm" (ngSubmit)="onEditRewardSubmit()" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Premio</label>
-          <input type="text" value="Premio Seleccionado" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Premio *</label>
+          <input 
+            type="text" 
+            formControlName="name" 
+            [class.border-rose-500]="isFieldInvalid(editRewardForm, 'name', isEditRewardSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(editRewardForm, 'name', isEditRewardSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          @if (isFieldInvalid(editRewardForm, 'name', isEditRewardSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editRewardForm, 'name') }}</p>
+          }
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea rows="2" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">Descripción actual del premio</textarea>
+          <textarea 
+            rows="2" 
+            formControlName="description" 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos</label>
-            <input type="number" value="350" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Stock de Premios</label>
-            <input type="number" value="5" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos *</label>
+          <input 
+            type="number" 
+            formControlName="pointsToEarn" 
+            [class.border-rose-500]="isFieldInvalid(editRewardForm, 'pointsToEarn', isEditRewardSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(editRewardForm, 'pointsToEarn', isEditRewardSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          @if (isFieldInvalid(editRewardForm, 'pointsToEarn', isEditRewardSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editRewardForm, 'pointsToEarn') }}</p>
+          }
         </div>
 
         <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
@@ -1109,31 +1350,39 @@
         </div>
       </div>
 
-      <form class="space-y-4">
+      @if (modalErrorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
+          {{ modalErrorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="addSaleForm" (ngSubmit)="onAddSaleSubmit()" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">DNI / Email del Cliente *</label>
-          <input type="text" placeholder="Ej. cliente@correo.com o 38123456" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">DNI del Cliente *</label>
+          <input 
+            type="text" 
+            formControlName="userDni" 
+            placeholder="Ej. 38123456" 
+            [class.border-rose-500]="isFieldInvalid(addSaleForm, 'userDni', isAddSaleSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addSaleForm, 'userDni', isAddSaleSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          @if (isFieldInvalid(addSaleForm, 'userDni', isAddSaleSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addSaleForm, 'userDni') }}</p>
+          }
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de la Venta ($) *</label>
-            <input type="number" placeholder="Ej. 2500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos a Otorgar *</label>
-            <input type="number" placeholder="Ej. 250" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-        </div>
-
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha de la Transacción</label>
-          <input type="date" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Observaciones / Factura</label>
-          <textarea rows="2" placeholder="Ej. Factura N° 0001-000456" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de la Venta ($) *</label>
+          <input 
+            type="number" 
+            formControlName="amount" 
+            placeholder="Ej. 2500" 
+            [class.border-rose-500]="isFieldInvalid(addSaleForm, 'amount', isAddSaleSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(addSaleForm, 'amount', isAddSaleSubmitted())"
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          @if (isFieldInvalid(addSaleForm, 'amount', isAddSaleSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addSaleForm, 'amount') }}</p>
+          }
         </div>
 
         <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
@@ -1176,52 +1425,25 @@
         </div>
         <div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Registro de Venta</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica los detalles de una transacción realizada.</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Detalles de la transacción realizada.</p>
         </div>
       </div>
 
-      <form class="space-y-4">
+      <form [formGroup]="editSaleForm" (ngSubmit)="closeEditSaleModal()" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">DNI / Email del Cliente</label>
-          <input type="text" value="cliente@correo.com" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de la Venta ($)</label>
-            <input type="number" value="1500" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos Otorgados</label>
-            <input type="number" value="150" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Estado de la Transacción</label>
-          <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="COMPLETED" selected>Completada</option>
-            <option value="PENDING">Pendiente</option>
-            <option value="CANCELLED">Anulada / Devuelta</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
-          <textarea rows="2" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">Ajuste de puntos registrado</textarea>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto ($)</label>
+          <input 
+            type="number" 
+            formControlName="amount" 
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none" />
         </div>
 
         <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
           <button 
             type="button"
             (click)="closeEditSaleModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
             class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Actualizar Venta
+            Cerrar
           </button>
         </div>
       </form>

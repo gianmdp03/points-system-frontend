@@ -1,22 +1,26 @@
 import { Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CompanyService } from '../../core/services/company-service';
 import { AuthService } from '../../core/services/auth-service';
-import { CompanyListDTO, Role, Page } from '../../core/models';
-
+import { CompanyListDTO, Role, Page, CompanyRequestDTO, CompanyUpdateDTO } from '../../core/models';
+import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit {
   protected readonly companyService = inject(CompanyService);
   protected readonly authService = inject(AuthService);
+  private readonly fb = inject(FormBuilder);
 
+  readonly isFieldInvalid = isFieldInvalid;
+  readonly getFieldError = getFieldError;
   readonly RoleEnum = Role;
 
   // Signals for state
@@ -33,18 +37,92 @@ export class Dashboard implements OnInit {
 
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly modalErrorMessage = signal<string | null>(null);
 
-  // Modales visuales (sin lógica de submit)
+  // Modales
   readonly showAddCompanyModal = signal<boolean>(false);
   readonly showEditCompanyModal = signal<boolean>(false);
+  readonly isAddCompanySubmitted = signal<boolean>(false);
+  readonly isEditCompanySubmitted = signal<boolean>(false);
 
-  openAddCompanyModal(): void { this.showAddCompanyModal.set(true); }
-  closeAddCompanyModal(): void { this.showAddCompanyModal.set(false); }
-  openEditCompanyModal(): void { this.showEditCompanyModal.set(true); }
-  closeEditCompanyModal(): void { this.showEditCompanyModal.set(false); }
+  selectedCompanyForEdit = signal<CompanyListDTO | null>(null);
+
+  addCompanyForm = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(300)]],
+    amountStep: [100, [Validators.required, Validators.min(1)]],
+    pointsPerStep: [10, [Validators.required, Validators.min(1)]],
+    userDni: ['', [Validators.required]],
+    address: ['', [Validators.required]],
+    city: ['', [Validators.required]],
+    province: ['', [Validators.required]],
+    country: ['Argentina', [Validators.required]],
+    zipCode: ['', [Validators.required]]
+  });
+
+  editCompanyForm = this.fb.group({
+    id: [0, [Validators.required]],
+    name: ['', [Validators.required, Validators.maxLength(300)]],
+    amountStep: [100, [Validators.required, Validators.min(1)]],
+    pointsPerStep: [10, [Validators.required, Validators.min(1)]],
+    isEnabled: [true, [Validators.required]],
+    address: ['', [Validators.required]],
+    city: ['', [Validators.required]],
+    province: ['', [Validators.required]],
+    country: ['Argentina', [Validators.required]],
+    zipCode: ['', [Validators.required]]
+  });
+
+  openAddCompanyModal(): void {
+    this.modalErrorMessage.set(null);
+    this.isAddCompanySubmitted.set(false);
+    this.addCompanyForm.reset({
+      name: '',
+      amountStep: 100,
+      pointsPerStep: 10,
+      userDni: '',
+      address: '',
+      city: '',
+      province: '',
+      country: 'Argentina',
+      zipCode: ''
+    });
+    this.showAddCompanyModal.set(true);
+  }
+
+  closeAddCompanyModal(): void {
+    this.showAddCompanyModal.set(false);
+    this.modalErrorMessage.set(null);
+  }
+
+  openEditCompanyModal(company?: CompanyListDTO): void {
+    this.modalErrorMessage.set(null);
+    this.isEditCompanySubmitted.set(false);
+
+    const comp = company || this.adminCompanies()[0] || this.allCompanies()[0];
+    if (comp) {
+      this.selectedCompanyForEdit.set(comp);
+      this.editCompanyForm.patchValue({
+        id: comp.id,
+        name: comp.name,
+        amountStep: comp.amountStep,
+        pointsPerStep: comp.pointsPerStep,
+        isEnabled: comp.isEnabled,
+        address: comp.companyDetails?.address || '',
+        city: comp.companyDetails?.city || '',
+        province: comp.companyDetails?.province || '',
+        country: comp.companyDetails?.country || 'Argentina',
+        zipCode: comp.companyDetails?.zipCode || ''
+      });
+    }
+    this.showEditCompanyModal.set(true);
+  }
+
+  closeEditCompanyModal(): void {
+    this.showEditCompanyModal.set(false);
+    this.modalErrorMessage.set(null);
+  }
 
   constructor() {
-    // Re-fetch data whenever active role or logged in status changes
     effect(() => {
       const role = this.currentRole();
       if (this.isLoggedIn()) {
@@ -120,6 +198,76 @@ export class Dashboard implements OnInit {
         }
       });
     }
+  }
+
+  onAddCompanySubmit(): void {
+    this.isAddCompanySubmitted.set(true);
+    if (this.addCompanyForm.invalid) {
+      this.addCompanyForm.markAllAsTouched();
+      return;
+    }
+
+    const val = this.addCompanyForm.getRawValue();
+    const userDni = val.userDni || '';
+
+    const dto: CompanyRequestDTO = {
+      name: val.name!,
+      amountStep: Number(val.amountStep),
+      pointsPerStep: Number(val.pointsPerStep),
+      companyDetails: {
+        country: val.country!,
+        province: val.province!,
+        city: val.city!,
+        address: val.address!,
+        zipCode: val.zipCode!
+      }
+    };
+
+    this.modalErrorMessage.set(null);
+    this.companyService.addCompany(userDni, dto).subscribe({
+      next: () => {
+        this.closeAddCompanyModal();
+        this.loadRoleData(this.currentRole(), this.currentPage());
+      },
+      error: (err) => {
+        this.modalErrorMessage.set(err.error?.message || 'Error al crear la empresa en el servidor.');
+      }
+    });
+  }
+
+  onEditCompanySubmit(): void {
+    this.isEditCompanySubmitted.set(true);
+    if (this.editCompanyForm.invalid) {
+      this.editCompanyForm.markAllAsTouched();
+      return;
+    }
+
+    const val = this.editCompanyForm.getRawValue();
+    const companyId = Number(val.id);
+
+    const dto: CompanyUpdateDTO = {
+      name: val.name!,
+      amountStep: Number(val.amountStep),
+      pointsPerStep: Number(val.pointsPerStep),
+      companyDetails: {
+        country: val.country!,
+        province: val.province!,
+        city: val.city!,
+        address: val.address!,
+        zipCode: val.zipCode!
+      }
+    };
+
+    this.modalErrorMessage.set(null);
+    this.companyService.updateCompany(companyId, dto).subscribe({
+      next: () => {
+        this.closeEditCompanyModal();
+        this.loadRoleData(this.currentRole(), this.currentPage());
+      },
+      error: (err) => {
+        this.modalErrorMessage.set(err.error?.message || 'Error al actualizar la empresa.');
+      }
+    });
   }
 
   toggleCompanyStatus(company: CompanyListDTO): void {
