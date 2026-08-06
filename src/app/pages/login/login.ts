@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { form, required, email, FormField } from '@angular/forms/signals';
 import { AuthService } from '../../core/services/auth-service';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormField],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -15,29 +15,38 @@ export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  email = signal<string>('');
-  password = signal<string>('');
+  readonly loginModel = signal({ email: '', password: '' });
+  readonly loginForm = form(this.loginModel, (f) => {
+    required(f.email);
+    email(f.email);
+    required(f.password);
+  });
+
+  readonly magicModel = signal({ magicEmail: '' });
+  readonly magicForm = form(this.magicModel, (f) => {
+    required(f.magicEmail);
+    email(f.magicEmail);
+  });
+
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
-
-  magicEmail = signal<string>('');
   activeTab = signal<'email' | 'magic'>('email');
   successMessage = signal<string | null>(null);
 
   async onSubmit(): Promise<void> {
-    if (!this.email() || !this.password()) {
-      this.errorMessage.set('Por favor completa todos los campos.');
+    if (this.loginForm().invalid()) {
+      this.errorMessage.set('Por favor completa todos los campos requeridos correctamente.');
       return;
     }
 
+    const { email: emailVal, password: passVal } = this.loginModel();
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const result = await this.authService.login(this.email(), this.password());
+    const result = await this.authService.login(emailVal, passVal);
     this.isLoading.set(false);
 
     if (result.success) {
-      // Redirect to dashboard page on successful login
       this.router.navigate(['/dashboard']);
     } else {
       this.errorMessage.set(result.error || 'Credenciales inválidas.');
@@ -57,16 +66,17 @@ export class Login {
   }
 
   async onMagicLink(): Promise<void> {
-    if (!this.magicEmail()) {
-      this.errorMessage.set('Por favor ingresa tu correo para enviarte el enlace mágico.');
+    if (this.magicForm().invalid()) {
+      this.errorMessage.set('Por favor ingresa un correo válido.');
       return;
     }
 
+    const { magicEmail } = this.magicModel();
     this.isLoading.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
 
-    const result = await this.authService.loginWithMagicLink(this.magicEmail());
+    const result = await this.authService.loginWithMagicLink(magicEmail);
     this.isLoading.set(false);
 
     if (result.success) {

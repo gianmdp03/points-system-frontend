@@ -48,11 +48,8 @@
           </label>
           <input 
             type="email"
-            [ngModel]="email()"
-            (ngModelChange)="email.set($event)"
-            name="email"
+            [formField]="loginForm.email"
             placeholder="tu@correo.com"
-            required
             class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
         </div>
 
@@ -62,11 +59,8 @@
           </label>
           <input 
             type="password"
-            [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
-            name="password"
+            [formField]="loginForm.password"
             placeholder="••••••••"
-            required
             class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
         </div>
 

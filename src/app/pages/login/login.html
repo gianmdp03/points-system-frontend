@@ -114,11 +114,8 @@
           </label>
           <input 
             type="email"
-            [ngModel]="email()"
-            (ngModelChange)="email.set($event)"
-            name="email"
+            [formField]="loginForm.email"
             placeholder="tu@correo.com"
-            required
             class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
         </div>
 
@@ -133,11 +130,8 @@
           </div>
           <input 
             type="password"
-            [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
-            name="password"
+            [formField]="loginForm.password"
             placeholder="••••••••"
-            required
             class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
         </div>
 
@@ -157,7 +151,7 @@
 
     <!-- Magic Link Form -->
     @if (activeTab() === 'magic') {
-      <div class="space-y-4">
+      <form (ngSubmit)="onMagicLink()" class="space-y-4">
         <p class="text-xs text-gray-500 dark:text-gray-400">
           Ingresa tu dirección de correo electrónico y te enviaremos un enlace seguro para acceder de inmediato sin usar contraseña.
         </p>
@@ -168,16 +162,13 @@
           </label>
           <input 
             type="email"
-            [ngModel]="magicEmail()"
-            (ngModelChange)="magicEmail.set($event)"
+            [formField]="magicForm.magicEmail"
             placeholder="tu@correo.com"
-            required
             class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
         </div>
 
         <button 
-          type="button"
-          (click)="onMagicLink()"
+          type="submit"
           [disabled]="isLoading()"
           class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-500/25 transition-all transform hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
           @if (isLoading()) {
@@ -187,7 +178,7 @@
             <span>Enviar Enlace Mágico ✨</span>
           }
         </button>
-      </div>
+      </form>
     }
 
     <!-- Link a Registro -->

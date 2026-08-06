@@ -1,15 +1,15 @@
 import { Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { form, required, min, FormField } from '@angular/forms/signals';
 import { CompanyService } from '../../core/services/company-service';
 import { AuthService } from '../../core/services/auth-service';
-import { CompanyListDTO, Role, Page } from '../../core/models';
-
-import { RouterLink } from '@angular/router';
+import { CompanyListDTO, CompanyRequestDTO, Role, Page } from '../../core/models';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormField],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -34,6 +34,32 @@ export class Dashboard implements OnInit {
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
 
+  // Modal Crear Empresa Signals & Signal Form
+  readonly isCreateModalOpen = signal<boolean>(false);
+  readonly createLoading = signal<boolean>(false);
+  readonly createError = signal<string | null>(null);
+
+  readonly createCompanyModel = signal({
+    name: '',
+    userDni: '',
+    address: '',
+    city: '',
+    province: '',
+    country: 'Argentina',
+    zipCode: '',
+    amountStep: 100,
+    pointsPerStep: 10
+  });
+
+  readonly createCompanyForm = form(this.createCompanyModel, (f) => {
+    required(f.name);
+    required(f.userDni);
+    required(f.amountStep);
+    min(f.amountStep, 1);
+    required(f.pointsPerStep);
+    min(f.pointsPerStep, 1);
+  });
+
   constructor() {
     // Re-fetch data whenever active role or logged in status changes
     effect(() => {
@@ -52,6 +78,67 @@ export class Dashboard implements OnInit {
 
   setRole(role: Role): void {
     this.authService.setRole(role);
+  }
+
+  openCreateModal(): void {
+    const defaultDni = this.authService.userProfile()?.dni || '';
+    this.createCompanyModel.set({
+      name: '',
+      userDni: defaultDni,
+      address: '',
+      city: '',
+      province: '',
+      country: 'Argentina',
+      zipCode: '',
+      amountStep: 100,
+      pointsPerStep: 10
+    });
+    this.createError.set(null);
+    this.isCreateModalOpen.set(true);
+  }
+
+  closeCreateModal(): void {
+    this.isCreateModalOpen.set(false);
+    this.createError.set(null);
+  }
+
+  submitCreateCompany(): void {
+    if (this.createCompanyForm().invalid()) {
+      this.createError.set('Por favor completa todos los campos requeridos (*).');
+      return;
+    }
+
+    const formVal = this.createCompanyModel();
+    const dni = formVal.userDni.trim();
+
+    const dto: CompanyRequestDTO = {
+      name: formVal.name.trim(),
+      companyDetails: {
+        address: formVal.address.trim(),
+        city: formVal.city.trim(),
+        province: formVal.province.trim(),
+        country: formVal.country.trim(),
+        zipCode: formVal.zipCode.trim()
+      },
+      amountStep: Number(formVal.amountStep) || 1,
+      pointsPerStep: Number(formVal.pointsPerStep) || 1
+    };
+
+    this.createLoading.set(true);
+    this.createError.set(null);
+
+    this.companyService.addCompany(dni, dto).subscribe({
+      next: () => {
+        this.createLoading.set(false);
+        this.closeCreateModal();
+        this.loadRoleData(this.currentRole(), this.currentPage());
+      },
+      error: (err) => {
+        this.createLoading.set(false);
+        const msg = err.error?.message || err.message || 'Error al crear la empresa.';
+        this.createError.set(msg);
+      }
+    });
   }
 
   loadRoleData(role: Role, page = 0): void {
