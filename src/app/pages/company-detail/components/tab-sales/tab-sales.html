@@ -1,0 +1,71 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white">Registro de Ventas y Otorgamiento de Puntos</h3>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Historial y alta de ventas de la sucursal</p>
+    </div>
+
+    @if (currentRole !== RoleEnum.USER) {
+      <button 
+        (click)="addSale.emit()"
+        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        + Registrar Venta
+      </button>
+    }
+  </div>
+
+  <!-- Tabla Visual de Ventas Demo -->
+  <div class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 dark:bg-gray-800/60 text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
+          <tr>
+            <th class="p-4">ID Venta</th>
+            <th class="p-4">Cliente (DNI / Email)</th>
+            <th class="p-4">Monto ($)</th>
+            <th class="p-4">Puntos Generados</th>
+            <th class="p-4">Fecha</th>
+            <th class="p-4 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
+          <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
+            <td class="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">#V-1001</td>
+            <td class="p-4 font-bold text-gray-900 dark:text-white">cliente@correo.com</td>
+            <td class="p-4 font-semibold text-emerald-600 dark:text-emerald-400">$1,500.00</td>
+            <td class="p-4 font-extrabold text-amber-500">+150 pts</td>
+            <td class="p-4 text-gray-400">06/08/2026</td>
+            <td class="p-4 text-right">
+              @if (currentRole !== RoleEnum.USER) {
+                <button 
+                  (click)="editSale.emit()"
+                  class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-lg transition cursor-pointer">
+                  Editar
+                </button>
+              }
+            </td>
+          </tr>
+          <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
+            <td class="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">#V-1002</td>
+            <td class="p-4 font-bold text-gray-900 dark:text-white">juan.perez@gmail.com</td>
+            <td class="p-4 font-semibold text-emerald-600 dark:text-emerald-400">$2,400.00</td>
+            <td class="p-4 font-extrabold text-amber-500">+240 pts</td>
+            <td class="p-4 text-gray-400">05/08/2026</td>
+            <td class="p-4 text-right">
+              @if (currentRole !== RoleEnum.USER) {
+                <button 
+                  (click)="editSale.emit()"
+                  class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-lg transition cursor-pointer">
+                  Editar
+                </button>
+              }
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

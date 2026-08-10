@@ -1,0 +1,56 @@
+<div class="flex items-center gap-2 p-1.5 bg-gray-100 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-x-auto">
+  <button 
+    (click)="selectTab.emit('overview')" 
+    [class.bg-blue-600]="activeTab === 'overview'"
+    [class.text-white]="activeTab === 'overview'"
+    [class.text-gray-700]="activeTab !== 'overview'"
+    [class.dark:text-gray-300]="activeTab !== 'overview'"
+    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer">
+    Resumen General
+  </button>
+  <button 
+    (click)="selectTab.emit('products')" 
+    [class.bg-blue-600]="activeTab === 'products'"
+    [class.text-white]="activeTab === 'products'"
+    [class.text-gray-700]="activeTab !== 'products'"
+    [class.dark:text-gray-300]="activeTab !== 'products'"
+    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
+    <span>Productos</span>
+    <span class="px-2 py-0.5 rounded-full text-[11px] bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200" [class.bg-white/20]="activeTab === 'products'" [class.text-white]="activeTab === 'products'">
+      {{ productsCount }}
+    </span>
+  </button>
+  <button 
+    (click)="selectTab.emit('promotions')" 
+    [class.bg-blue-600]="activeTab === 'promotions'"
+    [class.text-white]="activeTab === 'promotions'"
+    [class.text-gray-700]="activeTab !== 'promotions'"
+    [class.dark:text-gray-300]="activeTab !== 'promotions'"
+    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
+    <span>Promociones</span>
+    <span class="px-2 py-0.5 rounded-full text-[11px] bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200" [class.bg-white/20]="activeTab === 'promotions'" [class.text-white]="activeTab === 'promotions'">
+      {{ promotionsCount }}
+    </span>
+  </button>
+  <button 
+    (click)="selectTab.emit('rewards')" 
+    [class.bg-blue-600]="activeTab === 'rewards'"
+    [class.text-white]="activeTab === 'rewards'"
+    [class.text-gray-700]="activeTab !== 'rewards'"
+    [class.dark:text-gray-300]="activeTab !== 'rewards'"
+    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
+    <span>Premios & Canjes</span>
+    <span class="px-2 py-0.5 rounded-full text-[11px] bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200" [class.bg-white/20]="activeTab === 'rewards'" [class.text-white]="activeTab === 'rewards'">
+      {{ rewardsCount }}
+    </span>
+  </button>
+  <button 
+    (click)="selectTab.emit('sales')" 
+    [class.bg-blue-600]="activeTab === 'sales'"
+    [class.text-white]="activeTab === 'sales'"
+    [class.text-gray-700]="activeTab !== 'sales'"
+    [class.dark:text-gray-300]="activeTab !== 'sales'"
+    class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
+    <span>Ventas & Puntos</span>
+  </button>
+</div>

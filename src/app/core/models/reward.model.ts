@@ -27,7 +27,7 @@ export interface RewardRequestDTO {
 export interface RewardUpdateDTO {
   name?: string;
   description?: string;
-  pointsToEarn?: number;
+  costInPoints?: number;
 }
 
 export interface RewardRedeemDTO {

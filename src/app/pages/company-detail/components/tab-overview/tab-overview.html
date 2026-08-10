@@ -1,0 +1,92 @@
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  
+  <!-- Detalles de Ubicación & Contacto -->
+  <div class="md:col-span-2 bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-sm space-y-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0h-4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Información Comercial</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Datos registrados en el sistema de puntos</p>
+        </div>
+      </div>
+
+      @if (currentRole !== RoleEnum.USER) {
+        <button 
+          (click)="editCompany.emit()" 
+          class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
+          Editar Datos
+        </button>
+      }
+    </div>
+
+    @if (company.companyDetails; as details) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
+          <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">Dirección</span>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.address }}</span>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
+          <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">Ciudad</span>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.city }}</span>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
+          <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">Provincia</span>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.province }}</span>
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
+          <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">País / Código Postal</span>
+          <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.country }} ({{ details.zipCode }})</span>
+        </div>
+      </div>
+    } @else {
+      <p class="text-sm text-gray-500 italic">No se registró información detallada de ubicación.</p>
+    }
+  </div>
+
+  <!-- Resumen de Métricas / Puntos -->
+  <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-between space-y-6">
+    <div>
+      @if (currentRole === RoleEnum.USER) {
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Tu Estado de Puntos</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Puntos acumulados en esta empresa</p>
+
+        <div class="p-5 bg-gradient-to-br from-amber-500/10 to-amber-600/20 border border-amber-500/30 rounded-2xl text-center space-y-2">
+          <span class="text-xs uppercase font-bold text-amber-700 dark:text-amber-400 tracking-wider">Saldo de Puntos</span>
+          <div class="text-3xl font-black text-amber-600 dark:text-amber-300">
+            {{ userPointsBalance ?? 0 }} pts
+          </div>
+        </div>
+      } @else {
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Resumen de la Empresa</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Métricas generales de la sucursal</p>
+
+        <div class="p-5 bg-gradient-to-br from-indigo-500/10 to-indigo-600/20 border border-indigo-500/30 rounded-2xl text-center space-y-2">
+          <span class="text-xs uppercase font-bold text-indigo-700 dark:text-indigo-400 tracking-wider">Clientes Registrados</span>
+          <div class="text-3xl font-black text-indigo-600 dark:text-indigo-300">
+            {{ company.pointsAccounts?.length || 0 }}
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="pt-4 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 space-y-2">
+      <div class="flex justify-between">
+        <span>Productos Disponibles:</span>
+        <span class="font-bold text-gray-900 dark:text-white">{{ company.products?.length || 0 }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Promociones Activas:</span>
+        <span class="font-bold text-gray-900 dark:text-white">{{ company.promotions?.length || 0 }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Premios Canjeables:</span>
+        <span class="font-bold text-gray-900 dark:text-white">{{ company.rewards?.length || 0 }}</span>
+      </div>
+    </div>
+  </div>
+</div>

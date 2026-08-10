@@ -1,0 +1,74 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white">Premios Canjeables por Puntos</h3>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ rewards.length }} premios</p>
+    </div>
+
+    @if (currentRole !== RoleEnum.USER) {
+      <button 
+        (click)="addReward.emit()"
+        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        + Agregar Premio
+      </button>
+    }
+  </div>
+
+  @if (rewards.length === 0) {
+    <div class="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-300 dark:border-gray-800">
+      <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+      </div>
+      <h4 class="font-bold text-gray-900 dark:text-white">Sin premios definidos</h4>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">No hay recompensas registradas aún para canjear en esta empresa.</p>
+      @if (currentRole !== RoleEnum.USER) {
+        <button 
+          (click)="addReward.emit()"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
+          + Crear Primer Premio
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (reward of rewards; track reward.id) {
+        <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-emerald-200 dark:border-emerald-900/50 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold mb-3">
+              🎁
+            </div>
+            <h4 class="font-bold text-base text-gray-900 dark:text-white">{{ reward.name }}</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ reward.description || 'Sin descripción' }}</p>
+          </div>
+
+          <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <span class="text-xs text-gray-400">Costo</span>
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 rounded-full font-black text-xs text-emerald-700 dark:text-emerald-300">
+                {{ reward.costInPoints }} Puntos
+              </span>
+              @if (currentRole !== RoleEnum.USER) {
+                <button 
+                  (click)="editReward.emit(reward)"
+                  class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
+                  Editar
+                </button>
+              } @else {
+                <button 
+                  (click)="redeemReward.emit(reward.id)"
+                  class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition cursor-pointer shadow">
+                  Canjear
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

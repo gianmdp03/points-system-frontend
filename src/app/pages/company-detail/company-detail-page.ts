@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from '../../core/services/company-service';
 import { AuthService } from '../../core/services/auth-service';
@@ -24,12 +24,38 @@ import {
   RewardUpdateDTO,
   SaleRequestDTO
 } from '../../core/models';
-import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
+
+import { CompanyDetailHeaderComponent } from './components/company-detail-header/company-detail-header';
+import { CompanyDetailTabsNavComponent, CompanyDetailTab } from './components/company-detail-tabs-nav/company-detail-tabs-nav';
+import { TabOverviewComponent } from './components/tab-overview/tab-overview';
+import { TabProductsComponent } from './components/tab-products/tab-products';
+import { TabPromotionsComponent } from './components/tab-promotions/tab-promotions';
+import { TabRewardsComponent } from './components/tab-rewards/tab-rewards';
+import { TabSalesComponent } from './components/tab-sales/tab-sales';
+import { EditCompanyModalComponent } from './components/modals/edit-company-modal/edit-company-modal';
+import { ProductModalComponent } from './components/modals/product-modal/product-modal';
+import { PromotionModalComponent } from './components/modals/promotion-modal/promotion-modal';
+import { RewardModalComponent } from './components/modals/reward-modal/reward-modal';
+import { SaleModalComponent } from './components/modals/sale-modal/sale-modal';
 
 @Component({
   selector: 'app-company-detail-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  imports: [
+    CommonModule,
+    CompanyDetailHeaderComponent,
+    CompanyDetailTabsNavComponent,
+    TabOverviewComponent,
+    TabProductsComponent,
+    TabPromotionsComponent,
+    TabRewardsComponent,
+    TabSalesComponent,
+    EditCompanyModalComponent,
+    ProductModalComponent,
+    PromotionModalComponent,
+    RewardModalComponent,
+    SaleModalComponent
+  ],
   templateUrl: './company-detail-page.html',
   styleUrl: './company-detail-page.css'
 })
@@ -45,15 +71,13 @@ export class CompanyDetailPage implements OnInit {
   protected readonly rewardService = inject(RewardService);
   protected readonly saleService = inject(SaleService);
 
-  readonly isFieldInvalid = isFieldInvalid;
-  readonly getFieldError = getFieldError;
   readonly RoleEnum = Role;
 
   readonly company = signal<CompanyDetailDTO | null>(null);
   readonly isLoading = signal<boolean>(true);
   readonly errorMessage = signal<string | null>(null);
   readonly modalErrorMessage = signal<string | null>(null);
-  readonly activeTab = signal<'overview' | 'products' | 'promotions' | 'rewards' | 'sales'>('overview');
+  readonly activeTab = signal<CompanyDetailTab>('overview');
 
   // Visibilidad de Modales
   readonly showEditCompanyModal = signal<boolean>(false);
@@ -136,7 +160,7 @@ export class CompanyDetailPage implements OnInit {
     id: [0, [Validators.required]],
     name: ['', [Validators.required, Validators.maxLength(100)]],
     description: ['', [Validators.maxLength(500)]],
-    pointsToEarn: [100, [Validators.required, Validators.min(1)]]
+    costInPoints: [100, [Validators.required, Validators.min(1)]]
   });
 
   addSaleForm = this.fb.group({
@@ -202,7 +226,7 @@ export class CompanyDetailPage implements OnInit {
     });
   }
 
-  setTab(tab: 'overview' | 'products' | 'promotions' | 'rewards' | 'sales'): void {
+  setTab(tab: CompanyDetailTab): void {
     this.activeTab.set(tab);
   }
 
@@ -300,7 +324,7 @@ export class CompanyDetailPage implements OnInit {
         id: r.id,
         name: r.name,
         description: r.description || '',
-        pointsToEarn: r.costInPoints
+        costInPoints: r.costInPoints
       });
     }
     this.modalErrorMessage.set(null);
@@ -499,7 +523,7 @@ export class CompanyDetailPage implements OnInit {
     const dto: RewardUpdateDTO = {
       name: val.name!,
       description: val.description || '',
-      pointsToEarn: Number(val.pointsToEarn)
+      costInPoints: Number(val.costInPoints)
     };
     this.modalErrorMessage.set(null);
     this.rewardService.updateReward(this.company()!.id, val.id!, dto).subscribe({

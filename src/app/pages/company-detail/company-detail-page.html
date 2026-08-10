@@ -1,22 +1,6 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
   <div class="max-w-6xl mx-auto space-y-8">
     
-    <!-- Botón Volver al Dashboard -->
-    <div class="flex items-center justify-between">
-      <button 
-        (click)="goBack()" 
-        class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-xl shadow-xs transition-all cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Volver al Panel
-      </button>
-
-      <span class="text-xs font-mono text-gray-400">
-        ID Empresa: #{{ company()?.id || '...' }}
-      </span>
-    </div>
-
     <!-- Indicador de Carga -->
     @if (isLoading()) {
       <div class="flex flex-col items-center justify-center py-24 bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl">
@@ -51,514 +35,73 @@
     @if (!isLoading() && company(); as comp) {
       <div class="space-y-8">
         
-        <!-- Header Banner de la Empresa -->
-        <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 rounded-3xl p-6 sm:p-10 text-white shadow-2xl">
-          <div class="absolute -right-10 -top-10 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-          
-          <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="flex items-center gap-5">
-              <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white text-3xl sm:text-4xl font-black shadow-inner">
-                {{ comp.name ? comp.name.charAt(0).toUpperCase() : 'E' }}
-              </div>
-              <div>
-                <div class="flex items-center gap-3 mb-1">
-                  <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-                    {{ comp.name }}
-                  </h1>
-                  <span [class]="comp.isEnabled ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30' : 'bg-rose-500/20 text-rose-200 border-rose-400/30'" class="px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-xs">
-                    {{ comp.isEnabled ? '● Activa' : '○ Inactiva' }}
-                  </span>
-                </div>
+        <!-- Header Banner & Top Controls -->
+        <app-company-detail-header
+          [company]="comp"
+          [currentRole]="currentRole()"
+          (back)="goBack()"
+          (editCompany)="openEditCompanyModal()">
+        </app-company-detail-header>
 
-                @if (comp.companyDetails) {
-                  <p class="text-sm text-blue-100 flex items-center gap-1.5 mt-1">
-                    <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>{{ comp.companyDetails.address }}, {{ comp.companyDetails.city }}, {{ comp.companyDetails.province }} ({{ comp.companyDetails.country }})</span>
-                  </p>
-                }
-              </div>
-            </div>
+        <!-- Selector de Pestañas -->
+        <app-company-detail-tabs-nav
+          [activeTab]="activeTab()"
+          [productsCount]="comp.products?.length || 0"
+          [promotionsCount]="comp.promotions?.length || 0"
+          [rewardsCount]="comp.rewards?.length || 0"
+          (selectTab)="setTab($event)">
+        </app-company-detail-tabs-nav>
 
-            <!-- Regla de Puntos Card & Botón Editar -->
-            <div class="flex flex-col sm:flex-row items-center gap-4">
-              <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center">
-                <span class="text-xs uppercase font-bold tracking-wider text-blue-200 mb-1">Regla de Puntos</span>
-                <div class="text-xl sm:text-2xl font-black text-amber-300">
-                  ${{ comp.amountStep }} &rarr; {{ comp.pointsPerStep }} pts
-                </div>
-                <span class="text-[11px] text-blue-100 mt-1 opacity-90">Por cada ${{ comp.amountStep }} invertidos obtienes {{ comp.pointsPerStep }} puntos</span>
-              </div>
-
-              @if (currentRole() !== RoleEnum.USER) {
-                <button 
-                  (click)="openEditCompanyModal()"
-                  class="px-4 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/40 text-white font-bold text-xs rounded-2xl shadow-lg transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Editar Empresa
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Selector de Pestañas (Navegación Interna) -->
-        <div class="flex items-center gap-2 p-1.5 bg-gray-100 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-x-auto">
-          <button 
-            (click)="setTab('overview')" 
-            [class.bg-blue-600]="activeTab() === 'overview'"
-            [class.text-white]="activeTab() === 'overview'"
-            [class.text-gray-700]="activeTab() !== 'overview'"
-            [class.dark:text-gray-300]="activeTab() !== 'overview'"
-            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer">
-            Resumen General
-          </button>
-          <button 
-            (click)="setTab('products')" 
-            [class.bg-blue-600]="activeTab() === 'products'"
-            [class.text-white]="activeTab() === 'products'"
-            [class.text-gray-700]="activeTab() !== 'products'"
-            [class.dark:text-gray-300]="activeTab() !== 'products'"
-            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
-            <span>Productos</span>
-            <span class="px-2 py-0.5 rounded-full text-[11px] bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200" [class.bg-white/20]="activeTab() === 'products'" [class.text-white]="activeTab() === 'products'">
-              {{ comp.products?.length || 0 }}
-            </span>
-          </button>
-          <button 
-            (click)="setTab('promotions')" 
-            [class.bg-blue-600]="activeTab() === 'promotions'"
-            [class.text-white]="activeTab() === 'promotions'"
-            [class.text-gray-700]="activeTab() !== 'promotions'"
-            [class.dark:text-gray-300]="activeTab() !== 'promotions'"
-            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
-            <span>Promociones</span>
-            <span class="px-2 py-0.5 rounded-full text-[11px] bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200" [class.bg-white/20]="activeTab() === 'promotions'" [class.text-white]="activeTab() === 'promotions'">
-              {{ comp.promotions?.length || 0 }}
-            </span>
-          </button>
-          <button 
-            (click)="setTab('rewards')" 
-            [class.bg-blue-600]="activeTab() === 'rewards'"
-            [class.text-white]="activeTab() === 'rewards'"
-            [class.text-gray-700]="activeTab() !== 'rewards'"
-            [class.dark:text-gray-300]="activeTab() !== 'rewards'"
-            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
-            <span>Premios & Canjes</span>
-            <span class="px-2 py-0.5 rounded-full text-[11px] bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200" [class.bg-white/20]="activeTab() === 'rewards'" [class.text-white]="activeTab() === 'rewards'">
-              {{ comp.rewards?.length || 0 }}
-            </span>
-          </button>
-          <button 
-            (click)="setTab('sales')" 
-            [class.bg-blue-600]="activeTab() === 'sales'"
-            [class.text-white]="activeTab() === 'sales'"
-            [class.text-gray-700]="activeTab() !== 'sales'"
-            [class.dark:text-gray-300]="activeTab() !== 'sales'"
-            class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-1.5">
-            <span>Ventas & Puntos</span>
-          </button>
-        </div>
-
-        <!-- ==================== TAB 1: RESUMEN GENERAL ==================== -->
+        <!-- TAB 1: RESUMEN GENERAL -->
         @if (activeTab() === 'overview') {
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <!-- Detalles de Ubicación & Contacto -->
-            <div class="md:col-span-2 bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-sm space-y-6">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0h-4" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Información Comercial</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Datos registrados en el sistema de puntos</p>
-                  </div>
-                </div>
-
-                @if (currentRole() !== RoleEnum.USER) {
-                  <button 
-                    (click)="openEditCompanyModal()" 
-                    class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-                    Editar Datos
-                  </button>
-                }
-              </div>
-
-              @if (comp.companyDetails; as details) {
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                  <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
-                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">Dirección</span>
-                    <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.address }}</span>
-                  </div>
-                  <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
-                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">Ciudad</span>
-                    <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.city }}</span>
-                  </div>
-                  <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
-                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">Provincia</span>
-                    <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.province }}</span>
-                  </div>
-                  <div class="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-800">
-                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">País / Código Postal</span>
-                    <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ details.country }} ({{ details.zipCode }})</span>
-                  </div>
-                </div>
-              } @else {
-                <p class="text-sm text-gray-500 italic">No se registró información detallada de ubicación.</p>
-              }
-            </div>
-
-            <!-- Resumen de Métricas / Puntos -->
-            <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-between space-y-6">
-              <div>
-                @if (currentRole() === RoleEnum.USER) {
-                  <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Tu Estado de Puntos</h3>
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Puntos acumulados en esta empresa</p>
-
-                  <div class="p-5 bg-gradient-to-br from-amber-500/10 to-amber-600/20 border border-amber-500/30 rounded-2xl text-center space-y-2">
-                    <span class="text-xs uppercase font-bold text-amber-700 dark:text-amber-400 tracking-wider">Saldo de Puntos</span>
-                    <div class="text-3xl font-black text-amber-600 dark:text-amber-300">
-                      {{ userPointsBalance() ?? 0 }} pts
-                    </div>
-                  </div>
-                } @else {
-                  <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Resumen de la Empresa</h3>
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">Métricas generales de la sucursal</p>
-
-                  <div class="p-5 bg-gradient-to-br from-indigo-500/10 to-indigo-600/20 border border-indigo-500/30 rounded-2xl text-center space-y-2">
-                    <span class="text-xs uppercase font-bold text-indigo-700 dark:text-indigo-400 tracking-wider">Clientes Registrados</span>
-                    <div class="text-3xl font-black text-indigo-600 dark:text-indigo-300">
-                      {{ comp.pointsAccounts?.length || 0 }}
-                    </div>
-                  </div>
-                }
-              </div>
-
-              <div class="pt-4 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 space-y-2">
-                <div class="flex justify-between">
-                  <span>Productos Disponibles:</span>
-                  <span class="font-bold text-gray-900 dark:text-white">{{ comp.products?.length || 0 }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>Promociones Activas:</span>
-                  <span class="font-bold text-gray-900 dark:text-white">{{ comp.promotions?.length || 0 }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>Premios Canjeables:</span>
-                  <span class="font-bold text-gray-900 dark:text-white">{{ comp.rewards?.length || 0 }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <app-tab-overview
+            [company]="comp"
+            [currentRole]="currentRole()"
+            [userPointsBalance]="userPointsBalance()"
+            (editCompany)="openEditCompanyModal()">
+          </app-tab-overview>
         }
 
-        <!-- ==================== TAB 2: PRODUCTOS ==================== -->
+        <!-- TAB 2: PRODUCTOS -->
         @if (activeTab() === 'products') {
-          <div class="space-y-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Catálogo de Productos</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.products?.length || 0 }} ítems</p>
-              </div>
-
-              @if (currentRole() !== RoleEnum.USER) {
-                <button 
-                  (click)="openAddProductModal()"
-                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  + Agregar Producto
-                </button>
-              }
-            </div>
-
-            @if (!comp.products || comp.products.length === 0) {
-              <div class="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-300 dark:border-gray-800">
-                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-                <h4 class="font-bold text-gray-900 dark:text-white">Sin productos cargados</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">Esta empresa aún no ha añadido productos a su catálogo.</p>
-                @if (currentRole() !== RoleEnum.USER) {
-                  <button 
-                    (click)="openAddProductModal()"
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
-                    + Crear Primer Producto
-                  </button>
-                }
-              </div>
-            } @else {
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @for (product of comp.products; track product.id) {
-                  <div class="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                      <div class="w-full h-36 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-800/60 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold mb-4 overflow-hidden">
-                        @if (product.image) {
-                          <img [src]="product.image" [alt]="product.name" class="w-full h-full object-cover rounded-2xl" />
-                        } @else {
-                          <svg class="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        }
-                      </div>
-
-                      <h4 class="font-bold text-base text-gray-900 dark:text-white">{{ product.name }}</h4>
-                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ product.description || 'Sin descripción' }}</p>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                      <span class="text-xs text-gray-400">Precio</span>
-                      <div class="flex items-center gap-2">
-                        <span class="text-base font-extrabold text-blue-600 dark:text-blue-400">${{ product.price }}</span>
-                        @if (currentRole() !== RoleEnum.USER) {
-                          <button 
-                            (click)="openEditProductModal(product)"
-                            class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
-                            Editar
-                          </button>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+          <app-tab-products
+            [products]="comp.products || []"
+            [currentRole]="currentRole()"
+            (addProduct)="openAddProductModal()"
+            (editProduct)="openEditProductModal($event)"
+            (deleteProduct)="onDeleteProduct($event)">
+          </app-tab-products>
         }
 
-        <!-- ==================== TAB 3: PROMOCIONES ==================== -->
+        <!-- TAB 3: PROMOCIONES -->
         @if (activeTab() === 'promotions') {
-          <div class="space-y-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Promociones Especiales</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.promotions?.length || 0 }} promociones</p>
-              </div>
-
-              @if (currentRole() !== RoleEnum.USER) {
-                <button 
-                  (click)="openAddPromotionModal()"
-                  class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  + Agregar Promoción
-                </button>
-              }
-            </div>
-
-            @if (!comp.promotions || comp.promotions.length === 0) {
-              <div class="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-300 dark:border-gray-800">
-                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-purple-50 dark:bg-purple-950 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 13C10.832 21 2 20 2 12V6a2 2 0 012-2h16a2 2 0 012 2v6c0 8-8.832 9-10 9z" />
-                  </svg>
-                </div>
-                <h4 class="font-bold text-gray-900 dark:text-white">Sin promociones activas</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">Actualmente no hay campañas promocionales vigentes en esta empresa.</p>
-                @if (currentRole() !== RoleEnum.USER) {
-                  <button 
-                    (click)="openAddPromotionModal()"
-                    class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
-                    + Crear Primera Promoción
-                  </button>
-                }
-              </div>
-            } @else {
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                @for (promo of comp.promotions; track promo.id) {
-                  <div class="bg-gradient-to-br from-purple-900/10 via-white to-purple-50/20 dark:from-purple-950/40 dark:via-gray-900 dark:to-gray-900 rounded-3xl p-6 border border-purple-200 dark:border-purple-800/50 shadow-sm space-y-4">
-                    <div class="flex items-start justify-between">
-                      <div>
-                        <h4 class="font-bold text-lg text-gray-900 dark:text-white">{{ promo.name }}</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ promo.description }}</p>
-                      </div>
-
-                      <span class="px-3 py-1 bg-purple-600 text-white rounded-full font-black text-xs shadow-md shadow-purple-500/20">
-                        {{ promo.multiplier }}x Puntos
-                      </span>
-                    </div>
-
-                    <div class="pt-3 border-t border-purple-100 dark:border-purple-900/40 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                      <span>Vigencia: <strong class="text-purple-700 dark:text-purple-300">{{ promo.startDate | date:'shortDate' }} - {{ promo.endDate | date:'shortDate' }}</strong></span>
-                      
-                      @if (currentRole() !== RoleEnum.USER) {
-                        <button 
-                          (click)="openEditPromotionModal(promo)"
-                          class="px-3 py-1 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/60 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-200 font-bold rounded-lg transition cursor-pointer">
-                          Editar
-                        </button>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+          <app-tab-promotions
+            [promotions]="comp.promotions || []"
+            [currentRole]="currentRole()"
+            (addPromotion)="openAddPromotionModal()"
+            (editPromotion)="openEditPromotionModal($event)">
+          </app-tab-promotions>
         }
 
-        <!-- ==================== TAB 4: RECOMPENSAS / PREMIOS ==================== -->
+        <!-- TAB 4: PREMIOS & CANJES -->
         @if (activeTab() === 'rewards') {
-          <div class="space-y-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Premios Canjeables por Puntos</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ comp.rewards?.length || 0 }} premios</p>
-              </div>
-
-              @if (currentRole() !== RoleEnum.USER) {
-                <button 
-                  (click)="openAddRewardModal()"
-                  class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  + Agregar Premio
-                </button>
-              }
-            </div>
-
-            @if (!comp.rewards || comp.rewards.length === 0) {
-              <div class="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-300 dark:border-gray-800">
-                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                </div>
-                <h4 class="font-bold text-gray-900 dark:text-white">Sin premios definidos</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">No hay recompensas registradas aún para canjear en esta empresa.</p>
-                @if (currentRole() !== RoleEnum.USER) {
-                  <button 
-                    (click)="openAddRewardModal()"
-                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
-                    + Crear Primer Premio
-                  </button>
-                }
-              </div>
-            } @else {
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @for (reward of comp.rewards; track reward.id) {
-                  <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-emerald-200 dark:border-emerald-900/50 shadow-sm flex flex-col justify-between space-y-4">
-                    <div>
-                      <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold mb-3">
-                        🎁
-                      </div>
-                      <h4 class="font-bold text-base text-gray-900 dark:text-white">{{ reward.name }}</h4>
-                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ reward.description || 'Sin descripción' }}</p>
-                    </div>
-
-                    <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                      <span class="text-xs text-gray-400">Costo</span>
-                      <div class="flex items-center gap-2">
-                        <span class="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 rounded-full font-black text-xs text-emerald-700 dark:text-emerald-300">
-                          {{ reward.costInPoints }} Puntos
-                        </span>
-                        @if (currentRole() !== RoleEnum.USER) {
-                          <button 
-                            (click)="openEditRewardModal(reward)"
-                            class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
-                            Editar
-                          </button>
-                        } @else {
-                          <button 
-                            (click)="onRedeemReward(reward.id)"
-                            class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition cursor-pointer shadow">
-                            Canjear
-                          </button>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+          <app-tab-rewards
+            [rewards]="comp.rewards || []"
+            [currentRole]="currentRole()"
+            (addReward)="openAddRewardModal()"
+            (editReward)="openEditRewardModal($event)"
+            (redeemReward)="onRedeemReward($event)">
+          </app-tab-rewards>
         }
 
-        <!-- ==================== TAB 5: VENTAS & REGISTRO DE TRANSACCIONES ==================== -->
+        <!-- TAB 5: VENTAS & REGISTRO DE TRANSACCIONES -->
         @if (activeTab() === 'sales') {
-          <div class="space-y-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Registro de Ventas y Otorgamiento de Puntos</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Historial y alta de ventas de la sucursal</p>
-              </div>
-
-              @if (currentRole() !== RoleEnum.USER) {
-                <button 
-                  (click)="openAddSaleModal()"
-                  class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  + Registrar Venta
-                </button>
-              }
-            </div>
-
-            <!-- Tabla Visual de Ventas Demo -->
-            <div class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-600 dark:text-gray-300">
-                  <thead class="bg-gray-50 dark:bg-gray-800/60 text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
-                    <tr>
-                      <th class="p-4">ID Venta</th>
-                      <th class="p-4">Cliente (DNI / Email)</th>
-                      <th class="p-4">Monto ($)</th>
-                      <th class="p-4">Puntos Generados</th>
-                      <th class="p-4">Fecha</th>
-                      <th class="p-4 text-right">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium">
-                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
-                      <td class="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">#V-1001</td>
-                      <td class="p-4 font-bold text-gray-900 dark:text-white">cliente@correo.com</td>
-                      <td class="p-4 font-semibold text-emerald-600 dark:text-emerald-400">$1,500.00</td>
-                      <td class="p-4 font-extrabold text-amber-500">+150 pts</td>
-                      <td class="p-4 text-gray-400">06/08/2026</td>
-                      <td class="p-4 text-right">
-                        @if (currentRole() !== RoleEnum.USER) {
-                          <button 
-                            (click)="openEditSaleModal()"
-                            class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-lg transition cursor-pointer">
-                            Editar
-                          </button>
-                        }
-                      </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition">
-                      <td class="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">#V-1002</td>
-                      <td class="p-4 font-bold text-gray-900 dark:text-white">juan.perez&#64;gmail.com</td>
-                      <td class="p-4 font-semibold text-emerald-600 dark:text-emerald-400">$2,400.00</td>
-                      <td class="p-4 font-extrabold text-amber-500">+240 pts</td>
-                      <td class="p-4 text-gray-400">05/08/2026</td>
-                      <td class="p-4 text-right">
-                        @if (currentRole() !== RoleEnum.USER) {
-                          <button 
-                            (click)="openEditSaleModal()"
-                            class="px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-lg transition cursor-pointer">
-                            Editar
-                          </button>
-                        }
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+          <app-tab-sales
+            [sales]="[]"
+            [currentRole]="currentRole()"
+            (addSale)="openAddSaleModal()"
+            (editSale)="openEditSaleModal()">
+          </app-tab-sales>
         }
 
       </div>
@@ -567,886 +110,101 @@
   </div>
 </div>
 
-<!-- ==============================================<!-- ========================================================================= -->
-<!-- MODALES REACTIVOS EN PUNTASOS (CON VALIDACIONES Y MENSAJES DINÁMICOS) -->
-<!-- ========================================================================= -->
-
-<!-- 1. MODAL: EDITAR EMPRESA -->
+<!-- MODALES -->
 @if (showEditCompanyModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeEditCompanyModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
-      <button 
-        (click)="closeEditCompanyModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-blue-100 dark:bg-blue-950/80 rounded-2xl text-blue-600 dark:text-blue-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Empresa</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Actualiza los datos de la sucursal y regla de puntos.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="editCompanyForm" (ngSubmit)="onEditCompanySubmit()" class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="sm:col-span-2">
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre Comercial *</label>
-            <input 
-              type="text" 
-              formControlName="name" 
-              [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'name', isEditCompanySubmitted())"
-              [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'name', isEditCompanySubmitted())"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            @if (isFieldInvalid(editCompanyForm, 'name', isEditCompanySubmitted())) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'name') }}</p>
-            }
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto por Paso ($) *</label>
-            <input 
-              type="number" 
-              formControlName="amountStep" 
-              [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'amountStep', isEditCompanySubmitted())"
-              [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'amountStep', isEditCompanySubmitted())"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            @if (isFieldInvalid(editCompanyForm, 'amountStep', isEditCompanySubmitted())) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'amountStep') }}</p>
-            }
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Puntos por Paso *</label>
-            <input 
-              type="number" 
-              formControlName="pointsPerStep" 
-              [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'pointsPerStep', isEditCompanySubmitted())"
-              [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'pointsPerStep', isEditCompanySubmitted())"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            @if (isFieldInvalid(editCompanyForm, 'pointsPerStep', isEditCompanySubmitted())) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'pointsPerStep') }}</p>
-            }
-          </div>
-        </div>
-
-        <div class="pt-4 border-t border-gray-100 dark:border-gray-800">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">Ubicación</h4>
-          
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="sm:col-span-2">
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dirección *</label>
-              <input 
-                type="text" 
-                formControlName="address" 
-                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'address', isEditCompanySubmitted())"
-                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'address', isEditCompanySubmitted())"
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              @if (isFieldInvalid(editCompanyForm, 'address', isEditCompanySubmitted())) {
-                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'address') }}</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ciudad *</label>
-              <input 
-                type="text" 
-                formControlName="city" 
-                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'city', isEditCompanySubmitted())"
-                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'city', isEditCompanySubmitted())"
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              @if (isFieldInvalid(editCompanyForm, 'city', isEditCompanySubmitted())) {
-                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'city') }}</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Provincia *</label>
-              <input 
-                type="text" 
-                formControlName="province" 
-                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'province', isEditCompanySubmitted())"
-                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'province', isEditCompanySubmitted())"
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              @if (isFieldInvalid(editCompanyForm, 'province', isEditCompanySubmitted())) {
-                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'province') }}</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">País *</label>
-              <input 
-                type="text" 
-                formControlName="country" 
-                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'country', isEditCompanySubmitted())"
-                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'country', isEditCompanySubmitted())"
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              @if (isFieldInvalid(editCompanyForm, 'country', isEditCompanySubmitted())) {
-                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'country') }}</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Código Postal *</label>
-              <input 
-                type="text" 
-                formControlName="zipCode" 
-                [class.border-rose-500]="isFieldInvalid(editCompanyForm, 'zipCode', isEditCompanySubmitted())"
-                [class.focus:ring-rose-500]="isFieldInvalid(editCompanyForm, 'zipCode', isEditCompanySubmitted())"
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              @if (isFieldInvalid(editCompanyForm, 'zipCode', isEditCompanySubmitted())) {
-                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editCompanyForm, 'zipCode') }}</p>
-              }
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeEditCompanyModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Guardar Cambios
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-edit-company-modal
+    [form]="editCompanyForm"
+    [isSubmitted]="isEditCompanySubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeEditCompanyModal()"
+    (submitForm)="onEditCompanySubmit()">
+  </app-edit-company-modal>
 }
 
-<!-- 2. MODAL: AGREGAR PRODUCTO -->
 @if (showAddProductModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeAddProductModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeAddProductModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-blue-100 dark:bg-blue-950/80 rounded-2xl text-blue-600 dark:text-blue-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Agregar Producto</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Carga un nuevo ítem al catálogo de la empresa.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="addProductForm" (ngSubmit)="onAddProductSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto *</label>
-          <input 
-            type="text" 
-            formControlName="name"
-            placeholder="Ej. Café Espresso 250g" 
-            [class.border-rose-500]="isFieldInvalid(addProductForm, 'name', isAddProductSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addProductForm, 'name', isAddProductSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          @if (isFieldInvalid(addProductForm, 'name', isAddProductSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addProductForm, 'name') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea 
-            rows="3" 
-            formControlName="description"
-            placeholder="Descripción detallada del producto..." 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($) *</label>
-          <input 
-            type="number" 
-            formControlName="price"
-            placeholder="Ej. 1200" 
-            [class.border-rose-500]="isFieldInvalid(addProductForm, 'price', isAddProductSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addProductForm, 'price', isAddProductSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          @if (isFieldInvalid(addProductForm, 'price', isAddProductSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addProductForm, 'price') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">URL de Imagen</label>
-          <input 
-            type="text" 
-            formControlName="image"
-            placeholder="https://ejemplo.com/imagen.jpg" 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeAddProductModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Guardar Producto
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-product-modal
+    [form]="addProductForm"
+    [isEdit]="false"
+    [isSubmitted]="isAddProductSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeAddProductModal()"
+    (submitForm)="onAddProductSubmit()">
+  </app-product-modal>
 }
 
-<!-- 3. MODAL: EDITAR PRODUCTO -->
 @if (showEditProductModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeEditProductModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeEditProductModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-blue-100 dark:bg-blue-950/80 rounded-2xl text-blue-600 dark:text-blue-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Producto</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica la información y precio del producto.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="editProductForm" (ngSubmit)="onEditProductSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Producto *</label>
-          <input 
-            type="text" 
-            formControlName="name" 
-            [class.border-rose-500]="isFieldInvalid(editProductForm, 'name', isEditProductSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(editProductForm, 'name', isEditProductSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          @if (isFieldInvalid(editProductForm, 'name', isEditProductSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editProductForm, 'name') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea 
-            rows="3" 
-            formControlName="description" 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Precio ($) *</label>
-          <input 
-            type="number" 
-            formControlName="price" 
-            [class.border-rose-500]="isFieldInvalid(editProductForm, 'price', isEditProductSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(editProductForm, 'price', isEditProductSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          @if (isFieldInvalid(editProductForm, 'price', isEditProductSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editProductForm, 'price') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">URL de Imagen</label>
-          <input 
-            type="text" 
-            formControlName="image" 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeEditProductModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Actualizar Producto
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-product-modal
+    [form]="editProductForm"
+    [isEdit]="true"
+    [isSubmitted]="isEditProductSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeEditProductModal()"
+    (submitForm)="onEditProductSubmit()">
+  </app-product-modal>
 }
 
-<!-- 4. MODAL: AGREGAR PROMOCIÓN -->
 @if (showAddPromotionModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeAddPromotionModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeAddPromotionModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-purple-100 dark:bg-purple-950/80 rounded-2xl text-purple-600 dark:text-purple-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 13C10.832 21 2 20 2 12V6a2 2 0 012-2h16a2 2 0 012 2v6c0 8-8.832 9-10 9z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Agregar Promoción</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Crea una nueva campaña multiplicadora de puntos.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="addPromotionForm" (ngSubmit)="onAddPromotionSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre de la Promoción *</label>
-          <input 
-            type="text" 
-            formControlName="name" 
-            placeholder="Ej. Fin de Semana Doble Puntos" 
-            [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'name', isAddPromotionSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'name', isAddPromotionSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-          @if (isFieldInvalid(addPromotionForm, 'name', isAddPromotionSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'name') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea 
-            rows="2" 
-            formControlName="description" 
-            placeholder="Detalle de la promoción..." 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Multiplicador de Puntos *</label>
-          <input 
-            type="number" 
-            formControlName="multiplier" 
-            placeholder="Ej. 2" 
-            [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'multiplier', isAddPromotionSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'multiplier', isAddPromotionSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-          @if (isFieldInvalid(addPromotionForm, 'multiplier', isAddPromotionSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'multiplier') }}</p>
-          }
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio *</label>
-            <input 
-              type="date" 
-              formControlName="startDate" 
-              [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'startDate', isAddPromotionSubmitted())"
-              [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'startDate', isAddPromotionSubmitted())"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-            @if (isFieldInvalid(addPromotionForm, 'startDate', isAddPromotionSubmitted())) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'startDate') }}</p>
-            }
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Fin *</label>
-            <input 
-              type="date" 
-              formControlName="endDate" 
-              [class.border-rose-500]="isFieldInvalid(addPromotionForm, 'endDate', isAddPromotionSubmitted())"
-              [class.focus:ring-rose-500]="isFieldInvalid(addPromotionForm, 'endDate', isAddPromotionSubmitted())"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-            @if (isFieldInvalid(addPromotionForm, 'endDate', isAddPromotionSubmitted())) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addPromotionForm, 'endDate') }}</p>
-            }
-          </div>
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeAddPromotionModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Guardar Promoción
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-promotion-modal
+    [form]="addPromotionForm"
+    [isEdit]="false"
+    [isSubmitted]="isAddPromotionSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeAddPromotionModal()"
+    (submitForm)="onAddPromotionSubmit()">
+  </app-promotion-modal>
 }
 
-<!-- 5. MODAL: EDITAR PROMOCIÓN -->
 @if (showEditPromotionModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeEditPromotionModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeEditPromotionModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-purple-100 dark:bg-purple-950/80 rounded-2xl text-purple-600 dark:text-purple-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Promoción</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica los parámetros de la campaña.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="editPromotionForm" (ngSubmit)="onEditPromotionSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre de la Promoción *</label>
-          <input 
-            type="text" 
-            formControlName="name" 
-            [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'name', isEditPromotionSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'name', isEditPromotionSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-          @if (isFieldInvalid(editPromotionForm, 'name', isEditPromotionSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'name') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea 
-            rows="2" 
-            formControlName="description" 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Multiplicador de Puntos *</label>
-          <input 
-            type="number" 
-            formControlName="multiplier" 
-            [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'multiplier', isEditPromotionSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'multiplier', isEditPromotionSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-          @if (isFieldInvalid(editPromotionForm, 'multiplier', isEditPromotionSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'multiplier') }}</p>
-          }
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio *</label>
-            <input 
-              type="date" 
-              formControlName="startDate" 
-              [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'startDate', isEditPromotionSubmitted())"
-              [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'startDate', isEditPromotionSubmitted())"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-            @if (isFieldInvalid(editPromotionForm, 'startDate', isEditPromotionSubmitted())) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'startDate') }}</p>
-            }
-          </div>
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Fecha Fin *</label>
-            <input 
-              type="date" 
-              formControlName="endDate" 
-              [class.border-rose-500]="isFieldInvalid(editPromotionForm, 'endDate', isEditPromotionSubmitted())"
-              [class.focus:ring-rose-500]="isFieldInvalid(editPromotionForm, 'endDate', isEditPromotionSubmitted())"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-            @if (isFieldInvalid(editPromotionForm, 'endDate', isEditPromotionSubmitted())) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editPromotionForm, 'endDate') }}</p>
-            }
-          </div>
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeEditPromotionModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Actualizar Promoción
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-promotion-modal
+    [form]="editPromotionForm"
+    [isEdit]="true"
+    [isSubmitted]="isEditPromotionSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeEditPromotionModal()"
+    (submitForm)="onEditPromotionSubmit()">
+  </app-promotion-modal>
 }
 
-<!-- 6. MODAL: AGREGAR PREMIO / RECOMPENSA -->
 @if (showAddRewardModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeAddRewardModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeAddRewardModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-emerald-100 dark:bg-emerald-950/80 rounded-2xl text-emerald-600 dark:text-emerald-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Agregar Premio</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Crea una nueva recompensa canjeable por puntos.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="addRewardForm" (ngSubmit)="onAddRewardSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Premio *</label>
-          <input 
-            type="text" 
-            formControlName="name" 
-            placeholder="Ej. Voucher $2000 o Remera Oficial" 
-            [class.border-rose-500]="isFieldInvalid(addRewardForm, 'name', isAddRewardSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addRewardForm, 'name', isAddRewardSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          @if (isFieldInvalid(addRewardForm, 'name', isAddRewardSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addRewardForm, 'name') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea 
-            rows="2" 
-            formControlName="description" 
-            placeholder="Condiciones del canje..." 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos *</label>
-          <input 
-            type="number" 
-            formControlName="costInPoints" 
-            placeholder="Ej. 500" 
-            [class.border-rose-500]="isFieldInvalid(addRewardForm, 'costInPoints', isAddRewardSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addRewardForm, 'costInPoints', isAddRewardSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          @if (isFieldInvalid(addRewardForm, 'costInPoints', isAddRewardSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addRewardForm, 'costInPoints') }}</p>
-          }
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeAddRewardModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Guardar Premio
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-reward-modal
+    [form]="addRewardForm"
+    [isEdit]="false"
+    [isSubmitted]="isAddRewardSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeAddRewardModal()"
+    (submitForm)="onAddRewardSubmit()">
+  </app-reward-modal>
 }
 
-<!-- 7. MODAL: EDITAR PREMIO / RECOMPENSA -->
 @if (showEditRewardModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeEditRewardModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeEditRewardModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-emerald-100 dark:bg-emerald-950/80 rounded-2xl text-emerald-600 dark:text-emerald-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Premio</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Modifica el costo en puntos y detalles del premio.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="editRewardForm" (ngSubmit)="onEditRewardSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Nombre del Premio *</label>
-          <input 
-            type="text" 
-            formControlName="name" 
-            [class.border-rose-500]="isFieldInvalid(editRewardForm, 'name', isEditRewardSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(editRewardForm, 'name', isEditRewardSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          @if (isFieldInvalid(editRewardForm, 'name', isEditRewardSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editRewardForm, 'name') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea 
-            rows="2" 
-            formControlName="description" 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Costo en Puntos *</label>
-          <input 
-            type="number" 
-            formControlName="pointsToEarn" 
-            [class.border-rose-500]="isFieldInvalid(editRewardForm, 'pointsToEarn', isEditRewardSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(editRewardForm, 'pointsToEarn', isEditRewardSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          @if (isFieldInvalid(editRewardForm, 'pointsToEarn', isEditRewardSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(editRewardForm, 'pointsToEarn') }}</p>
-          }
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeEditRewardModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Actualizar Premio
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-reward-modal
+    [form]="editRewardForm"
+    [isEdit]="true"
+    [isSubmitted]="isEditRewardSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeEditRewardModal()"
+    (submitForm)="onEditRewardSubmit()">
+  </app-reward-modal>
 }
 
-<!-- 8. MODAL: REGISTRAR VENTA -->
 @if (showAddSaleModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeAddSaleModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeAddSaleModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-indigo-100 dark:bg-indigo-950/80 rounded-2xl text-indigo-600 dark:text-indigo-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Registrar Venta</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Registra una compra y otorga puntos al cliente.</p>
-        </div>
-      </div>
-
-      @if (modalErrorMessage()) {
-        <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold">
-          {{ modalErrorMessage() }}
-        </div>
-      }
-
-      <form [formGroup]="addSaleForm" (ngSubmit)="onAddSaleSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">DNI del Cliente *</label>
-          <input 
-            type="text" 
-            formControlName="userDni" 
-            placeholder="Ej. 38123456" 
-            [class.border-rose-500]="isFieldInvalid(addSaleForm, 'userDni', isAddSaleSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addSaleForm, 'userDni', isAddSaleSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          @if (isFieldInvalid(addSaleForm, 'userDni', isAddSaleSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addSaleForm, 'userDni') }}</p>
-          }
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto de la Venta ($) *</label>
-          <input 
-            type="number" 
-            formControlName="amount" 
-            placeholder="Ej. 2500" 
-            [class.border-rose-500]="isFieldInvalid(addSaleForm, 'amount', isAddSaleSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(addSaleForm, 'amount', isAddSaleSubmitted())"
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          @if (isFieldInvalid(addSaleForm, 'amount', isAddSaleSubmitted())) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(addSaleForm, 'amount') }}</p>
-          }
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeAddSaleModal()"
-            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition cursor-pointer">
-            Cancelar
-          </button>
-          <button 
-            type="submit"
-            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Confirmar Venta
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-sale-modal
+    [form]="addSaleForm"
+    [isEdit]="false"
+    [isSubmitted]="isAddSaleSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeAddSaleModal()"
+    (submitForm)="onAddSaleSubmit()">
+  </app-sale-modal>
 }
 
-<!-- 9. MODAL: EDITAR VENTA -->
 @if (showEditSaleModal()) {
-  <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-    <div (click)="closeEditSaleModal()" class="absolute inset-0"></div>
-
-    <div class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl z-10">
-      <button 
-        (click)="closeEditSaleModal()"
-        class="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-3 bg-indigo-100 dark:bg-indigo-950/80 rounded-2xl text-indigo-600 dark:text-indigo-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Editar Registro de Venta</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Detalles de la transacción realizada.</p>
-        </div>
-      </div>
-
-      <form [formGroup]="editSaleForm" (ngSubmit)="closeEditSaleModal()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1">Monto ($)</label>
-          <input 
-            type="number" 
-            formControlName="amount" 
-            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none" />
-        </div>
-
-        <div class="pt-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
-          <button 
-            type="button"
-            (click)="closeEditSaleModal()"
-            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-            Cerrar
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <app-sale-modal
+    [form]="editSaleForm"
+    [isEdit]="true"
+    [isSubmitted]="isEditSaleSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeEditSaleModal()"
+    (submitForm)="closeEditSaleModal()">
+  </app-sale-modal>
 }
