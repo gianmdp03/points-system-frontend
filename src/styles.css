@@ -11,3 +11,34 @@
   --color-brand-600: #2563eb;
   --color-brand-700: #1d4ed8;
 }
+
+/* Variables Globales y Modo Claro */
+:root {
+  /* Ahora simplemente llamamos a la fuente directamente */
+  --font-principal: 'Google Sans', sans-serif;
+  
+  --bg-principal: #FFFFFF;
+  --bg-secundario: #F8F9FA;
+  --color-texto: #1F1F1F;
+  --color-borde: #E3E3E3;
+}
+
+/* Modo Oscuro Automático */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-principal: #131314;
+    --bg-secundario: #1E1E1E;
+    --color-texto: #E3E3E3;
+    --color-borde: #333333;
+  }
+}
+
+/* Aplicación global al proyecto */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-principal);
+  background-color: var(--bg-principal);
+  color: var(--color-texto);
+  -webkit-font-smoothing: antialiased;
+}
