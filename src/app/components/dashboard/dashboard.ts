@@ -5,12 +5,28 @@ import { CompanyService } from '../../core/services/company-service';
 import { AuthService } from '../../core/services/auth-service';
 import { CompanyListDTO, Role, Page, CompanyRequestDTO, CompanyUpdateDTO } from '../../core/models';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
-import { RouterLink } from '@angular/router';
+
+// Sub-components
+import { DashboardHeaderComponent } from './components/dashboard-header/dashboard-header';
+import { RoleUserViewComponent } from './components/role-user-view/role-user-view';
+import { RoleAdminViewComponent } from './components/role-admin-view/role-admin-view';
+import { RoleAppAdminViewComponent } from './components/role-app-admin-view/role-app-admin-view';
+import { AddCompanyModalComponent } from './components/modals/add-company-modal/add-company-modal';
+import { DashboardEditCompanyModalComponent } from './components/modals/edit-company-modal/edit-company-modal';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    DashboardHeaderComponent,
+    RoleUserViewComponent,
+    RoleAdminViewComponent,
+    RoleAppAdminViewComponent,
+    AddCompanyModalComponent,
+    DashboardEditCompanyModalComponent
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -51,7 +67,6 @@ export class Dashboard implements OnInit {
     name: ['', [Validators.required, Validators.maxLength(300)]],
     amountStep: [100, [Validators.required, Validators.min(1)]],
     pointsPerStep: [10, [Validators.required, Validators.min(1)]],
-    userDni: ['', [Validators.required]],
     address: ['', [Validators.required]],
     city: ['', [Validators.required]],
     province: ['', [Validators.required]],
@@ -79,7 +94,6 @@ export class Dashboard implements OnInit {
       name: '',
       amountStep: 100,
       pointsPerStep: 10,
-      userDni: '',
       address: '',
       city: '',
       province: '',
@@ -208,7 +222,6 @@ export class Dashboard implements OnInit {
     }
 
     const val = this.addCompanyForm.getRawValue();
-    const userDni = val.userDni || '';
 
     const dto: CompanyRequestDTO = {
       name: val.name!,
@@ -224,7 +237,7 @@ export class Dashboard implements OnInit {
     };
 
     this.modalErrorMessage.set(null);
-    this.companyService.addCompany(userDni, dto).subscribe({
+    this.companyService.addCompany(dto).subscribe({
       next: () => {
         this.closeAddCompanyModal();
         this.loadRoleData(this.currentRole(), this.currentPage());

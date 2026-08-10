@@ -17,8 +17,8 @@ export class CompanyService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/companies`;
 
-  addCompany(userDni: string, dto: CompanyRequestDTO): Observable<CompanyDetailDTO> {
-    return this.http.post<CompanyDetailDTO>(`${this.apiUrl}/${userDni}`, dto);
+  addCompany(dto: CompanyRequestDTO): Observable<CompanyDetailDTO> {
+    return this.http.post<CompanyDetailDTO>(this.apiUrl, dto);
   }
 
   updateCompany(id: number, dto: CompanyUpdateDTO): Observable<CompanyDetailDTO> {
