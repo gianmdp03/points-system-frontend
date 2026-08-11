@@ -8,13 +8,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return from(supabaseService.getToken()).pipe(
     switchMap(token => {
+      const headersToSet: Record<string, string> = {
+        'ngrok-skip-browser-warning': 'true'
+      };
+
       if (token) {
-        const cloned = req.clone({
-          setHeaders: { Authorization: `Bearer ${token}` }
-        });
-        return next(cloned);
+        headersToSet['Authorization'] = `Bearer ${token}`;
       }
-      return next(req);
+
+      const cloned = req.clone({
+        setHeaders: headersToSet
+      });
+      return next(cloned);
     })
   );
-};
+};
