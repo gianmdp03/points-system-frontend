@@ -6,7 +6,8 @@ import { ProductListDTO, Role } from '../../../../core/models';
   selector: 'app-tab-products',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './tab-products.html'
+  templateUrl: './tab-products.html',
+  host: { class: 'block' }
 })
 export class TabProductsComponent {
   @Input() products: ProductListDTO[] = [];

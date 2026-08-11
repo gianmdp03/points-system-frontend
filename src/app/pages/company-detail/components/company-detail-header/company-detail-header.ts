@@ -6,7 +6,8 @@ import { CompanyDetailDTO, Role } from '../../../../core/models';
   selector: 'app-company-detail-header',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './company-detail-header.html'
+  templateUrl: './company-detail-header.html',
+  host: { class: 'block' }
 })
 export class CompanyDetailHeaderComponent {
   @Input({ required: true }) company!: CompanyDetailDTO;

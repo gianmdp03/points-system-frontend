@@ -6,7 +6,8 @@ import { CompanyDetailDTO, Role } from '../../../../core/models';
   selector: 'app-tab-overview',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './tab-overview.html'
+  templateUrl: './tab-overview.html',
+  host: { class: 'block' }
 })
 export class TabOverviewComponent {
   @Input({ required: true }) company!: CompanyDetailDTO;

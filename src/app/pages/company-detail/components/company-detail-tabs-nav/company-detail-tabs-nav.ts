@@ -8,7 +8,8 @@ export type CompanyDetailTab = 'overview' | 'products' | 'promotions' | 'rewards
   selector: 'app-company-detail-tabs-nav',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './company-detail-tabs-nav.html'
+  templateUrl: './company-detail-tabs-nav.html',
+  host: { class: 'block' }
 })
 export class CompanyDetailTabsNavComponent {
   @Input({ required: true }) activeTab!: CompanyDetailTab;

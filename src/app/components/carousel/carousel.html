@@ -1,0 +1,74 @@
+<div
+  id="indicators"
+  data-carousel='{ "loadingClasses": "opacity-0", "dotsItemClasses": "carousel-dot carousel-active:bg-primary" }'
+  class="relative w-full overflow-hidden rounded-[28px] sm:rounded-[32px] border border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#1E1E1E] shadow-xs"
+>
+  <!-- Flecha Izquierda -->
+  <button 
+    type="button" 
+    (click)="prevSlide()" 
+    class="carousel-prev absolute start-5 max-sm:start-3 top-1/2 -translate-y-1/2 z-20 carousel-disabled:opacity-50 size-9.5 w-10 h-10 bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#E3E3E3] dark:border-[#333333] flex items-center justify-center rounded-full shadow-md hover:bg-[#F8F9FA] dark:hover:bg-[#131314] transition cursor-pointer">
+    <span class="icon-[tabler--chevron-left] size-5">
+      <svg class="w-5 h-5 text-[#1F1F1F] dark:text-[#E3E3E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+      </svg>
+    </span>
+    <span class="sr-only">Previous</span>
+  </button>
+
+  <!-- Flecha Derecha -->
+  <button 
+    type="button" 
+    (click)="nextSlide()" 
+    class="carousel-next absolute end-5 max-sm:end-3 top-1/2 -translate-y-1/2 z-20 carousel-disabled:opacity-50 size-9.5 w-10 h-10 bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#E3E3E3] dark:border-[#333333] flex items-center justify-center rounded-full shadow-md hover:bg-[#F8F9FA] dark:hover:bg-[#131314] transition cursor-pointer">
+    <span class="icon-[tabler--chevron-right] size-5">
+      <svg class="w-5 h-5 text-[#1F1F1F] dark:text-[#E3E3E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+      </svg>
+    </span>
+    <span class="sr-only">Next</span>
+  </button>
+
+  <!-- Cuerpo del Carousel -->
+  <div class="carousel h-80 sm:h-96">
+    <div class="carousel-body h-full relative">
+      @for (slide of slides(); track slide.id; let idx = $index) {
+        <div 
+          [class.opacity-100]="activeIndex() === idx"
+          [class.opacity-0]="activeIndex() !== idx"
+          [class.pointer-events-none]="activeIndex() !== idx"
+          class="carousel-slide absolute inset-0 carousel-slide-transition flex items-center justify-center p-6 sm:p-12">
+          
+          <div class="w-full max-w-3xl mx-auto text-center space-y-4 px-8 sm:px-12">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-[#E8F0FE] dark:bg-[#131314] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 shadow-xs">
+              <span>{{ slide.icon }}</span>
+              <span>{{ slide.badge }}</span>
+            </span>
+
+            <h3 class="text-2xl sm:text-4xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight leading-tight">
+              {{ slide.title }}
+            </h3>
+
+            <p class="text-xs sm:text-base text-[#5F6368] dark:text-[#9AA0A6] max-w-xl mx-auto font-normal leading-relaxed">
+              {{ slide.subtitle }}
+            </p>
+          </div>
+
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Paginación de Puntos (Dots) -->
+  <div class="carousel-pagination absolute bottom-4 end-0 start-0 flex justify-center gap-2.5 z-20">
+    @for (slide of slides(); track slide.id; let idx = $index) {
+      <button
+        type="button"
+        (click)="goToSlide(idx)"
+        [class]="activeIndex() === idx ? 'w-8 bg-[#1A73E8] dark:bg-[#8AB4F8]' : 'w-2.5 bg-[#E3E3E3] dark:bg-[#333333] hover:bg-[#5F6368]'"
+        class="h-2.5 rounded-full transition-all duration-300 cursor-pointer"
+        [ariaLabel]="'Ir a slide ' + (idx + 1)">
+      </button>
+    }
+  </div>
+</div>
