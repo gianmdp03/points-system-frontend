@@ -49,6 +49,21 @@ export class Header implements OnInit {
     }
   }
 
+  scrollToSection(fragment: string): void {
+    this.closeMobileMenu();
+    if (typeof window !== 'undefined') {
+      const currentUrl = this.router.url.split('#')[0];
+      if (currentUrl === '/' || currentUrl === '') {
+        const element = document.getElementById(fragment);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+      }
+    }
+    this.router.navigate(['/'], { fragment });
+  }
+
   async logout(): Promise<void> {
     await this.authService.logout();
     this.router.navigate(['/']);

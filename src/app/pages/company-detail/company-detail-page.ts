@@ -227,6 +227,9 @@ export class CompanyDetailPage implements OnInit {
   }
 
   setTab(tab: CompanyDetailTab): void {
+    if (tab === 'sales' && (this.currentRole() !== Role.COMPANY_ADMIN && this.currentRole() !== Role.APP_ADMIN)) {
+      return;
+    }
     this.activeTab.set(tab);
   }
 
