@@ -34,10 +34,10 @@
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
       @for (company of companies; track company.id) {
-        <div class="group bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#E3E3E3] dark:border-[#333333] shadow-xs hover:border-[#1A73E8]/50 dark:hover:border-[#8AB4F8]/50 hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+        <div class="group bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#E3E3E3] dark:border-[#333333] shadow-xs hover:border-[#C4C7C5] dark:hover:border-[#5E6266] hover:scale-[1.01] hover:shadow-sm transition-all duration-300 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 rounded-2xl bg-[#E8F0FE] dark:bg-[#1E1E1E] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] font-black text-xl shadow-xs group-hover:scale-105 transition-transform">
+              <div class="w-12 h-12 rounded-2xl bg-[#E8F0FE] dark:bg-[#1E1E1E] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] font-black text-xl shadow-xs group-hover:scale-[1.02] transition-transform">
                 {{ company.name ? company.name.charAt(0).toUpperCase() : 'C' }}
               </div>
               <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">

@@ -146,9 +146,7 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.isLoggedIn()) {
-      this.loadRoleData(this.currentRole(), 0);
-    }
+    // Rely on constructor effect to load data when logged in
   }
 
   setRole(role: Role): void {
@@ -160,10 +158,14 @@ export class Dashboard implements OnInit {
     this.errorMessage.set(null);
     this.currentPage.set(page);
 
+    const activeRole = role;
+
     if (role === Role.USER) {
       this.companyService.listMySubscribedCompanies(page, 18).subscribe({
         next: (pageData: any) => {
+          if (this.currentRole() !== activeRole) return;
           this.isLoading.set(false);
+          this.errorMessage.set(null);
           const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
           const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
 
@@ -172,6 +174,7 @@ export class Dashboard implements OnInit {
           this.totalPages.set(pageData?.totalPages || 1);
         },
         error: (err) => {
+          if (this.currentRole() !== activeRole) return;
           this.isLoading.set(false);
           this.subscribedCompanies.set([]);
           this.totalElements.set(0);
@@ -184,7 +187,9 @@ export class Dashboard implements OnInit {
     } else if (role === Role.COMPANY_ADMIN) {
       this.companyService.listMyAdminCompanies(page, 18).subscribe({
         next: (pageData: any) => {
+          if (this.currentRole() !== activeRole) return;
           this.isLoading.set(false);
+          this.errorMessage.set(null);
           const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
           const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
 
@@ -193,6 +198,7 @@ export class Dashboard implements OnInit {
           this.totalPages.set(pageData?.totalPages || 1);
         },
         error: (err) => {
+          if (this.currentRole() !== activeRole) return;
           this.isLoading.set(false);
           this.adminCompanies.set([]);
           this.totalElements.set(0);
@@ -205,7 +211,9 @@ export class Dashboard implements OnInit {
     } else if (role === Role.APP_ADMIN) {
       this.companyService.listCompanies(page, 18).subscribe({
         next: (pageData: any) => {
+          if (this.currentRole() !== activeRole) return;
           this.isLoading.set(false);
+          this.errorMessage.set(null);
           const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
           const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
 
@@ -214,6 +222,7 @@ export class Dashboard implements OnInit {
           this.totalPages.set(pageData?.totalPages || 1);
         },
         error: (err) => {
+          if (this.currentRole() !== activeRole) return;
           this.isLoading.set(false);
           this.allCompanies.set([]);
           this.totalElements.set(0);
