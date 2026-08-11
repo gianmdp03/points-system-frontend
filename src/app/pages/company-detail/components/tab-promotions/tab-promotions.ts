@@ -6,7 +6,8 @@ import { PromotionListDTO, Role } from '../../../../core/models';
   selector: 'app-tab-promotions',
   standalone: true,
   imports: [CommonModule, DatePipe],
-  templateUrl: './tab-promotions.html'
+  templateUrl: './tab-promotions.html',
+  host: { class: 'block' }
 })
 export class TabPromotionsComponent {
   @Input() promotions: PromotionListDTO[] = [];

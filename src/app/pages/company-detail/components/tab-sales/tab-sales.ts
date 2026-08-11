@@ -6,7 +6,8 @@ import { Role, SaleListDTO } from '../../../../core/models';
   selector: 'app-tab-sales',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './tab-sales.html'
+  templateUrl: './tab-sales.html',
+  host: { class: 'block' }
 })
 export class TabSalesComponent {
   @Input() sales: SaleListDTO[] = [];

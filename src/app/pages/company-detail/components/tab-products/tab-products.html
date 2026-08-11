@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="flex flex-col gap-6 sm:gap-8">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
       <h3 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Catálogo de Productos</h3>
@@ -35,11 +35,11 @@
       }
     </div>
   } @else {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
       @for (product of products; track product.id) {
-        <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl p-5 border border-[#E3E3E3] dark:border-[#333333] shadow-xs hover:border-[#1A73E8]/40 transition-all duration-300 flex flex-col justify-between">
-          <div>
-            <div class="w-full h-40 bg-[#F8F9FA] dark:bg-[#1E1E1E] border border-[#E3E3E3]/60 dark:border-[#333333]/60 rounded-2xl flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] font-bold mb-4 overflow-hidden">
+        <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl p-6 border border-[#E3E3E3] dark:border-[#333333] shadow-xs hover:border-[#1A73E8]/40 transition-all duration-300 flex flex-col justify-between h-full space-y-5">
+          <div class="space-y-4">
+            <div class="w-full h-44 bg-[#F8F9FA] dark:bg-[#1E1E1E] border border-[#E3E3E3]/60 dark:border-[#333333]/60 rounded-2xl flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] font-bold overflow-hidden">
               @if (product.image) {
                 <img [src]="product.image" [alt]="product.name" class="w-full h-full object-cover rounded-2xl" />
               } @else {
@@ -49,11 +49,13 @@
               }
             </div>
 
-            <h4 class="font-black text-base sm:text-lg text-[#1F1F1F] dark:text-[#E3E3E3]">{{ product.name }}</h4>
-            <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1 line-clamp-2 leading-relaxed">{{ product.description || 'Sin descripción' }}</p>
+            <div>
+              <h4 class="font-black text-base sm:text-lg text-[#1F1F1F] dark:text-[#E3E3E3]">{{ product.name }}</h4>
+              <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1.5 line-clamp-2 leading-relaxed">{{ product.description || 'Sin descripción' }}</p>
+            </div>
           </div>
 
-          <div class="mt-5 pt-3 border-t border-[#E3E3E3] dark:border-[#333333] flex items-center justify-between">
+          <div class="pt-4 border-t border-[#E3E3E3] dark:border-[#333333] flex items-center justify-between gap-3">
             <div>
               <span class="text-[10px] font-extrabold uppercase text-[#5F6368] dark:text-[#9AA0A6] block">Precio</span>
               <span class="text-base sm:text-lg font-black text-[#1A73E8] dark:text-[#8AB4F8]">${{ product.price }}</span>

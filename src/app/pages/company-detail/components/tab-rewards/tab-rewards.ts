@@ -6,7 +6,8 @@ import { RewardListDTO, Role } from '../../../../core/models';
   selector: 'app-tab-rewards',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './tab-rewards.html'
+  templateUrl: './tab-rewards.html',
+  host: { class: 'block' }
 })
 export class TabRewardsComponent {
   @Input() rewards: RewardListDTO[] = [];
