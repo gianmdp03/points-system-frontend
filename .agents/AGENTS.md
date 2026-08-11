@@ -8,3 +8,8 @@
   - Collapsible mobile navigation drawers/menus for headers and navigation bars.
   - Horizontal scrolling containers, card grids, or stacked layouts for data tables on small screens.
   - Responsive typography, image aspect ratios (`object-contain` / `object-cover`), and dynamic modal sizing (`w-full max-w-lg px-4`).
+
+## Template Syntax & Verification Integrity (Mandatory)
+- **Zero Syntax Errors**: Always verify closing tags and class binding syntax in Angular HTML templates (e.g. use ternary expressions `[class]="..."` instead of invalid syntax like `[class.bg-[#HEX]="..."`).
+- **Empirical Build Verification**: Never claim a task or refactor is completed without verifying with `ng build` or runtime checks to ensure 0 compilation errors.
+- **Production-Ready UI**: Never include developer debug text, API endpoints (`GET /api/...`), or raw backend tech tags in user-facing UI components.

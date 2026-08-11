@@ -1,14 +1,14 @@
 <div class="space-y-6">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white">Premios Canjeables por Puntos</h3>
-      <p class="text-xs text-gray-500 dark:text-gray-400">Total: {{ rewards.length }} premios</p>
+      <h3 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Premios Canjeables por Puntos</h3>
+      <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">Total: {{ rewards.length }} {{ rewards.length === 1 ? 'premio' : 'premios' }}</p>
     </div>
 
     @if (currentRole !== RoleEnum.USER) {
       <button 
         (click)="addReward.emit()"
-        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+        class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -18,18 +18,18 @@
   </div>
 
   @if (rewards.length === 0) {
-    <div class="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-300 dark:border-gray-800">
-      <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+    <div class="text-center py-14 px-6 bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#E8F0FE] dark:bg-[#1E1E1E] flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8]">
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
         </svg>
       </div>
-      <h4 class="font-bold text-gray-900 dark:text-white">Sin premios definidos</h4>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">No hay recompensas registradas aún para canjear en esta empresa.</p>
+      <h4 class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Sin premios definidos</h4>
+      <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto mb-6 leading-relaxed">No hay Recompensas registradas aún para canjear en esta sucursal.</p>
       @if (currentRole !== RoleEnum.USER) {
         <button 
           (click)="addReward.emit()"
-          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">
+          class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
           + Crear Primer Premio
         </button>
       }
@@ -37,31 +37,33 @@
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       @for (reward of rewards; track reward.id) {
-        <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-emerald-200 dark:border-emerald-900/50 shadow-sm flex flex-col justify-between space-y-4">
+        <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl p-6 border border-[#E3E3E3] dark:border-[#333333] shadow-xs hover:border-[#1A73E8]/40 transition-all duration-300 flex flex-col justify-between space-y-4">
           <div>
-            <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-[#E8F0FE] dark:bg-[#1E1E1E] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center text-xl mb-4">
               🎁
             </div>
-            <h4 class="font-bold text-base text-gray-900 dark:text-white">{{ reward.name }}</h4>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ reward.description || 'Sin descripción' }}</p>
+            <h4 class="font-black text-base sm:text-lg text-[#1F1F1F] dark:text-[#E3E3E3]">{{ reward.name }}</h4>
+            <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1 line-clamp-2 leading-relaxed">{{ reward.description || 'Sin descripción' }}</p>
           </div>
 
-          <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <span class="text-xs text-gray-400">Costo</span>
-            <div class="flex items-center gap-2">
-              <span class="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 rounded-full font-black text-xs text-emerald-700 dark:text-emerald-300">
+          <div class="pt-4 border-t border-[#E3E3E3] dark:border-[#333333] flex items-center justify-between gap-3">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase text-[#5F6368] dark:text-[#9AA0A6] block">Requisito</span>
+              <span class="inline-flex items-center px-3 py-1 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 rounded-full font-black text-xs text-emerald-700 dark:text-emerald-300">
                 {{ reward.costInPoints }} Puntos
               </span>
+            </div>
+            <div>
               @if (currentRole !== RoleEnum.USER) {
                 <button 
                   (click)="editReward.emit(reward)"
-                  class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-lg transition cursor-pointer">
+                  class="min-h-[44px] px-4 py-2 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
                   Editar
                 </button>
               } @else {
                 <button 
                   (click)="redeemReward.emit(reward.id)"
-                  class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition cursor-pointer shadow">
+                  class="min-h-[44px] px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition cursor-pointer shadow-xs">
                   Canjear
                 </button>
               }
