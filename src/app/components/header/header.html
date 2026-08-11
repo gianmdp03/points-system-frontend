@@ -11,8 +11,6 @@
     <!-- Nav Links (Desktop) -->
     <nav class="hidden md:flex items-center gap-8 text-[#5F6368] dark:text-[#9AA0A6] font-medium text-sm">
       <a (click)="scrollToSection('como-funciona')" routerLink="/" fragment="como-funciona" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors cursor-pointer">Para Usuarios</a>
-      <a (click)="scrollToSection('para-empresas')" routerLink="/" fragment="para-empresas" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors cursor-pointer">Para Empresas</a>
-      <a (click)="scrollToSection('beneficios')" routerLink="/" fragment="beneficios" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors cursor-pointer">Beneficios</a>
       <a (click)="scrollToSection('precios')" routerLink="/" fragment="precios" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors cursor-pointer">Precios</a>
       @if (authService.isLoggedIn()) {
         <a routerLink="/dashboard" class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold hover:underline transition flex items-center gap-2">
@@ -81,8 +79,6 @@
     <div class="md:hidden bg-[#FFFFFF] dark:bg-[#131314] border-t border-[#E3E3E3] dark:border-[#333333] px-6 py-5 space-y-4 shadow-xl">
       <nav class="flex flex-col gap-3 text-[#5F6368] dark:text-[#9AA0A6] font-medium text-sm">
         <a (click)="scrollToSection('como-funciona')" routerLink="/" fragment="como-funciona" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors py-2 border-b border-gray-100 dark:border-gray-800 cursor-pointer">Para Usuarios</a>
-        <a (click)="scrollToSection('para-empresas')" routerLink="/" fragment="para-empresas" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors py-2 border-b border-gray-100 dark:border-gray-800 cursor-pointer">Para Empresas</a>
-        <a (click)="scrollToSection('beneficios')" routerLink="/" fragment="beneficios" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors py-2 border-b border-gray-100 dark:border-gray-800 cursor-pointer">Beneficios</a>
         <a (click)="scrollToSection('precios')" routerLink="/" fragment="precios" class="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors py-2 border-b border-gray-100 dark:border-gray-800 cursor-pointer">Precios</a>
         @if (authService.isLoggedIn()) {
           <a (click)="closeMobileMenu()" routerLink="/dashboard" class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold py-2 flex items-center gap-2">
