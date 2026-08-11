@@ -84,21 +84,13 @@
       <button 
         type="button" 
         (click)="activeTab.set('email')"
-        [class.text-[#1A73E8]]="activeTab() === 'email'"
-        [class.dark:text-[#8AB4F8]]="activeTab() === 'email'"
-        [class.border-[#1A73E8]]="activeTab() === 'email'"
-        [class.dark:border-[#8AB4F8]]="activeTab() === 'email'"
-        class="pb-2 text-xs font-bold border-b-2 border-transparent transition cursor-pointer text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3]">
+        [class]="'pb-2 text-xs font-bold border-b-2 transition cursor-pointer ' + (activeTab() === 'email' ? 'border-[#1A73E8] dark:border-[#8AB4F8] text-[#1A73E8] dark:text-[#8AB4F8]' : 'border-transparent text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3]')">
         Contraseña
       </button>
       <button 
         type="button" 
         (click)="activeTab.set('magic')"
-        [class.text-[#1A73E8]]="activeTab() === 'magic'"
-        [class.dark:text-[#8AB4F8]]="activeTab() === 'magic'"
-        [class.border-[#1A73E8]]="activeTab() === 'magic'"
-        [class.dark:border-[#8AB4F8]]="activeTab() === 'magic'"
-        class="pb-2 text-xs font-bold border-b-2 border-transparent transition cursor-pointer text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3]">
+        [class]="'pb-2 text-xs font-bold border-b-2 transition cursor-pointer ' + (activeTab() === 'magic' ? 'border-[#1A73E8] dark:border-[#8AB4F8] text-[#1A73E8] dark:text-[#8AB4F8]' : 'border-transparent text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3]')">
         Enlace Mágico ✨
       </button>
     </div>

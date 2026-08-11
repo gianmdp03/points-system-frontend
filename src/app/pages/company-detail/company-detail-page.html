@@ -46,6 +46,7 @@
         <!-- Selector de Pestañas -->
         <app-company-detail-tabs-nav
           [activeTab]="activeTab()"
+          [currentRole]="currentRole()"
           [productsCount]="comp.products?.length || 0"
           [promotionsCount]="comp.promotions?.length || 0"
           [rewardsCount]="comp.rewards?.length || 0"
@@ -95,7 +96,7 @@
         }
 
         <!-- TAB 5: VENTAS & REGISTRO DE TRANSACCIONES -->
-        @if (activeTab() === 'sales') {
+        @if (activeTab() === 'sales' && (currentRole() === RoleEnum.COMPANY_ADMIN || currentRole() === RoleEnum.APP_ADMIN)) {
           <app-tab-sales
             [sales]="[]"
             [currentRole]="currentRole()"

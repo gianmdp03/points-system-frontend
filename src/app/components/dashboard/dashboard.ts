@@ -162,15 +162,19 @@ export class Dashboard implements OnInit {
 
     if (role === Role.USER) {
       this.companyService.listMySubscribedCompanies(page, 18).subscribe({
-        next: (pageData: Page<CompanyListDTO>) => {
+        next: (pageData: any) => {
           this.isLoading.set(false);
-          this.subscribedCompanies.set(pageData?.content || []);
-          this.totalElements.set(pageData?.totalElements || 0);
-          this.totalPages.set(pageData?.totalPages || 0);
+          const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
+          const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
+
+          this.subscribedCompanies.set(items);
+          this.totalElements.set(total);
+          this.totalPages.set(pageData?.totalPages || 1);
         },
         error: (err) => {
           this.isLoading.set(false);
           this.subscribedCompanies.set([]);
+          this.totalElements.set(0);
           const msg = err.status === 401 || err.status === 403
             ? 'No tienes permisos o no te has autenticado correctamente.'
             : (err.error?.message || 'Error al conectar con el servidor backend.');
@@ -179,15 +183,19 @@ export class Dashboard implements OnInit {
       });
     } else if (role === Role.COMPANY_ADMIN) {
       this.companyService.listMyAdminCompanies(page, 18).subscribe({
-        next: (pageData: Page<CompanyListDTO>) => {
+        next: (pageData: any) => {
           this.isLoading.set(false);
-          this.adminCompanies.set(pageData?.content || []);
-          this.totalElements.set(pageData?.totalElements || 0);
-          this.totalPages.set(pageData?.totalPages || 0);
+          const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
+          const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
+
+          this.adminCompanies.set(items);
+          this.totalElements.set(total);
+          this.totalPages.set(pageData?.totalPages || 1);
         },
         error: (err) => {
           this.isLoading.set(false);
           this.adminCompanies.set([]);
+          this.totalElements.set(0);
           const msg = err.status === 401 || err.status === 403
             ? 'No tienes permisos para listar tus empresas administradas.'
             : (err.error?.message || 'Error al conectar con el servidor backend.');
@@ -196,15 +204,19 @@ export class Dashboard implements OnInit {
       });
     } else if (role === Role.APP_ADMIN) {
       this.companyService.listCompanies(page, 18).subscribe({
-        next: (pageData: Page<CompanyListDTO>) => {
+        next: (pageData: any) => {
           this.isLoading.set(false);
-          this.allCompanies.set(pageData?.content || []);
-          this.totalElements.set(pageData?.totalElements || 0);
-          this.totalPages.set(pageData?.totalPages || 0);
+          const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
+          const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
+
+          this.allCompanies.set(items);
+          this.totalElements.set(total);
+          this.totalPages.set(pageData?.totalPages || 1);
         },
         error: (err) => {
           this.isLoading.set(false);
           this.allCompanies.set([]);
+          this.totalElements.set(0);
           const msg = err.status === 401 || err.status === 403
             ? 'Se requiere rol APP_ADMIN para ver todas las empresas.'
             : (err.error?.message || 'Error al conectar con el servidor backend.');

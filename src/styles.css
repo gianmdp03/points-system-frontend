@@ -35,24 +35,7 @@
   --color-acento-texto: #FFFFFF;
 }
 
-/* Modo Oscuro (Preferencia de sistema & Clase .dark) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-principal: #131314;
-    --bg-secundario: #1E1E1E;
-    --bg-tarjeta: #1E1E1E;
-    
-    --color-texto: #E3E3E3;
-    --color-texto-secundario: #9AA0A6;
-    --color-borde: #333333;
-    
-    --color-acento: #8AB4F8;
-    --color-acento-hover: #AECBFA;
-    --color-acento-subtle: #1E293B;
-    --color-acento-texto: #131314;
-  }
-}
-
+/* Modo Oscuro (Controlado por la clase .dark en <html>) */
 .dark {
   --bg-principal: #131314;
   --bg-secundario: #1E1E1E;
