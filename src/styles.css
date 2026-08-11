@@ -5,35 +5,70 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
+  --font-sans: 'Google Sans', 'Inter', 'Roboto', sans-serif;
+  --color-brand-50: #e8f0fe;
+  --color-brand-100: #d2e3fc;
+  --color-brand-500: #1a73e8;
+  --color-brand-600: #1557b0;
+  --color-brand-700: #10438c;
 }
 
-/* Variables Globales y Modo Claro */
+/* ==========================================================================
+   SISTEMA DE DISEÑO ANTI-IA (Google Material 3 / Gemini Style)
+   ========================================================================== */
+
+/* Variables Globales - Modo Claro */
 :root {
-  /* Ahora simplemente llamamos a la fuente directamente */
-  --font-principal: 'Google Sans', sans-serif;
+  --font-principal: 'Google Sans', 'Inter', 'Roboto', sans-serif;
   
   --bg-principal: #FFFFFF;
   --bg-secundario: #F8F9FA;
+  --bg-tarjeta: #FFFFFF;
+  
   --color-texto: #1F1F1F;
+  --color-texto-secundario: #5F6368;
   --color-borde: #E3E3E3;
+  
+  --color-acento: #1A73E8;
+  --color-acento-hover: #1557B0;
+  --color-acento-subtle: #E8F0FE;
+  --color-acento-texto: #FFFFFF;
 }
 
-/* Modo Oscuro Automático */
+/* Modo Oscuro (Preferencia de sistema & Clase .dark) */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-principal: #131314;
     --bg-secundario: #1E1E1E;
+    --bg-tarjeta: #1E1E1E;
+    
     --color-texto: #E3E3E3;
+    --color-texto-secundario: #9AA0A6;
     --color-borde: #333333;
+    
+    --color-acento: #8AB4F8;
+    --color-acento-hover: #AECBFA;
+    --color-acento-subtle: #1E293B;
+    --color-acento-texto: #131314;
   }
 }
 
-/* Aplicación global al proyecto */
+.dark {
+  --bg-principal: #131314;
+  --bg-secundario: #1E1E1E;
+  --bg-tarjeta: #1E1E1E;
+  
+  --color-texto: #E3E3E3;
+  --color-texto-secundario: #9AA0A6;
+  --color-borde: #333333;
+  
+  --color-acento: #8AB4F8;
+  --color-acento-hover: #AECBFA;
+  --color-acento-subtle: #1E293B;
+  --color-acento-texto: #131314;
+}
+
+/* Aplicación global al documento */
 html, body {
   margin: 0;
   padding: 0;
@@ -41,4 +76,73 @@ html, body {
   background-color: var(--bg-principal);
   color: var(--color-texto);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Regla 1: Tipografía - Pesos contrastantes */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-principal);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+p, span, label, input, button {
+  font-family: var(--font-principal);
+}
+
+.text-muted {
+  color: var(--color-texto-secundario);
+  font-weight: 400;
+}
+
+/* Regla 2 & 3: Anti-Sombras, Bordes Sólidos Finos y Geometría Google */
+.card-google {
+  background-color: var(--bg-tarjeta);
+  border: 1px solid var(--color-borde);
+  border-radius: 24px;
+  box-shadow: none !important;
+}
+
+.btn-pill-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 12px 32px;
+  font-weight: 700;
+  background-color: var(--color-acento);
+  color: var(--color-acento-texto);
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.btn-pill-primary:hover {
+  background-color: var(--color-acento-hover);
+}
+
+.btn-pill-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 12px 32px;
+  font-weight: 700;
+  background-color: transparent;
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.btn-pill-secondary:hover {
+  background-color: var(--bg-secundario);
+  border-color: var(--color-texto-secundario);
+}
+
+/* Reset Global Anti-IA: Anular box-shadows exageradas y backdrop-blur si no son necesarias */
+.no-shadow {
+  box-shadow: none !important;
 }

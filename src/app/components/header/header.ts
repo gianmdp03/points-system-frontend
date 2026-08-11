@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
+import { AppConfigService } from '../../core/services/app-config-service';
 
 @Component({
   selector: 'app-header',
@@ -11,10 +12,20 @@ import { AuthService } from '../../core/services/auth-service';
   styleUrl: './header.css',
 })
 export class Header implements OnInit {
+  protected readonly configService = inject(AppConfigService);
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   
   isDarkMode = signal<boolean>(false);
+  isMobileMenuOpen = signal<boolean>(false);
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update(v => !v);
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
+  }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {

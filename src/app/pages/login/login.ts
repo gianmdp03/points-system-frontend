@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
+import { AppConfigService } from '../../core/services/app-config-service';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
 
 @Component({
@@ -13,6 +14,7 @@ import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
   styleUrl: './login.css'
 })
 export class Login {
+  protected readonly configService = inject(AppConfigService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);

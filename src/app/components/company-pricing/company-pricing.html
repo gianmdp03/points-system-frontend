@@ -1,77 +1,83 @@
-<section id="precios" class="space-y-12">
-            <div class="text-center max-w-2xl mx-auto space-y-3">
-                <span class="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider text-xs">Planes Flexibles</span>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">Precios transparentes para todo tamaño de negocio</h2>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">Elige el plan que mejor se adapte a tu volumen de clientes. Cancela o cambia de plan en cualquier momento.</p>
+<section id="precios" class="space-y-16 py-8">
+    <div class="text-center max-w-2xl mx-auto space-y-4">
+        <span class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold uppercase tracking-wider text-xs">Planes Flexibles</span>
+        <h2 class="text-3xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Precios transparentes para todo tamaño de negocio</h2>
+        <p class="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-base">Elige el plan que mejor se adapte a tu volumen de clientes. Cancela o cambia de plan en cualquier momento.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+        <!-- Plan Inicial / Starter -->
+        <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-[32px] p-8 md:p-10 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-8">
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">Plan Emprendedor</h3>
+                    <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Ideal para pequeños locales o comercios en etapa inicial.</p>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">$19</span>
+                    <span class="text-sm text-[#5F6368] dark:text-[#9AA0A6] font-medium">/ mes</span>
+                </div>
+                <ul class="space-y-3.5 text-sm text-[#1F1F1F] dark:text-[#E3E3E3] border-t border-[#E3E3E3] dark:border-[#333333] pt-6">
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Hasta 500 usuarios activos</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Dashboard básico de métricas</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> App móvil para escaneo QR</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Soporte por Email</li>
+                </ul>
             </div>
+            <a href="#contacto-empresa" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition">
+                Empezar Prueba
+            </a>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-                <!-- Plan Inicial / Starter -->
-                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 flex flex-col justify-between space-y-6">
-                    <div class="space-y-4">
-                        <h3 class="font-bold text-xl text-gray-900 dark:text-white">Plan Emprendedor</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Ideal para pequeños locales o comercios en etapa inicial.</p>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-black text-gray-900 dark:text-white">$19</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">/ mes</span>
-                        </div>
-                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
-                            <li class="flex items-center gap-2">✓ Hasta 500 usuarios activos</li>
-                            <li class="flex items-center gap-2">✓ Dashboard básico de métricas</li>
-                            <li class="flex items-center gap-2">✓ App móvil para escaneo QR</li>
-                            <li class="flex items-center gap-2">✓ Soporte por Email</li>
-                        </ul>
-                    </div>
-                    <a href="#contacto-empresa" class="w-full text-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition">
-                        Empezar Prueba
-                    </a>
-                </div>
-
-                <!-- Plan Pro / Pyme (RECOMENDADO) -->
-                <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 border-2 border-blue-600 dark:border-blue-500 shadow-2xl relative flex flex-col justify-between space-y-6 transform md:-translate-y-2">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
-                        Más Popular
-                    </div>
-                    <div class="space-y-4">
-                        <h3 class="font-bold text-xl text-gray-900 dark:text-white">Plan Crecimiento</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Para marcas en expansión que buscan automatizar su fidelización.</p>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-black text-blue-600 dark:text-blue-400">$49</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">/ mes</span>
-                        </div>
-                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
-                            <li class="flex items-center gap-2">✓ Hasta 5,000 usuarios activos</li>
-                            <li class="flex items-center gap-2">✓ Analytics avanzado + Exportación</li>
-                            <li class="flex items-center gap-2">✓ Integración Ecommerce / POS</li>
-                            <li class="flex items-center gap-2">✓ Campañas automáticas por Email/Push</li>
-                            <li class="flex items-center gap-2">✓ Soporte Prioritario WhatsApp</li>
-                        </ul>
-                    </div>
-                    <a href="#contacto-empresa" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-500/25">
-                        Probar 30 Días Gratis
-                    </a>
-                </div>
-
-                <!-- Plan Corporativo -->
-                <div class="bg-gray-50 dark:bg-gray-800/60 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 flex flex-col justify-between space-y-6">
-                    <div class="space-y-4">
-                        <h3 class="font-bold text-xl text-gray-900 dark:text-white">Plan Corporativo</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Franquicias o cadenas con múltiples sucursales.</p>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-black text-gray-900 dark:text-white">$99</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">/ mes</span>
-                        </div>
-                        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4">
-                            <li class="flex items-center gap-2">✓ Usuarios ilimitados</li>
-                            <li class="flex items-center gap-2">✓ Multi-sucursal y Roles de empleado</li>
-                            <li class="flex items-center gap-2">✓ Marca Blanca (Tu propio logo y dominio)</li>
-                            <li class="flex items-center gap-2">✓ API custom de integración</li>
-                            <li class="flex items-center gap-2">✓ Ejecutivo de cuenta dedicado</li>
-                        </ul>
-                    </div>
-                    <a href="#contacto-empresa" class="w-full text-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition">
-                        Contactar Ventas
-                    </a>
-                </div>
+        <!-- Plan Pro / Pyme (RECOMENDADO) -->
+        <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-[32px] p-8 md:p-10 border-2 border-[#1A73E8] dark:border-[#8AB4F8] relative flex flex-col justify-between space-y-8">
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
+                Más Popular
             </div>
-        </section>
+            <div class="space-y-6 pt-2">
+                <div class="space-y-2">
+                    <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">Plan Crecimiento</h3>
+                    <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Para marcas en expansión que buscan automatizar su fidelización.</p>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-5xl font-black text-[#1A73E8] dark:text-[#8AB4F8]">$49</span>
+                    <span class="text-sm text-[#5F6368] dark:text-[#9AA0A6] font-medium">/ mes</span>
+                </div>
+                <ul class="space-y-3.5 text-sm text-[#1F1F1F] dark:text-[#E3E3E3] border-t border-[#E3E3E3] dark:border-[#333333] pt-6">
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Hasta 5,000 usuarios activos</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Analytics avanzado + Exportación</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Integración Ecommerce / POS</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Campañas automáticas por Email/Push</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Soporte Prioritario WhatsApp</li>
+                </ul>
+            </div>
+            <a href="#contacto-empresa" class="w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-4 rounded-full transition">
+                Probar 30 Días Gratis
+            </a>
+        </div>
+
+        <!-- Plan Corporativo -->
+        <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-[32px] p-8 md:p-10 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-8">
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">Plan Corporativo</h3>
+                    <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Franquicias o cadenas con múltiples sucursales.</p>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">$99</span>
+                    <span class="text-sm text-[#5F6368] dark:text-[#9AA0A6] font-medium">/ mes</span>
+                </div>
+                <ul class="space-y-3.5 text-sm text-[#1F1F1F] dark:text-[#E3E3E3] border-t border-[#E3E3E3] dark:border-[#333333] pt-6">
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Usuarios ilimitados</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Multi-sucursal y Roles de empleado</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Marca Blanca (Tu propio logo y dominio)</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> API custom de integración</li>
+                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Ejecutivo de cuenta dedicado</li>
+                </ul>
+            </div>
+            <a href="#contacto-empresa" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition">
+                Contactar Ventas
+            </a>
+        </div>
+    </div>
+</section>

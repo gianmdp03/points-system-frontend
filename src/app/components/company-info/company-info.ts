@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
+import { AppConfigService } from '../../core/services/app-config-service';
 
 @Component({
   selector: 'app-company-info',
@@ -11,6 +12,7 @@ import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
   styleUrl: './company-info.css',
 })
 export class CompanyInfo {
+  protected readonly configService = inject(AppConfigService);
   private readonly fb = inject(FormBuilder);
 
   readonly isFieldInvalid = isFieldInvalid;

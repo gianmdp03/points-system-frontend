@@ -1,8 +1,8 @@
 <div class="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-  <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-2xl transition-all">
+  <div class="w-full max-w-md bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-[32px] p-8 md:p-10 border border-[#E3E3E3] dark:border-[#333333] transition-all">
     
     <!-- Link Volver -->
-    <a routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 mb-6 transition">
+    <a routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-[#5F6368] hover:text-[#1A73E8] dark:text-[#9AA0A6] dark:hover:text-[#8AB4F8] mb-6 transition">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
@@ -10,23 +10,21 @@
     </a>
 
     <!-- Header Login -->
-    <div class="text-center mb-8">
-      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 p-2 shadow-inner">
-        <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
+    <div class="text-center mb-8 space-y-3">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center p-2.5 overflow-hidden">
+        <img src="logo.svg" alt="Pointly Logo" class="w-full h-full object-contain" />
       </div>
-      <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+      <h2 class="text-3xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
         Iniciar Sesión
       </h2>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-        Ingresa a tu cuenta de Puntazos para acceder a tu panel
+      <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] font-normal">
+        Ingresa a tu cuenta de {{ configService.appName() }} para acceder a tu panel
       </p>
     </div>
 
     <!-- Error Alert Banner -->
     @if (errorMessage()) {
-      <div class="mb-5 p-3.5 bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 rounded-2xl text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
+      <div class="mb-5 p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-3">
         <svg class="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -35,7 +33,7 @@
     }
 
     @if (successMessage()) {
-      <div class="mb-5 p-3.5 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 rounded-2xl text-xs font-semibold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+      <div class="mb-5 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl text-xs font-semibold text-emerald-700 dark:text-emerald-300 flex items-center gap-3">
         <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
@@ -51,14 +49,14 @@
           type="button"
           (click)="onOAuth('google')"
           [disabled]="isLoading()"
-          class="w-full py-3 px-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-xs font-bold text-gray-700 dark:text-gray-200 flex items-center justify-center gap-2 transition cursor-pointer shadow-sm disabled:opacity-50">
+          class="w-full py-3 px-4 bg-[#FFFFFF] dark:bg-[#131314] hover:bg-[#F8F9FA] dark:hover:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50">
           <svg class="w-4 h-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
           </svg>
-          <span>Ingresar con Google</span>
+          <span>Google</span>
         </button>
 
         <!-- GitHub -->
@@ -66,41 +64,41 @@
           type="button"
           (click)="onOAuth('github')"
           [disabled]="isLoading()"
-          class="w-full py-3 px-4 bg-gray-900 hover:bg-gray-800 text-white border border-gray-800 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer shadow-sm disabled:opacity-50">
+          class="w-full py-3 px-4 bg-[#1F1F1F] dark:bg-[#131314] hover:bg-[#333333] text-white border border-[#333333] rounded-full text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50">
           <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
           </svg>
-          <span>Ingresar con GitHub</span>
+          <span>GitHub</span>
         </button>
       </div>
 
       <!-- Divider -->
-      <div class="relative flex items-center justify-center my-4">
-        <div class="border-t border-gray-200 dark:border-gray-800 w-full"></div>
-        <span class="bg-white dark:bg-gray-900 px-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider absolute">O ingresa con tu correo</span>
+      <div class="relative flex items-center justify-center my-6">
+        <div class="border-t border-[#E3E3E3] dark:border-[#333333] w-full"></div>
+        <span class="bg-[#FFFFFF] dark:bg-[#1E1E1E] px-3 text-[11px] font-bold text-[#5F6368] dark:text-[#9AA0A6] uppercase tracking-wider absolute">O ingresa con tu correo</span>
       </div>
     </div>
 
     <!-- Pestañas: Email / Magic Link -->
-    <div class="flex items-center justify-center gap-4 mb-6 border-b border-gray-100 dark:border-gray-800 pb-3">
+    <div class="flex items-center justify-center gap-6 mb-6 border-b border-[#E3E3E3] dark:border-[#333333] pb-3">
       <button 
         type="button" 
         (click)="activeTab.set('email')"
-        [class.text-blue-600]="activeTab() === 'email'"
-        [class.dark:text-blue-400]="activeTab() === 'email'"
-        [class.border-blue-600]="activeTab() === 'email'"
-        [class.dark:border-blue-400]="activeTab() === 'email'"
-        class="pb-2 text-xs font-bold border-b-2 border-transparent transition cursor-pointer text-gray-500 hover:text-gray-900 dark:hover:text-white">
+        [class.text-[#1A73E8]]="activeTab() === 'email'"
+        [class.dark:text-[#8AB4F8]]="activeTab() === 'email'"
+        [class.border-[#1A73E8]]="activeTab() === 'email'"
+        [class.dark:border-[#8AB4F8]]="activeTab() === 'email'"
+        class="pb-2 text-xs font-bold border-b-2 border-transparent transition cursor-pointer text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3]">
         Contraseña
       </button>
       <button 
         type="button" 
         (click)="activeTab.set('magic')"
-        [class.text-blue-600]="activeTab() === 'magic'"
-        [class.dark:text-blue-400]="activeTab() === 'magic'"
-        [class.border-blue-600]="activeTab() === 'magic'"
-        [class.dark:border-blue-400]="activeTab() === 'magic'"
-        class="pb-2 text-xs font-bold border-b-2 border-transparent transition cursor-pointer text-gray-500 hover:text-gray-900 dark:hover:text-white">
+        [class.text-[#1A73E8]]="activeTab() === 'magic'"
+        [class.dark:text-[#8AB4F8]]="activeTab() === 'magic'"
+        [class.border-[#1A73E8]]="activeTab() === 'magic'"
+        [class.dark:border-[#8AB4F8]]="activeTab() === 'magic'"
+        class="pb-2 text-xs font-bold border-b-2 border-transparent transition cursor-pointer text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3]">
         Enlace Mágico ✨
       </button>
     </div>
@@ -109,7 +107,7 @@
     @if (activeTab() === 'email') {
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-2">
             Correo Electrónico
           </label>
           <input 
@@ -117,8 +115,7 @@
             formControlName="email"
             placeholder="tu@correo.com"
             [class.border-rose-500]="isFieldInvalid(loginForm, 'email', isLoginFormSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(loginForm, 'email', isLoginFormSubmitted())"
-            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+            class="w-full px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(loginForm, 'email', isLoginFormSubmitted())) {
             <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -128,11 +125,11 @@
         </div>
 
         <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">
               Contraseña
             </label>
-            <button type="button" (click)="activeTab.set('magic')" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+            <button type="button" (click)="activeTab.set('magic')" class="text-[11px] font-semibold text-[#1A73E8] dark:text-[#8AB4F8] hover:underline">
               ¿Usar Enlace Mágico?
             </button>
           </div>
@@ -141,8 +138,7 @@
             formControlName="password"
             placeholder="••••••••"
             [class.border-rose-500]="isFieldInvalid(loginForm, 'password', isLoginFormSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(loginForm, 'password', isLoginFormSubmitted())"
-            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+            class="w-full px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(loginForm, 'password', isLoginFormSubmitted())) {
             <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -154,12 +150,12 @@
         <button 
           type="submit"
           [disabled]="isLoading()"
-          class="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
+          class="w-full py-4 px-6 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
           @if (isLoading()) {
-            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div class="w-4 h-4 border-2 border-white dark:border-[#131314] border-t-transparent rounded-full animate-spin"></div>
             <span>Iniciando sesión...</span>
           } @else {
-            <span>Ingresar a Puntazos</span>
+            <span>Ingresar a {{ configService.appName() }}</span>
           }
         </button>
       </form>
@@ -167,13 +163,13 @@
 
     <!-- Magic Link Form -->
     @if (activeTab() === 'magic') {
-      <form [formGroup]="magicLinkForm" (ngSubmit)="onMagicLink()" class="space-y-4">
-        <p class="text-xs text-gray-500 dark:text-gray-400">
+      <form [formGroup]="magicLinkForm" (ngSubmit)="onMagicLink()" class="space-y-5">
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
           Ingresa tu dirección de correo electrónico y te enviaremos un enlace seguro para acceder de inmediato sin usar contraseña.
         </p>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-2">
             Correo Electrónico
           </label>
           <input 
@@ -181,8 +177,7 @@
             formControlName="email"
             placeholder="tu@correo.com"
             [class.border-rose-500]="isFieldInvalid(magicLinkForm, 'email', isMagicFormSubmitted())"
-            [class.focus:ring-rose-500]="isFieldInvalid(magicLinkForm, 'email', isMagicFormSubmitted())"
-            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+            class="w-full px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(magicLinkForm, 'email', isMagicFormSubmitted())) {
             <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -194,9 +189,9 @@
         <button 
           type="submit"
           [disabled]="isLoading()"
-          class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-500/25 transition-all transform hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
+          class="w-full py-4 px-6 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
           @if (isLoading()) {
-            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div class="w-4 h-4 border-2 border-white dark:border-[#131314] border-t-transparent rounded-full animate-spin"></div>
             <span>Enviando enlace...</span>
           } @else {
             <span>Enviar Enlace Mágico ✨</span>
@@ -206,10 +201,10 @@
     }
 
     <!-- Link a Registro -->
-    <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 text-center">
-      <p class="text-xs text-gray-500 dark:text-gray-400">
+    <div class="mt-8 pt-6 border-t border-[#E3E3E3] dark:border-[#333333] text-center">
+      <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
         ¿Aún no tienes una cuenta? 
-        <a routerLink="/register" class="text-blue-600 dark:text-blue-400 font-bold hover:underline ml-1">
+        <a routerLink="/register" class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold hover:underline ml-1">
           Regístrate gratis aquí
         </a>
       </p>

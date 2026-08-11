@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth-service';
+import { AppConfigService } from '../../core/services/app-config-service';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
 
 @Component({
@@ -12,6 +13,7 @@ import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
   styleUrl: './login-modal.css'
 })
 export class LoginModal {
+  protected readonly configService = inject(AppConfigService);
   protected readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
 

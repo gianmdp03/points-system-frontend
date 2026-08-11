@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
+import { AppConfigService } from '../../core/services/app-config-service';
 import { Role } from '../../core/models';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
 
@@ -24,6 +25,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   styleUrl: './register.css'
 })
 export class Register {
+  protected readonly configService = inject(AppConfigService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
