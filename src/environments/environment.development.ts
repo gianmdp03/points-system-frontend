@@ -1,8 +1,9 @@
-import { environment as baseEnvironment } from './environment';
+import { baseEnvironment } from './environment.base';
 
 export const environment = {
   ...baseEnvironment,
   production: false
 };
+
 
 
