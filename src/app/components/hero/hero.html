@@ -7,7 +7,7 @@
       Aumenta tus ventas recurrentes si tienes un negocio, o acumula puntos con {{ configService.appName() }} en miles de tiendas asociadas si eres cliente. Todo en un solo lugar.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 pt-2">
-      <a href="#contacto-empresa" class="bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] rounded-full px-8 py-3.5 sm:px-9 sm:py-4 font-bold text-center transition cursor-pointer">
+      <a routerLink="/register" [queryParams]="{ role: 'COMPANY_ADMIN' }" class="bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] rounded-full px-8 py-3.5 sm:px-9 sm:py-4 font-bold text-center transition cursor-pointer">
         Sumar mi Empresa
       </a>
       <a href="#como-funciona" class="border border-[#E3E3E3] dark:border-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#1E1E1E] rounded-full px-8 py-3.5 sm:px-9 sm:py-4 font-bold text-center transition cursor-pointer">
@@ -20,7 +20,7 @@
   <div class="md:w-1/2 flex justify-center md:justify-end">
     <div class="relative bg-[#F8F9FA] dark:bg-[#1E1E1E] p-6 sm:p-10 rounded-[28px] sm:rounded-[32px] w-full max-w-md border border-[#E3E3E3] dark:border-[#333333]">
       <div class="absolute -top-4 -left-3 sm:-top-5 sm:-left-5 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] border border-[#1A73E8]/30 dark:border-[#8AB4F8]/30 flex items-center justify-center p-2 sm:p-2.5 overflow-hidden shadow-sm">
-        <img src="logo.svg" alt="Pointly Logo" class="w-full h-full object-contain" />
+        <img src="logo.svg" alt="Pointly Logo" class="w-full h-full object-contain translate-x-[1px]" />
       </div>
 
       <div class="absolute -top-4 right-2 sm:-right-4 bg-[#FFFFFF] dark:bg-[#131314] px-4 py-2 sm:px-5 sm:py-3 rounded-2xl border border-[#E3E3E3] dark:border-[#333333] shadow-sm">

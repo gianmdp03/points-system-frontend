@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { Hero } from '../../components/hero/hero';
 import { CarouselComponent } from '../../components/carousel/carousel';
-import { CompanyPricing } from '../../components/company-pricing/company-pricing';
 import { UserInfo } from '../../components/user-info/user-info';
-import { CtaBanner } from '../../components/cta-banner/cta-banner';
+import { CompanyInfo } from '../../components/company-info/company-info';
+import { CompanyPricing } from '../../components/company-pricing/company-pricing';
+import { Faq } from '../../components/faq/faq';
 
 @Component({
   selector: 'app-home',
@@ -11,9 +12,10 @@ import { CtaBanner } from '../../components/cta-banner/cta-banner';
   imports: [
     Hero,
     CarouselComponent,
-    CompanyPricing,
     UserInfo,
-    CtaBanner
+    CompanyInfo,
+    CompanyPricing,
+    Faq
   ],
   templateUrl: './home.html',
   styleUrl: './home.css'

@@ -1,7 +1,7 @@
 <section id="precios" class="space-y-16 py-8">
     <div class="text-center max-w-2xl mx-auto space-y-4">
         <span class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold uppercase tracking-wider text-xs">Planes Flexibles</span>
-        <h2 class="text-3xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Precios transparentes para todo tamaño de negocio</h2>
+        <h2 class="text-3xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Precios para todo tamaño de negocio</h2>
         <p class="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-base">Elige el plan que mejor se adapte a tu volumen de clientes. Cancela o cambia de plan en cualquier momento.</p>
     </div>
 
@@ -24,7 +24,7 @@
                     <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Soporte por Email</li>
                 </ul>
             </div>
-            <a routerLink="/register" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition">
+            <a routerLink="/register" [queryParams]="{ role: 'COMPANY_ADMIN' }" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition cursor-pointer">
                 Empezar Prueba
             </a>
         </div>
@@ -51,7 +51,7 @@
                     <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Soporte Prioritario WhatsApp</li>
                 </ul>
             </div>
-            <a routerLink="/register" class="w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-4 rounded-full transition">
+            <a routerLink="/register" [queryParams]="{ role: 'COMPANY_ADMIN' }" class="w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-4 rounded-full transition cursor-pointer">
                 Probar 30 Días Gratis
             </a>
         </div>
@@ -75,7 +75,7 @@
                     <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Ejecutivo de cuenta dedicado</li>
                 </ul>
             </div>
-            <a routerLink="/register" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition">
+            <a routerLink="/register" [queryParams]="{ role: 'COMPANY_ADMIN' }" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition cursor-pointer">
                 Contactar Ventas
             </a>
         </div>

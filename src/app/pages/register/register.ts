@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
 import { AppConfigService } from '../../core/services/app-config-service';
 import { Role } from '../../core/models';
@@ -24,10 +24,11 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
-export class Register {
+export class Register implements OnInit {
   protected readonly configService = inject(AppConfigService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
 
   readonly isFieldInvalid = isFieldInvalid;
@@ -35,6 +36,15 @@ export class Register {
   readonly RoleEnum = Role;
 
   activeTab = signal<'email' | 'magic'>('email');
+
+  ngOnInit(): void {
+    const roleParam = this.route.snapshot.queryParamMap.get('role');
+    if (roleParam === Role.COMPANY_ADMIN || roleParam === 'COMPANY_ADMIN') {
+      this.selectRole(Role.COMPANY_ADMIN);
+    } else if (roleParam === Role.USER || roleParam === 'USER') {
+      this.selectRole(Role.USER);
+    }
+  }
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);

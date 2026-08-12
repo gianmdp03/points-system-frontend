@@ -14,8 +14,13 @@ export class AuthService {
   readonly currentRole = signal<Role>(Role.USER);
   readonly userEmail = signal<string | null>(null);
   readonly userId = signal<string | null>(null);
+  readonly userName = signal<string | null>(null);
 
   readonly isLoginModalOpen = signal<boolean>(false);
+
+  displayName(): string {
+    return this.userName() || (this.userEmail() ? this.userEmail()!.split('@')[0] : 'Usuario');
+  }
 
   constructor() {
     this.initSession();
@@ -45,6 +50,11 @@ export class AuthService {
     this.userEmail.set(user.email ?? null);
     this.userId.set(user.id ?? null);
 
+    const metaName = user.user_metadata?.name || user.user_metadata?.full_name || user.user_metadata?.user_name;
+    if (metaName) {
+      this.userName.set(metaName);
+    }
+
     // Initial check from Supabase metadata if present
     const roleFromMetadata = user.user_metadata?.role || user.app_metadata?.role;
     if (roleFromMetadata && Object.values(Role).includes(roleFromMetadata as Role)) {
@@ -57,6 +67,9 @@ export class AuthService {
         if (profile?.role && Object.values(Role).includes(profile.role)) {
           this.currentRole.set(profile.role);
         }
+        if (profile?.name) {
+          this.userName.set(profile.name);
+        }
       },
       error: (err) => {
         console.warn('Could not fetch user profile from backend API', err);
@@ -68,6 +81,7 @@ export class AuthService {
     this.isLoggedIn.set(false);
     this.userEmail.set(null);
     this.userId.set(null);
+    this.userName.set(null);
     this.currentRole.set(Role.USER);
   }
 

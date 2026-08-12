@@ -1,0 +1,33 @@
+<section id="faq" class="space-y-12 border-t border-[#E3E3E3] dark:border-[#333333] pt-20 pb-10">
+    <div class="text-center space-y-3 max-w-2xl mx-auto">
+        <span class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold uppercase tracking-wider text-xs">Resolvamos tus dudas</span>
+        <h2 class="text-3xl md:text-4xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+            Preguntas Frecuentes
+        </h2>
+        <p class="text-[#5F6368] dark:text-[#9AA0A6] text-base font-normal">Todo lo que necesitas saber antes de comenzar como usuario o con tu empresa.</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto space-y-4">
+        @for (faq of faqs; track $index) {
+            <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] overflow-hidden transition-all duration-200">
+                <button 
+                    type="button"
+                    (click)="toggleFaq($index)"
+                    class="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 font-extrabold text-base sm:text-lg text-[#1F1F1F] dark:text-[#E3E3E3] hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors cursor-pointer min-h-[44px]">
+                    <span>{{ faq.question }}</span>
+                    <div class="w-8 h-8 rounded-full bg-[#E8F0FE] dark:bg-[#131314] flex items-center justify-center flex-shrink-0 text-[#1A73E8] dark:text-[#8AB4F8] transition-transform duration-200" [class.rotate-180]="openIndex() === $index">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </button>
+                
+                @if (openIndex() === $index) {
+                    <div class="px-5 pb-6 sm:px-6 sm:pb-6 text-sm sm:text-base text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed border-t border-[#E3E3E3]/60 dark:border-[#333333]/60 pt-4">
+                        {{ faq.answer }}
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
