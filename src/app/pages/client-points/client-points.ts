@@ -6,6 +6,7 @@ import { ClientPublicService } from '../../core/services/client-public-service';
 import { AppConfigService } from '../../core/services/app-config-service';
 import { CompanyListDTO } from '../../core/models';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
+import { CountrySelectComponent } from '../../components/country-select/country-select';
 
 const STORAGE_KEY_DNI = 'pointly_client_dni';
 const STORAGE_KEY_COUNTRY = 'pointly_client_country';
@@ -13,7 +14,7 @@ const STORAGE_KEY_COUNTRY = 'pointly_client_country';
 @Component({
   selector: 'app-client-points-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CountrySelectComponent],
   templateUrl: './client-points.html',
   styleUrl: './client-points.css'
 })
@@ -26,21 +27,8 @@ export class ClientPointsPage implements OnInit {
   readonly isFieldInvalid = isFieldInvalid;
   readonly getFieldError = getFieldError;
 
-  readonly countries = [
-    'Argentina',
-    'Chile',
-    'Uruguay',
-    'Paraguay',
-    'Brasil',
-    'México',
-    'Colombia',
-    'Perú',
-    'España',
-    'Estados Unidos'
-  ];
-
   readonly searchForm = this.fb.group({
-    country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
+    country: ['Argentina', [Validators.required, Validators.maxLength(100)]],
     dni: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(20)]],
     remember: [true]
   });

@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { isFieldInvalid, getFieldError } from '../../../../../core/utils/form-utils';
+import { CountrySelectComponent } from '../../../../../components/country-select/country-select';
 
 @Component({
   selector: 'app-edit-company-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CountrySelectComponent],
   templateUrl: './edit-company-modal.html'
 })
 export class EditCompanyModalComponent {

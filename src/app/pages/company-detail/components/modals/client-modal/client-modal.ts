@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { isFieldInvalid, getFieldError } from '../../../../../core/utils/form-utils';
+import { CountrySelectComponent } from '../../../../../components/country-select/country-select';
 
 @Component({
   selector: 'app-client-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CountrySelectComponent],
   templateUrl: './client-modal.html'
 })
 export class ClientModalComponent {
@@ -20,17 +21,4 @@ export class ClientModalComponent {
 
   readonly isFieldInvalid = isFieldInvalid;
   readonly getFieldError = getFieldError;
-
-  readonly countries = [
-    'Argentina',
-    'Chile',
-    'Uruguay',
-    'Paraguay',
-    'Brasil',
-    'México',
-    'Colombia',
-    'Perú',
-    'España',
-    'Estados Unidos'
-  ];
 }

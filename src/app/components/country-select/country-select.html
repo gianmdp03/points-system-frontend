@@ -1,0 +1,110 @@
+<div class="relative w-full">
+  @if (label) {
+    <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">
+      {{ label }} @if (required) { <span>*</span> }
+    </label>
+  }
+
+  <!-- Botón Trigger / Caja de Selección -->
+  <button
+    type="button"
+    (click)="toggleDropdown()"
+    [disabled]="disabled"
+    [class.border-rose-500]="hasError"
+    [class.focus:ring-rose-500]="hasError"
+    class="w-full min-h-[44px] px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition flex items-center justify-between gap-2 text-left cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+    <div class="flex items-center gap-2.5 truncate">
+      @if (currentSelectedCountry(); as selected) {
+        <span class="text-lg leading-none flex-shrink-0">{{ selected.flag }}</span>
+        <span class="font-bold text-sm truncate">{{ selected.name }}</span>
+      } @else {
+        <span class="text-lg leading-none flex-shrink-0">🌎</span>
+        <span class="font-medium text-sm text-[#5F6368] dark:text-[#9AA0A6] truncate">{{ selectedCountryName() || placeholder }}</span>
+      }
+    </div>
+
+    <div class="flex items-center gap-1 text-[#5F6368] dark:text-[#9AA0A6] flex-shrink-0">
+      @if (isLoading()) {
+        <div class="w-3.5 h-3.5 border-2 border-[#1A73E8] dark:border-[#8AB4F8] border-t-transparent rounded-full animate-spin"></div>
+      }
+      <svg 
+        [class.rotate-180]="isOpen()"
+        class="w-4 h-4 transition-transform duration-200" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </button>
+
+  @if (hasError && errorMessage) {
+    <p class="text-rose-500 text-xs mt-1 font-medium">{{ errorMessage }}</p>
+  }
+
+  <!-- Dropdown Flotante con Buscador -->
+  @if (isOpen()) {
+    <div class="absolute z-50 left-0 right-0 mt-2 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl shadow-2xl overflow-hidden animate-fade-in max-h-80 flex flex-col">
+      
+      <!-- Input de Búsqueda -->
+      <div class="p-2.5 border-b border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] sticky top-0 z-10">
+        <div class="relative flex items-center">
+          <svg class="w-4 h-4 text-[#5F6368] dark:text-[#9AA0A6] absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            id="country-search-input"
+            type="text"
+            [ngModel]="searchTerm()"
+            (ngModelChange)="searchTerm.set($event)"
+            placeholder="Buscar país (ej: Argentina, España, México)..."
+            class="w-full pl-9 pr-8 py-2 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8]" />
+          
+          @if (searchTerm()) {
+            <button
+              type="button"
+              (click)="clearSearch($event)"
+              class="absolute right-2.5 p-1 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3] cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Lista Scrollable de Países -->
+      <div class="overflow-y-auto max-h-60 divide-y divide-[#E3E3E3]/40 dark:divide-[#333333]/40 p-1">
+        @for (country of filteredCountries(); track country.code + country.name) {
+          <button
+            type="button"
+            (click)="selectCountry(country)"
+            [class.bg-[#E8F0FE]]="country.name.toLowerCase() === selectedCountryName().toLowerCase()"
+            [class.dark:bg-[#131314]]="country.name.toLowerCase() === selectedCountryName().toLowerCase()"
+            class="w-full px-3.5 py-2.5 hover:bg-[#F8F9FA] dark:hover:bg-[#2A2A2B] rounded-xl text-left flex items-center justify-between gap-3 text-xs sm:text-sm transition cursor-pointer">
+            <div class="flex items-center gap-3 truncate">
+              <span class="text-lg leading-none flex-shrink-0">{{ country.flag }}</span>
+              <span class="font-bold text-[#1F1F1F] dark:text-[#E3E3E3] truncate">{{ country.name }}</span>
+            </div>
+
+            @if (country.name.toLowerCase() === selectedCountryName().toLowerCase()) {
+              <svg class="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            }
+          </button>
+        } @empty {
+          <div class="py-8 px-4 text-center text-[#5F6368] dark:text-[#9AA0A6] space-y-1">
+            <p class="text-sm font-bold">No se encontró ningún país</p>
+            <p class="text-xs">Prueba escribiendo el nombre en español o código ISO</p>
+          </div>
+        }
+      </div>
+
+      <!-- Footer informativo -->
+      <div class="p-2 text-[10px] text-[#5F6368] dark:text-[#9AA0A6] bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#E3E3E3] dark:border-[#333333] text-center">
+        {{ filteredCountries().length }} {{ filteredCountries().length === 1 ? 'país disponible' : 'países disponibles' }}
+      </div>
+    </div>
+  }
+</div>
