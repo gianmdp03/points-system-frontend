@@ -1,0 +1,156 @@
+<!-- ========================================================================= -->
+<!-- 1. MATERIAL 3 FAB TRIGGER (INFERIOR DERECHO) -->
+<!-- ========================================================================= -->
+<div class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end">
+  
+  @if (!chatService.isOpen()) {
+    <button
+      type="button"
+      (click)="chatService.toggleChat()"
+      class="min-h-[52px] min-w-[52px] w-13 h-13 sm:w-14 sm:h-14 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] rounded-2xl sm:rounded-[20px] shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center cursor-pointer active:scale-95"
+      aria-label="Abrir asistente de chat">
+      
+      <!-- Material 3 AI Sparkle Icon -->
+      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/>
+      </svg>
+
+      <!-- Badge de Notificación -->
+      @if (chatService.hasUnread()) {
+        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-500 border-2 border-white dark:border-[#1E1E1E] rounded-full"></span>
+      }
+    </button>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- 2. VENTANA DE CHAT MATERIAL 3 -->
+  <!-- ========================================================================= -->
+  @if (chatService.isOpen()) {
+    <div class="fixed inset-x-0 bottom-0 sm:static sm:inset-auto w-full sm:w-[380px] h-[82vh] sm:h-[520px] bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-t-[28px] sm:rounded-[28px] shadow-2xl flex flex-col overflow-hidden animate-fade-in transition-all z-50">
+      
+      <!-- HEADER MATERIAL 3 -->
+      <div class="px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border-b border-[#E3E3E3] dark:border-[#333333] flex items-center justify-between gap-3 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[#E8F0FE] dark:bg-[#1E293B] text-[#1A73E8] dark:text-[#8AB4F8] flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Asistente Pointly</h3>
+            <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] font-medium flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+              <span>En línea</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <!-- Botón Limpiar Chat -->
+          <button 
+            type="button" 
+            (click)="chatService.clearHistory()"
+            title="Reiniciar conversación"
+            class="p-2 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3] hover:bg-[#E3E3E3]/50 dark:hover:bg-[#333333] rounded-xl transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+
+          <!-- Botón Cerrar Chat -->
+          <button 
+            type="button" 
+            (click)="chatService.closeChat()"
+            title="Cerrar ventana"
+            class="p-2 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3] hover:bg-[#E3E3E3]/50 dark:hover:bg-[#333333] rounded-xl transition cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- CUERPO / HISTORIAL DE MENSAJES -->
+      <div 
+        #messagesContainer
+        class="flex-1 p-4 overflow-y-auto space-y-3 chat-scroll bg-[#FFFFFF] dark:bg-[#1E1E1E]">
+        
+        @for (msg of chatService.messages(); track msg.id) {
+          @if (msg.sender === 'user') {
+            <!-- Mensaje Usuario -->
+            <div class="flex justify-end">
+              <div class="max-w-[80%] bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] px-4 py-2.5 rounded-2xl rounded-tr-xs text-xs sm:text-sm font-medium shadow-xs leading-relaxed">
+                {{ msg.text }}
+              </div>
+            </div>
+          } @else {
+            <!-- Mensaje Asistente -->
+            <div class="flex justify-start">
+              <div 
+                [class.border-rose-300]="msg.isError"
+                [class.dark:border-rose-800]="msg.isError"
+                [class.bg-rose-50]="msg.isError"
+                [class.dark:bg-rose-950/40]="msg.isError"
+                class="max-w-[85%] bg-[#F0F4F9] dark:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] px-4 py-2.5 rounded-2xl rounded-tl-xs text-xs sm:text-sm shadow-xs leading-relaxed">
+                <div [innerHTML]="formatMessageText(msg.text)"></div>
+                <span class="block text-[10px] text-[#5F6368] dark:text-[#9AA0A6] mt-1 text-right font-medium">
+                  {{ msg.timestamp | date:'shortTime' }}
+                </span>
+              </div>
+            </div>
+          }
+        }
+
+        <!-- Indicador de Carga / Respuesta -->
+        @if (chatService.isTyping()) {
+          <div class="flex justify-start items-center gap-2">
+            <div class="bg-[#F0F4F9] dark:bg-[#282A2C] text-[#5F6368] dark:text-[#9AA0A6] px-4 py-2.5 rounded-2xl rounded-tl-xs text-xs flex items-center gap-1.5 shadow-xs">
+              <span class="text-[11px] font-medium mr-1">Escribiendo</span>
+              <span class="m3-typing-dot"></span>
+              <span class="m3-typing-dot"></span>
+              <span class="m3-typing-dot"></span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- SUGERENCIAS RÁPIDAS (PROMPT CHIPS) -->
+      <div class="px-3 py-2 bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#E3E3E3] dark:border-[#333333] overflow-x-auto flex items-center gap-2 flex-shrink-0 no-scrollbar">
+        @for (prompt of chatService.suggestedPrompts; track prompt) {
+          <button
+            type="button"
+            (click)="onPromptClick(prompt)"
+            [disabled]="chatService.isTyping()"
+            class="px-3 py-1 bg-[#FFFFFF] dark:bg-[#1E1E1E] hover:bg-[#E8F0FE] dark:hover:bg-[#1E293B] hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-[11px] font-medium text-[#5F6368] dark:text-[#9AA0A6] whitespace-nowrap transition cursor-pointer disabled:opacity-50">
+            {{ prompt }}
+          </button>
+        }
+      </div>
+
+      <!-- CAJA DE TEXTO MATERIAL 3 -->
+      <div class="p-3 bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#E3E3E3] dark:border-[#333333] flex-shrink-0">
+        <form (ngSubmit)="onSendMessage()" class="flex items-center gap-2">
+          <input
+            type="text"
+            [ngModel]="inputMessage()"
+            (ngModelChange)="inputMessage.set($event)"
+            name="chatMessageInput"
+            (keydown)="onKeyDown($event)"
+            [disabled]="chatService.isTyping()"
+            placeholder="Pregunta sobre puntos o premios..."
+            class="flex-1 px-4 py-2.5 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition disabled:opacity-50" />
+
+          <button
+            type="submit"
+            [disabled]="!inputMessage().trim() || chatService.isTyping()"
+            class="min-h-[38px] min-w-[38px] w-9.5 h-9.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] rounded-full flex items-center justify-center transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0">
+            <svg class="w-4 h-4 translate-x-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  }
+</div>

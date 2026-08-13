@@ -87,7 +87,15 @@
             }
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <app-country-select 
+              formControlName="country"
+              label="País"
+              [required]="true"
+              [hasError]="isFieldInvalid(form, 'country', isSubmitted)"
+              [errorMessage]="getFieldError(form, 'country')">
+            </app-country-select>
+
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Ciudad *</label>
               <input 

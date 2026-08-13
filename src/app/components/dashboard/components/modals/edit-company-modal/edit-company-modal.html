@@ -113,18 +113,13 @@
             }
           </div>
 
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">País *</label>
-            <input 
-              type="text" 
-              formControlName="country" 
-              [class.border-rose-500]="isFieldInvalid(form, 'country', isSubmitted)"
-              [class.focus:ring-rose-500]="isFieldInvalid(form, 'country', isSubmitted)"
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
-            @if (isFieldInvalid(form, 'country', isSubmitted)) {
-              <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'country') }}</p>
-            }
-          </div>
+          <app-country-select 
+            formControlName="country"
+            label="País"
+            [required]="true"
+            [hasError]="isFieldInvalid(form, 'country', isSubmitted)"
+            [errorMessage]="getFieldError(form, 'country')">
+          </app-country-select>
 
           <div>
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Código Postal *</label>
