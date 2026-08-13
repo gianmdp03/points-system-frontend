@@ -56,15 +56,4 @@ export class CompanyService {
     }
     return this.http.get<Page<CompanyListDTO>>(`${this.apiUrl}/my-companies`, { params });
   }
-
-  listMySubscribedCompanies(page = 0, size = 18, sort = 'name', direction = 'DESC'): Observable<Page<CompanyListDTO>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
-    if (sort) {
-      params = params.set('sort', `${sort},${direction.toLowerCase()}`);
-    }
-    return this.http.get<Page<CompanyListDTO>>(`${this.apiUrl}/my-subscriptions`, { params });
-  }
 }
-

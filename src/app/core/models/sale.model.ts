@@ -1,17 +1,13 @@
 import { CompanyListDTO } from './company.model';
+import { ClientDetailDTO } from './client.model';
 
 export interface SaleListDTO {
   id: number;
   amount: number;
+  client?: ClientDetailDTO;
   userDni?: string;
   userEmail?: string;
   userName?: string;
-  user?: {
-    id?: string;
-    email?: string;
-    name?: string;
-    dni?: string;
-  };
   pointsGenerated?: number;
   createdAt?: string;
 }
@@ -20,15 +16,7 @@ export interface SaleDetailDTO {
   id: number;
   amount: number;
   company: CompanyListDTO;
-  userDni?: string;
-  userEmail?: string;
-  userName?: string;
-  user?: {
-    id?: string;
-    email?: string;
-    name?: string;
-    dni?: string;
-  };
+  client?: ClientDetailDTO;
   pointsGenerated?: number;
   createdAt?: string;
 }
@@ -36,6 +24,6 @@ export interface SaleDetailDTO {
 export interface SaleRequestDTO {
   amount: number;
   companyId: number;
-  userDni: string;
+  dni: string;
+  country: string;
 }
-

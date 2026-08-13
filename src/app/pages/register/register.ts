@@ -28,7 +28,6 @@ export class Register implements OnInit {
   protected readonly configService = inject(AppConfigService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
 
   readonly isFieldInvalid = isFieldInvalid;
@@ -36,15 +35,6 @@ export class Register implements OnInit {
   readonly RoleEnum = Role;
 
   activeTab = signal<'email' | 'magic'>('email');
-
-  ngOnInit(): void {
-    const roleParam = this.route.snapshot.queryParamMap.get('role');
-    if (roleParam === Role.COMPANY_ADMIN || roleParam === 'COMPANY_ADMIN') {
-      this.selectRole(Role.COMPANY_ADMIN);
-    } else if (roleParam === Role.USER || roleParam === 'USER') {
-      this.selectRole(Role.USER);
-    }
-  }
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
@@ -53,7 +43,7 @@ export class Register implements OnInit {
   isMagicFormSubmitted = signal<boolean>(false);
 
   registerForm = this.fb.nonNullable.group({
-    selectedRole: [Role.USER, [Validators.required]],
+    selectedRole: [Role.COMPANY_ADMIN, [Validators.required]],
     name: ['', [Validators.required, Validators.minLength(2)]],
     dni: ['', [Validators.required, Validators.maxLength(20)]],
     email: ['', [Validators.required, Validators.email]],
@@ -66,12 +56,8 @@ export class Register implements OnInit {
     email: ['', [Validators.required, Validators.email]]
   });
 
-  selectRole(role: Role): void {
-    this.registerForm.patchValue({ selectedRole: role });
-  }
-
-  get selectedRole(): Role {
-    return this.registerForm.get('selectedRole')?.value || Role.USER;
+  ngOnInit(): void {
+    // Default role is COMPANY_ADMIN
   }
 
   async onSubmit(): Promise<void> {
@@ -81,7 +67,7 @@ export class Register implements OnInit {
       return;
     }
 
-    const { email, password, name, dni, selectedRole } = this.registerForm.getRawValue();
+    const { email, password, name, dni } = this.registerForm.getRawValue();
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -92,13 +78,13 @@ export class Register implements OnInit {
       password,
       name,
       dni,
-      selectedRole
+      Role.COMPANY_ADMIN
     );
 
     this.isLoading.set(false);
 
     if (result.success) {
-      this.successMessage.set('¡Cuenta creada exitosamente! Redirigiendo a tu panel...');
+      this.successMessage.set('¡Cuenta de comercio creada exitosamente! Redirigiendo a tu panel...');
       setTimeout(() => {
         this.router.navigate(['/dashboard']);
       }, 1500);

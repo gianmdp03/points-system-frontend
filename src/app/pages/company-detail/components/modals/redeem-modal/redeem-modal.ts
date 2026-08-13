@@ -4,13 +4,15 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { isFieldInvalid, getFieldError } from '../../../../../core/utils/form-utils';
 
 @Component({
-  selector: 'app-client-modal',
+  selector: 'app-redeem-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './client-modal.html'
+  templateUrl: './redeem-modal.html'
 })
-export class ClientModalComponent {
+export class RedeemModalComponent {
   @Input({ required: true }) form!: FormGroup;
+  @Input() rewardName: string = '';
+  @Input() costInPoints: number = 0;
   @Input() isSubmitted: boolean = false;
   @Input() errorMessage: string | null = null;
   @Input() isLoading: boolean = false;

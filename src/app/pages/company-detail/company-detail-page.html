@@ -58,7 +58,6 @@
           <app-tab-overview
             [company]="comp"
             [currentRole]="currentRole()"
-            [userPointsBalance]="userPointsBalance()"
             (editCompany)="openEditCompanyModal()"
             (addClient)="openAddClientModal()">
           </app-tab-overview>
@@ -97,7 +96,7 @@
         }
 
         <!-- TAB 5: VENTAS & REGISTRO DE TRANSACCIONES -->
-        @if (activeTab() === 'sales' && (currentRole() === RoleEnum.COMPANY_ADMIN || currentRole() === RoleEnum.APP_ADMIN)) {
+        @if (activeTab() === 'sales') {
           <app-tab-sales
             [sales]="sales()"
             [isLoading]="isLoadingSales()"
@@ -223,4 +222,17 @@
     (close)="closeAddClientModal()"
     (submitForm)="onAddClientSubmit()">
   </app-client-modal>
+}
+
+@if (showRedeemModal()) {
+  <app-redeem-modal
+    [form]="redeemForm"
+    [rewardName]="selectedRewardForRedeem()?.name || ''"
+    [costInPoints]="selectedRewardForRedeem()?.costInPoints || 0"
+    [isSubmitted]="isRedeemSubmitted()"
+    [isLoading]="isRedeemLoading()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeRedeemModal()"
+    (submitForm)="onRedeemSubmit()">
+  </app-redeem-modal>
 }

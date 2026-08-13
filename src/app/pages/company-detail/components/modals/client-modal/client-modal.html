@@ -17,18 +17,22 @@
         </svg>
       </div>
       <div>
-        <h3 class="text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Asociar Cliente a Empresa</h3>
-        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Registra un nuevo cliente para asignarle una cuenta de puntos en tu comercio.</p>
+        <h3 class="text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Asociar Cliente a Comercio</h3>
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Registra los datos del cliente para abrirle su cuenta de fidelización.</p>
       </div>
     </div>
 
     @if (errorMessage) {
-      <div class="mb-4 p-3 bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 rounded-xl text-xs text-rose-700 dark:text-rose-300 font-semibold">
-        {{ errorMessage }}
+      <div class="mb-4 p-3 bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 rounded-xl text-xs text-rose-700 dark:text-rose-300 font-semibold flex items-center gap-2">
+        <svg class="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ errorMessage }}</span>
       </div>
     }
 
     <form [formGroup]="form" (ngSubmit)="submitForm.emit()" class="space-y-4">
+      <!-- Nombre Completo -->
       <div>
         <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Nombre Completo *</label>
         <input 
@@ -43,32 +47,68 @@
         }
       </div>
 
-      <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Correo Electrónico *</label>
-        <input 
-          type="email" 
-          formControlName="email" 
-          placeholder="Ej. cliente@correo.com" 
-          [class.border-rose-500]="isFieldInvalid(form, 'email', isSubmitted)"
-          [class.focus:ring-rose-500]="isFieldInvalid(form, 'email', isSubmitted)"
-          class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
-        @if (isFieldInvalid(form, 'email', isSubmitted)) {
-          <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'email') }}</p>
-        }
+      <!-- País y DNI -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">País *</label>
+          <div class="relative">
+            <select 
+              formControlName="country" 
+              class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition appearance-none">
+              @for (c of countries; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#5F6368] dark:text-[#9AA0A6]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">DNI / Identificación *</label>
+          <input 
+            type="text" 
+            formControlName="dni" 
+            placeholder="Ej. 40123456" 
+            [class.border-rose-500]="isFieldInvalid(form, 'dni', isSubmitted)"
+            [class.focus:ring-rose-500]="isFieldInvalid(form, 'dni', isSubmitted)"
+            class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+          @if (isFieldInvalid(form, 'dni', isSubmitted)) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'dni') }}</p>
+          }
+        </div>
       </div>
 
-      <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">DNI / Identificación *</label>
-        <input 
-          type="text" 
-          formControlName="dni" 
-          placeholder="Ej. 40123456" 
-          [class.border-rose-500]="isFieldInvalid(form, 'dni', isSubmitted)"
-          [class.focus:ring-rose-500]="isFieldInvalid(form, 'dni', isSubmitted)"
-          class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
-        @if (isFieldInvalid(form, 'dni', isSubmitted)) {
-          <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'dni') }}</p>
-        }
+      <!-- Email (opcional) y Teléfono (opcional) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">
+            Correo Electrónico <span class="text-[#5F6368] font-normal lowercase">(opcional)</span>
+          </label>
+          <input 
+            type="email" 
+            formControlName="email" 
+            placeholder="cliente@correo.com" 
+            [class.border-rose-500]="isFieldInvalid(form, 'email', isSubmitted)"
+            class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+          @if (isFieldInvalid(form, 'email', isSubmitted)) {
+            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'email') }}</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">
+            Teléfono / WhatsApp <span class="text-[#5F6368] font-normal lowercase">(opcional)</span>
+          </label>
+          <input 
+            type="tel" 
+            formControlName="phone" 
+            placeholder="+54 9 11 12345678" 
+            class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+        </div>
       </div>
 
       <div class="pt-5 border-t border-[#E3E3E3] dark:border-[#333333] flex items-center justify-end gap-3">

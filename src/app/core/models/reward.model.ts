@@ -33,5 +33,6 @@ export interface RewardUpdateDTO {
 export interface RewardRedeemDTO {
   companyId: number;
   rewardId: number;
-  userDni: string;
+  dni: string;
+  country: string;
 }

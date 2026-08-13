@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CompanyService } from '../../core/services/company-service';
 import { AuthService } from '../../core/services/auth-service';
-import { CompanyListDTO, Role, Page, CompanyRequestDTO, CompanyUpdateDTO } from '../../core/models';
+import { CompanyListDTO, Role, CompanyRequestDTO, CompanyUpdateDTO } from '../../core/models';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
 
 // Sub-components
 import { DashboardHeaderComponent } from './components/dashboard-header/dashboard-header';
-import { RoleUserViewComponent } from './components/role-user-view/role-user-view';
 import { RoleAdminViewComponent } from './components/role-admin-view/role-admin-view';
 import { RoleAppAdminViewComponent } from './components/role-app-admin-view/role-app-admin-view';
 import { AddCompanyModalComponent } from './components/modals/add-company-modal/add-company-modal';
@@ -21,7 +20,6 @@ import { DashboardEditCompanyModalComponent } from './components/modals/edit-com
     CommonModule,
     ReactiveFormsModule,
     DashboardHeaderComponent,
-    RoleUserViewComponent,
     RoleAdminViewComponent,
     RoleAppAdminViewComponent,
     AddCompanyModalComponent,
@@ -43,7 +41,6 @@ export class Dashboard implements OnInit {
   readonly currentRole = computed(() => this.authService.currentRole());
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
 
-  readonly subscribedCompanies = signal<CompanyListDTO[]>([]);
   readonly adminCompanies = signal<CompanyListDTO[]>([]);
   readonly allCompanies = signal<CompanyListDTO[]>([]);
   
@@ -146,7 +143,7 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    // Rely on constructor effect to load data when logged in
+    // Rely on constructor effect
   }
 
   setRole(role: Role): void {
@@ -160,31 +157,7 @@ export class Dashboard implements OnInit {
 
     const activeRole = role;
 
-    if (role === Role.USER) {
-      this.companyService.listMySubscribedCompanies(page, 18).subscribe({
-        next: (pageData: any) => {
-          if (this.currentRole() !== activeRole) return;
-          this.isLoading.set(false);
-          this.errorMessage.set(null);
-          const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
-          const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
-
-          this.subscribedCompanies.set(items);
-          this.totalElements.set(total);
-          this.totalPages.set(pageData?.totalPages || 1);
-        },
-        error: (err) => {
-          if (this.currentRole() !== activeRole) return;
-          this.isLoading.set(false);
-          this.subscribedCompanies.set([]);
-          this.totalElements.set(0);
-          const msg = err.status === 401 || err.status === 403
-            ? 'No tienes permisos o no te has autenticado correctamente.'
-            : (err.error?.message || 'Error al conectar con el servidor backend.');
-          this.errorMessage.set(msg);
-        }
-      });
-    } else if (role === Role.COMPANY_ADMIN) {
+    if (role === Role.COMPANY_ADMIN) {
       this.companyService.listMyAdminCompanies(page, 18).subscribe({
         next: (pageData: any) => {
           if (this.currentRole() !== activeRole) return;
@@ -258,13 +231,14 @@ export class Dashboard implements OnInit {
     };
 
     this.modalErrorMessage.set(null);
+
     this.companyService.addCompany(dto).subscribe({
       next: () => {
         this.closeAddCompanyModal();
         this.loadRoleData(this.currentRole(), this.currentPage());
       },
       error: (err) => {
-        this.modalErrorMessage.set(err.error?.message || 'Error al crear la empresa en el servidor.');
+        this.modalErrorMessage.set(err.error?.message || 'Error al crear la empresa.');
       }
     });
   }
@@ -277,7 +251,6 @@ export class Dashboard implements OnInit {
     }
 
     const val = this.editCompanyForm.getRawValue();
-    const companyId = Number(val.id);
 
     const dto: CompanyUpdateDTO = {
       name: val.name!,
@@ -293,7 +266,8 @@ export class Dashboard implements OnInit {
     };
 
     this.modalErrorMessage.set(null);
-    this.companyService.updateCompany(companyId, dto).subscribe({
+
+    this.companyService.updateCompany(val.id!, dto).subscribe({
       next: () => {
         this.closeEditCompanyModal();
         this.loadRoleData(this.currentRole(), this.currentPage());
@@ -305,22 +279,17 @@ export class Dashboard implements OnInit {
   }
 
   toggleCompanyStatus(company: CompanyListDTO): void {
-    if (company.isEnabled) {
-      this.companyService.disableCompany(company.id).subscribe({
-        next: () => {
-          company.isEnabled = false;
-          this.loadRoleData(this.currentRole(), this.currentPage());
-        },
-        error: (err) => alert('Error al deshabilitar empresa: ' + (err.error?.message || err.message))
-      });
-    } else {
-      this.companyService.enableCompany(company.id).subscribe({
-        next: () => {
-          company.isEnabled = true;
-          this.loadRoleData(this.currentRole(), this.currentPage());
-        },
-        error: (err) => alert('Error al habilitar empresa: ' + (err.error?.message || err.message))
-      });
-    }
+    const action = company.isEnabled
+      ? this.companyService.disableCompany(company.id)
+      : this.companyService.enableCompany(company.id);
+
+    action.subscribe({
+      next: () => {
+        this.loadRoleData(this.currentRole(), this.currentPage());
+      },
+      error: (err) => {
+        alert('Error al cambiar el estado de la empresa: ' + (err.error?.message || err.message));
+      }
+    });
   }
 }

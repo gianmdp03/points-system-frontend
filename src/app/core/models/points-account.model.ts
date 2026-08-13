@@ -1,5 +1,5 @@
 import { CompanyListDTO } from './company.model';
-import { UserDetailDTO } from './user.model';
+import { ClientDetailDTO } from './client.model';
 
 export enum TransactionType {
   EARNED = 'EARNED',
@@ -17,12 +17,14 @@ export interface PointsAccountDetailDTO {
   id: number;
   balance: number;
   company: CompanyListDTO;
-  user: UserDetailDTO;
+  client: ClientDetailDTO;
 }
 
 export interface PointsAccountRequestDTO {
   companyId: number;
-  email: string;
-  name: string;
   dni: string;
+  country: string;
+  name: string;
+  email?: string;
+  phone?: string;
 }

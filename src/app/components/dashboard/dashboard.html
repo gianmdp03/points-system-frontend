@@ -8,16 +8,7 @@
     (retryLoad)="loadRoleData(currentRole(), 0)">
   </app-dashboard-header>
 
-  <!-- ==================== 1. VISTA ROL: USER ==================== -->
-  @if (currentRole() === RoleEnum.USER) {
-    <app-role-user-view
-      [companies]="subscribedCompanies()"
-      [totalElements]="totalElements()"
-      [isLoading]="isLoading()">
-    </app-role-user-view>
-  }
-
-  <!-- ==================== 2. VISTA ROL: COMPANY_ADMIN ==================== -->
+  <!-- ==================== 1. VISTA ROL: COMPANY_ADMIN ==================== -->
   @if (currentRole() === RoleEnum.COMPANY_ADMIN) {
     <app-role-admin-view
       [companies]="adminCompanies()"
@@ -28,7 +19,7 @@
     </app-role-admin-view>
   }
 
-  <!-- ==================== 3. VISTA ROL: APP_ADMIN ==================== -->
+  <!-- ==================== 2. VISTA ROL: APP_ADMIN ==================== -->
   @if (currentRole() === RoleEnum.APP_ADMIN) {
     <app-role-app-admin-view
       [companies]="allCompanies()"

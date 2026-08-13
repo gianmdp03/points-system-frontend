@@ -4,6 +4,7 @@ import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { DashboardPage } from './pages/dashboard/dashboard-page';
 import { CompanyDetailPage } from './pages/company-detail/company-detail-page';
+import { ClientPointsPage } from './pages/client-points/client-points';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -11,6 +12,8 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'dashboard', component: DashboardPage },
   { path: 'companies/:id', component: CompanyDetailPage },
+  { path: 'points', component: ClientPointsPage },
+  { path: 'my-points', redirectTo: 'points', pathMatch: 'full' },
+  { path: 'check-points', redirectTo: 'points', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];
-

@@ -15,7 +15,7 @@ export class TabRewardsComponent {
 
   @Output() addReward = new EventEmitter<void>();
   @Output() editReward = new EventEmitter<RewardListDTO>();
-  @Output() redeemReward = new EventEmitter<number>();
+  @Output() redeemReward = new EventEmitter<RewardListDTO>();
 
   readonly RoleEnum = Role;
 }

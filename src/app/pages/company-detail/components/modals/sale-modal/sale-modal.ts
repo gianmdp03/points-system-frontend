@@ -14,10 +14,24 @@ export class SaleModalComponent {
   @Input({ required: true }) isEdit: boolean = false;
   @Input() isSubmitted: boolean = false;
   @Input() errorMessage: string | null = null;
+  @Input() isLoading: boolean = false;
 
   @Output() close = new EventEmitter<void>();
   @Output() submitForm = new EventEmitter<void>();
 
   readonly isFieldInvalid = isFieldInvalid;
   readonly getFieldError = getFieldError;
+
+  readonly countries = [
+    'Argentina',
+    'Chile',
+    'Uruguay',
+    'Paraguay',
+    'Brasil',
+    'México',
+    'Colombia',
+    'Perú',
+    'España',
+    'Estados Unidos'
+  ];
 }

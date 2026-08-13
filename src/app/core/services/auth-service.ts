@@ -11,7 +11,7 @@ export class AuthService {
   private readonly userService = inject(UserService);
 
   readonly isLoggedIn = signal<boolean>(false);
-  readonly currentRole = signal<Role>(Role.USER);
+  readonly currentRole = signal<Role>(Role.COMPANY_ADMIN);
   readonly userEmail = signal<string | null>(null);
   readonly userId = signal<string | null>(null);
   readonly userName = signal<string | null>(null);
@@ -19,7 +19,7 @@ export class AuthService {
   readonly isLoginModalOpen = signal<boolean>(false);
 
   displayName(): string {
-    return this.userName() || (this.userEmail() ? this.userEmail()!.split('@')[0] : 'Usuario');
+    return this.userName() || (this.userEmail() ? this.userEmail()!.split('@')[0] : 'Administrador');
   }
 
   constructor() {
@@ -82,7 +82,7 @@ export class AuthService {
     this.userEmail.set(null);
     this.userId.set(null);
     this.userName.set(null);
-    this.currentRole.set(Role.USER);
+    this.currentRole.set(Role.COMPANY_ADMIN);
   }
 
   async login(email: string, pass: string): Promise<{ success: boolean; error?: string }> {
@@ -102,7 +102,7 @@ export class AuthService {
     }
   }
 
-  async register(email: string, pass: string, name: string, dni: string, role: Role): Promise<{ success: boolean; error?: string }> {
+  async register(email: string, pass: string, name: string, dni: string, role: Role = Role.COMPANY_ADMIN): Promise<{ success: boolean; error?: string }> {
     try {
       const { data, error } = await this.supabase.signUp(email, pass, { name, dni, role });
       if (error) {

@@ -1,5 +1,5 @@
 <div class="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-  <div class="w-full max-w-md bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-[32px] p-8 md:p-10 border border-[#E3E3E3] dark:border-[#333333] transition-all">
+  <div class="w-full max-w-md bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-[32px] p-8 md:p-10 border border-[#E3E3E3] dark:border-[#333333] shadow-xl transition-all">
     
     <!-- Link Volver -->
     <a routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-[#5F6368] hover:text-[#1A73E8] dark:text-[#9AA0A6] dark:hover:text-[#8AB4F8] mb-6 transition">
@@ -15,11 +15,22 @@
         <img src="logo.svg" alt="Pointly Logo" class="w-full h-full object-contain translate-x-[1px]" />
       </div>
       <h2 class="text-3xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
-        Iniciar Sesión
+        Acceso Comercial
       </h2>
       <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] font-normal">
-        Ingresa a tu cuenta de {{ configService.appName() }} para acceder a tu panel
+        Ingresa a tu cuenta de {{ configService.appName() }} para gestionar tu comercio
       </p>
+    </div>
+
+    <!-- Callout informativo para Clientes Finales -->
+    <div class="mb-6 p-4 bg-[#E8F0FE]/70 dark:bg-[#1E293B]/70 border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 rounded-2xl flex items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2 text-[#1A73E8] dark:text-[#8AB4F8] font-bold">
+        <span class="text-base">🛍️</span>
+        <span>¿Eres cliente?</span>
+      </div>
+      <a routerLink="/points" class="px-3.5 py-1.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-black rounded-xl text-[11px] shadow-xs transition">
+        Ver mis Puntos &rarr;
+      </a>
     </div>
 
     <!-- Error Alert Banner -->
@@ -105,7 +116,7 @@
           <input 
             type="email"
             formControlName="email"
-            placeholder="tu@correo.com"
+            placeholder="admin@empresa.com"
             [class.border-rose-500]="isFieldInvalid(loginForm, 'email', isLoginFormSubmitted())"
             class="w-full px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(loginForm, 'email', isLoginFormSubmitted())) {
@@ -121,7 +132,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">
               Contraseña
             </label>
-            <button type="button" (click)="activeTab.set('magic')" class="text-[11px] font-semibold text-[#1A73E8] dark:text-[#8AB4F8] hover:underline">
+            <button type="button" (click)="activeTab.set('magic')" class="text-[11px] font-semibold text-[#1A73E8] dark:text-[#8AB4F8] hover:underline cursor-pointer">
               ¿Usar Enlace Mágico?
             </button>
           </div>
@@ -142,12 +153,12 @@
         <button 
           type="submit"
           [disabled]="isLoading()"
-          class="w-full py-4 px-6 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50">
+          class="w-full py-4 px-6 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 shadow-md hover:shadow-lg">
           @if (isLoading()) {
             <div class="w-4 h-4 border-2 border-white dark:border-[#131314] border-t-transparent rounded-full animate-spin"></div>
             <span>Iniciando sesión...</span>
           } @else {
-            <span>Ingresar a {{ configService.appName() }}</span>
+            <span>Ingresar al Panel</span>
           }
         </button>
       </form>
@@ -167,7 +178,7 @@
           <input 
             type="email"
             formControlName="email"
-            placeholder="tu@correo.com"
+            placeholder="admin@empresa.com"
             [class.border-rose-500]="isFieldInvalid(magicLinkForm, 'email', isMagicFormSubmitted())"
             class="w-full px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(magicLinkForm, 'email', isMagicFormSubmitted())) {
@@ -195,7 +206,7 @@
     <!-- Link a Registro -->
     <div class="mt-8 pt-6 border-t border-[#E3E3E3] dark:border-[#333333] text-center">
       <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
-        ¿Aún no tienes una cuenta? 
+        ¿Aún no registraste tu comercio? 
         <a routerLink="/register" class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold hover:underline ml-1">
           Regístrate gratis aquí
         </a>

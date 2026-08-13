@@ -1,0 +1,188 @@
+<main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+  
+  <!-- Encabezado de la Sección Pública -->
+  <div class="text-center max-w-2xl mx-auto space-y-3">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E8F0FE] dark:bg-[#1E293B] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 shadow-xs">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      Portal Público para Clientes
+    </div>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+      Consulta tus <span class="text-[#1A73E8] dark:text-[#8AB4F8]">Puntos y Beneficios</span>
+    </h1>
+    <p class="text-xs sm:text-sm md:text-base text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
+      Sin necesidad de usuario ni contraseña. Ingresa tu País y DNI para ver al instante tus comercios adheridos y beneficios acumulados.
+    </p>
+  </div>
+
+  <!-- Formulario de Consulta / Escaneo QR -->
+  <div class="max-w-xl mx-auto bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-lg transition-all duration-300">
+    <form [formGroup]="searchForm" (ngSubmit)="onSearchSubmit()" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Selector de País -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1.5">
+            País *
+          </label>
+          <div class="relative">
+            <select 
+              formControlName="country" 
+              class="w-full px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition cursor-pointer appearance-none">
+              @for (c of countries; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#5F6368] dark:text-[#9AA0A6]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input de DNI / Identificación -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1.5">
+            DNI / Identificación *
+          </label>
+          <input 
+            type="text" 
+            formControlName="dni" 
+            placeholder="Ej. 40123456" 
+            [class.border-rose-500]="isFieldInvalid(searchForm, 'dni', isSubmitted())"
+            [class.focus:ring-rose-500]="isFieldInvalid(searchForm, 'dni', isSubmitted())"
+            class="w-full px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+          @if (isFieldInvalid(searchForm, 'dni', isSubmitted())) {
+            <p class="text-rose-500 text-[11px] mt-1 font-semibold">{{ getFieldError(searchForm, 'dni') }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Recordar DNI y Botón de Búsqueda -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+        <label class="flex items-center gap-2 cursor-pointer text-xs text-[#5F6368] dark:text-[#9AA0A6] select-none">
+          <input 
+            type="checkbox" 
+            formControlName="remember" 
+            class="w-4 h-4 rounded text-[#1A73E8] dark:text-[#8AB4F8] focus:ring-0 cursor-pointer" />
+          <span>Recordar en este dispositivo</span>
+        </label>
+
+        <button 
+          type="submit" 
+          [disabled]="isLoading()"
+          class="min-h-[44px] px-7 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+          @if (isLoading()) {
+            <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+            <span>Consultando...</span>
+          } @else {
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span>Consultar Saldo</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Alerta de Error -->
+  @if (errorMessage()) {
+    <div class="max-w-xl mx-auto p-4 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 rounded-2xl flex items-center gap-3 text-rose-800 dark:text-rose-200 text-xs sm:text-sm shadow-xs">
+      <div class="p-2 rounded-xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-300 flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div>
+        <p class="font-bold">Aviso de consulta:</p>
+        <p class="opacity-90">{{ errorMessage() }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Resultados de la Consulta -->
+  @if (hasSearched()) {
+    <div class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E3E3E3] dark:border-[#333333]">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+            Tus Comercios Adheridos
+          </h2>
+          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">
+            DNI: <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">{{ searchedDni() }}</strong> | País: <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">{{ searchedCountry() }}</strong>
+          </p>
+        </div>
+
+        <span class="px-3.5 py-1.5 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3] self-start sm:self-auto shadow-xs">
+          {{ companies().length }} {{ companies().length === 1 ? 'comercio encontrado' : 'comercios encontrados' }}
+        </span>
+      </div>
+
+      <!-- Estado: Sin Comercios -->
+      @if (!isLoading() && companies().length === 0) {
+        <div class="text-center py-16 px-6 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs max-w-lg mx-auto space-y-4">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] text-2xl">
+            🏬
+          </div>
+          <h3 class="text-lg sm:text-xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+            Aún no tienes puntos registrados
+          </h3>
+          <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
+            No encontramos cuentas de puntos asociadas a tu DNI ({{ searchedDni() }}) en {{ searchedCountry() }}. Al realizar compras en cualquier comercio adherido a {{ configService.appName() }}, solicita que sumen tus puntos indicando tu DNI.
+          </p>
+        </div>
+      } @else {
+        <!-- Grid de Comercios Adheridos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (company of companies(); track company.id) {
+            <div class="group bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl p-6 border border-[#E3E3E3] dark:border-[#333333] shadow-xs hover:border-[#C4C7C5] dark:hover:border-[#5E6266] hover:scale-[1.01] hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6">
+              <div>
+                <div class="flex items-start justify-between gap-4 mb-4">
+                  <div class="w-14 h-14 rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] font-black text-2xl shadow-xs group-hover:scale-105 transition-transform">
+                    {{ company.name ? company.name.charAt(0).toUpperCase() : 'C' }}
+                  </div>
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                    Activa
+                  </span>
+                </div>
+
+                <h3 class="text-lg sm:text-xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
+                  {{ company.name }}
+                </h3>
+
+                @if (company.companyDetails) {
+                  <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-[#5F6368] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="truncate">{{ company.companyDetails.address }}, {{ company.companyDetails.city }}</span>
+                  </p>
+                }
+
+                <!-- Equivalencia de Puntos -->
+                <div class="mt-5 p-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3]/60 dark:border-[#333333]/60 flex items-center justify-between text-xs">
+                  <div>
+                    <span class="text-[10px] uppercase font-extrabold tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block mb-0.5">Regla de Puntos</span>
+                    <span class="font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Por compras en el local</span>
+                  </div>
+                  <span class="font-black text-[#1A73E8] dark:text-[#8AB4F8] bg-[#FFFFFF] dark:bg-[#1E1E1E] px-3 py-1.5 rounded-xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
+                    ${{ company.amountStep }} = {{ company.pointsPerStep }} pts
+                  </span>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-[#E3E3E3] dark:border-[#333333]">
+                <a [routerLink]="['/companies', company.id]" class="w-full inline-flex items-center justify-center min-h-[44px] py-2.5 px-4 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer">
+                  Ver Premios y Catálogo
+                </a>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+</main>

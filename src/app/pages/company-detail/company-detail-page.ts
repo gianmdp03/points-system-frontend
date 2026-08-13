@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,7 +24,8 @@ import {
   RewardRequestDTO,
   RewardUpdateDTO,
   SaleRequestDTO,
-  PointsAccountRequestDTO
+  PointsAccountRequestDTO,
+  RewardRedeemDTO
 } from '../../core/models';
 
 import { CompanyDetailHeaderComponent } from './components/company-detail-header/company-detail-header';
@@ -40,6 +41,7 @@ import { PromotionModalComponent } from './components/modals/promotion-modal/pro
 import { RewardModalComponent } from './components/modals/reward-modal/reward-modal';
 import { SaleModalComponent } from './components/modals/sale-modal/sale-modal';
 import { ClientModalComponent } from './components/modals/client-modal/client-modal';
+import { RedeemModalComponent } from './components/modals/redeem-modal/redeem-modal';
 
 @Component({
   selector: 'app-company-detail-page',
@@ -58,7 +60,8 @@ import { ClientModalComponent } from './components/modals/client-modal/client-mo
     PromotionModalComponent,
     RewardModalComponent,
     SaleModalComponent,
-    ClientModalComponent
+    ClientModalComponent,
+    RedeemModalComponent
   ],
   templateUrl: './company-detail-page.html',
   styleUrl: './company-detail-page.css'
@@ -97,8 +100,9 @@ export class CompanyDetailPage implements OnInit {
   readonly showAddSaleModal = signal<boolean>(false);
   readonly showEditSaleModal = signal<boolean>(false);
   readonly showAddClientModal = signal<boolean>(false);
+  readonly showRedeemModal = signal<boolean>(false);
 
-  // Flags de submit de formularios
+  // Flags de submit
   readonly isEditCompanySubmitted = signal<boolean>(false);
   readonly isAddProductSubmitted = signal<boolean>(false);
   readonly isEditProductSubmitted = signal<boolean>(false);
@@ -109,20 +113,24 @@ export class CompanyDetailPage implements OnInit {
   readonly isAddSaleSubmitted = signal<boolean>(false);
   readonly isEditSaleSubmitted = signal<boolean>(false);
   readonly isAddClientSubmitted = signal<boolean>(false);
+  readonly isRedeemSubmitted = signal<boolean>(false);
+  readonly isRedeemLoading = signal<boolean>(false);
 
   selectedProductForEdit = signal<ProductListDTO | null>(null);
   selectedPromotionForEdit = signal<PromotionListDTO | null>(null);
   selectedRewardForEdit = signal<RewardListDTO | null>(null);
   selectedSaleForEdit = signal<SaleListDTO | null>(null);
+  selectedRewardForRedeem = signal<RewardListDTO | null>(null);
 
   // FormGroups Reactivos
   addClientForm = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(200)]],
-    email: ['', [Validators.required, Validators.email]],
-    dni: ['', [Validators.required, Validators.maxLength(50)]]
+    country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
+    dni: ['', [Validators.required, Validators.maxLength(20)]],
+    email: ['', [Validators.email]],
+    phone: ['']
   });
 
-  // FormGroups Reactivos
   editCompanyForm = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(300)]],
     amountStep: [100, [Validators.required, Validators.min(1)]],
@@ -180,30 +188,24 @@ export class CompanyDetailPage implements OnInit {
   });
 
   addSaleForm = this.fb.group({
-    userDni: ['', [Validators.required]],
+    country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
+    dni: ['', [Validators.required, Validators.maxLength(20)]],
     amount: [1000, [Validators.required, Validators.min(1)]]
   });
 
   editSaleForm = this.fb.group({
     id: [0, [Validators.required]],
-    userDni: ['', [Validators.required]],
+    country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
+    dni: ['', [Validators.required, Validators.maxLength(20)]],
     amount: [1000, [Validators.required, Validators.min(1)]]
   });
 
-  readonly currentRole = this.authService.currentRole;
-
-  readonly userPointsBalance = computed<number | null>(() => {
-    if (this.currentRole() !== Role.USER) {
-      return null;
-    }
-    const comp = this.company();
-    const currentUserId = this.authService.userId();
-    if (!comp || !comp.pointsAccounts || comp.pointsAccounts.length === 0) {
-      return 0;
-    }
-    const myAccount = comp.pointsAccounts.find(pa => pa.user?.id === currentUserId) || comp.pointsAccounts[0];
-    return myAccount ? myAccount.balance : 0;
+  redeemForm = this.fb.group({
+    country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
+    dni: ['', [Validators.required, Validators.maxLength(20)]]
   });
+
+  readonly currentRole = this.authService.currentRole;
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -229,9 +231,7 @@ export class CompanyDetailPage implements OnInit {
       next: (data) => {
         this.company.set(data);
         this.isLoading.set(false);
-        if (this.currentRole() === Role.COMPANY_ADMIN || this.currentRole() === Role.APP_ADMIN) {
-          this.fetchCompanySales(id);
-        }
+        this.fetchCompanySales(id);
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -259,9 +259,6 @@ export class CompanyDetailPage implements OnInit {
   }
 
   setTab(tab: CompanyDetailTab): void {
-    if (tab === 'sales' && (this.currentRole() !== Role.COMPANY_ADMIN && this.currentRole() !== Role.APP_ADMIN)) {
-      return;
-    }
     this.activeTab.set(tab);
     if (tab === 'sales' && this.company()) {
       this.fetchCompanySales(this.company()!.id);
@@ -372,7 +369,7 @@ export class CompanyDetailPage implements OnInit {
   closeEditRewardModal(): void { this.showEditRewardModal.set(false); }
 
   openAddSaleModal(): void {
-    this.addSaleForm.reset({ userDni: '', amount: 1000 });
+    this.addSaleForm.reset({ country: 'Argentina', dni: '', amount: 1000 });
     this.modalErrorMessage.set(null);
     this.isAddSaleSubmitted.set(false);
     this.showAddSaleModal.set(true);
@@ -384,7 +381,8 @@ export class CompanyDetailPage implements OnInit {
       this.selectedSaleForEdit.set(sale);
       this.editSaleForm.patchValue({
         id: sale.id,
-        userDni: '',
+        country: sale.client?.country || 'Argentina',
+        dni: sale.client?.dni || sale.userDni || '',
         amount: sale.amount
       });
     }
@@ -395,12 +393,22 @@ export class CompanyDetailPage implements OnInit {
   closeEditSaleModal(): void { this.showEditSaleModal.set(false); }
 
   openAddClientModal(): void {
-    this.addClientForm.reset({ name: '', email: '', dni: '' });
+    this.addClientForm.reset({ name: '', country: 'Argentina', dni: '', email: '', phone: '' });
     this.modalErrorMessage.set(null);
     this.isAddClientSubmitted.set(false);
     this.showAddClientModal.set(true);
   }
   closeAddClientModal(): void { this.showAddClientModal.set(false); }
+
+  openRedeemModal(reward: RewardListDTO): void {
+    this.selectedRewardForRedeem.set(reward);
+    this.redeemForm.reset({ country: 'Argentina', dni: '' });
+    this.modalErrorMessage.set(null);
+    this.isRedeemSubmitted.set(false);
+    this.isRedeemLoading.set(false);
+    this.showRedeemModal.set(true);
+  }
+  closeRedeemModal(): void { this.showRedeemModal.set(false); }
 
   onAddClientSubmit(): void {
     this.isAddClientSubmitted.set(true);
@@ -412,8 +420,10 @@ export class CompanyDetailPage implements OnInit {
     const dto: PointsAccountRequestDTO = {
       companyId: this.company()!.id,
       name: val.name!,
-      email: val.email!,
-      dni: val.dni!
+      country: val.country!,
+      dni: val.dni!,
+      email: val.email || undefined,
+      phone: val.phone || undefined
     };
     this.modalErrorMessage.set(null);
     this.pointsAccountService.registerClientAndCreateAccount(dto).subscribe({
@@ -614,7 +624,8 @@ export class CompanyDetailPage implements OnInit {
     const dto: SaleRequestDTO = {
       amount: Number(val.amount),
       companyId: this.company()!.id,
-      userDni: val.userDni!
+      dni: val.dni!,
+      country: val.country!
     };
     this.modalErrorMessage.set(null);
     this.saleService.addSale(dto).subscribe({
@@ -628,21 +639,36 @@ export class CompanyDetailPage implements OnInit {
     });
   }
 
-  onRedeemReward(rewardId: number): void {
-    if (!this.company()) return;
-    const userDni = prompt('Ingresa el DNI del cliente para canjear la recompensa:');
-    if (!userDni) return;
+  onRedeemReward(reward: RewardListDTO): void {
+    this.openRedeemModal(reward);
+  }
 
-    this.rewardService.redeemReward({
+  onRedeemSubmit(): void {
+    this.isRedeemSubmitted.set(true);
+    if (this.redeemForm.invalid || !this.company() || !this.selectedRewardForRedeem()) {
+      this.redeemForm.markAllAsTouched();
+      return;
+    }
+    const val = this.redeemForm.getRawValue();
+    const dto: RewardRedeemDTO = {
       companyId: this.company()!.id,
-      rewardId,
-      userDni
-    }).subscribe({
+      rewardId: this.selectedRewardForRedeem()!.id,
+      dni: val.dni!,
+      country: val.country!
+    };
+    this.isRedeemLoading.set(true);
+    this.modalErrorMessage.set(null);
+    this.rewardService.redeemReward(dto).subscribe({
       next: () => {
-        alert('¡Premio canjeado con éxito!');
+        this.isRedeemLoading.set(false);
+        this.closeRedeemModal();
+        alert('¡Recompensa canjeada con éxito!');
         this.fetchCompanyDetails(this.company()!.id);
       },
-      error: (err) => alert('Error al canjear premio: ' + (err.error?.message || err.message))
+      error: (err) => {
+        this.isRedeemLoading.set(false);
+        this.modalErrorMessage.set(err.error?.message || 'Error al canjear premio.');
+      }
     });
   }
 }

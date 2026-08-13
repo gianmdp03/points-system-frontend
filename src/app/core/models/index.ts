@@ -1,5 +1,6 @@
 export * from './page.model';
 export * from './user.model';
+export * from './client.model';
 export * from './company.model';
 export * from './points-account.model';
 export * from './product.model';

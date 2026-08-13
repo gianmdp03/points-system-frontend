@@ -28,6 +28,7 @@ export class PointsAccountService {
   }
 
   getTransactionHistory(
+    clientId: number,
     companyId: number,
     page = 0,
     size = 10,
@@ -40,6 +41,6 @@ export class PointsAccountService {
     if (sort) {
       params = params.set('sort', `${sort},${direction.toLowerCase()}`);
     }
-    return this.http.get<Page<PointsTransactionDetailDTO>>(`${this.apiUrl}/history/${companyId}`, { params });
+    return this.http.get<Page<PointsTransactionDetailDTO>>(`${this.apiUrl}/history/${clientId}/${companyId}`, { params });
   }
 }
