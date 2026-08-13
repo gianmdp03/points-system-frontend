@@ -8,6 +8,7 @@ import { ProductService } from '../../core/services/product-service';
 import { PromotionService } from '../../core/services/promotion-service';
 import { RewardService } from '../../core/services/reward-service';
 import { SaleService } from '../../core/services/sale-service';
+import { PointsAccountService } from '../../core/services/points-account-service';
 import {
   CompanyDetailDTO,
   Role,
@@ -22,7 +23,8 @@ import {
   PromotionUpdateDTO,
   RewardRequestDTO,
   RewardUpdateDTO,
-  SaleRequestDTO
+  SaleRequestDTO,
+  PointsAccountRequestDTO
 } from '../../core/models';
 
 import { CompanyDetailHeaderComponent } from './components/company-detail-header/company-detail-header';
@@ -37,6 +39,7 @@ import { ProductModalComponent } from './components/modals/product-modal/product
 import { PromotionModalComponent } from './components/modals/promotion-modal/promotion-modal';
 import { RewardModalComponent } from './components/modals/reward-modal/reward-modal';
 import { SaleModalComponent } from './components/modals/sale-modal/sale-modal';
+import { ClientModalComponent } from './components/modals/client-modal/client-modal';
 
 @Component({
   selector: 'app-company-detail-page',
@@ -54,7 +57,8 @@ import { SaleModalComponent } from './components/modals/sale-modal/sale-modal';
     ProductModalComponent,
     PromotionModalComponent,
     RewardModalComponent,
-    SaleModalComponent
+    SaleModalComponent,
+    ClientModalComponent
   ],
   templateUrl: './company-detail-page.html',
   styleUrl: './company-detail-page.css'
@@ -70,11 +74,14 @@ export class CompanyDetailPage implements OnInit {
   protected readonly promotionService = inject(PromotionService);
   protected readonly rewardService = inject(RewardService);
   protected readonly saleService = inject(SaleService);
+  protected readonly pointsAccountService = inject(PointsAccountService);
 
   readonly RoleEnum = Role;
 
   readonly company = signal<CompanyDetailDTO | null>(null);
+  readonly sales = signal<SaleListDTO[]>([]);
   readonly isLoading = signal<boolean>(true);
+  readonly isLoadingSales = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
   readonly modalErrorMessage = signal<string | null>(null);
   readonly activeTab = signal<CompanyDetailTab>('overview');
@@ -89,6 +96,7 @@ export class CompanyDetailPage implements OnInit {
   readonly showEditRewardModal = signal<boolean>(false);
   readonly showAddSaleModal = signal<boolean>(false);
   readonly showEditSaleModal = signal<boolean>(false);
+  readonly showAddClientModal = signal<boolean>(false);
 
   // Flags de submit de formularios
   readonly isEditCompanySubmitted = signal<boolean>(false);
@@ -100,11 +108,19 @@ export class CompanyDetailPage implements OnInit {
   readonly isEditRewardSubmitted = signal<boolean>(false);
   readonly isAddSaleSubmitted = signal<boolean>(false);
   readonly isEditSaleSubmitted = signal<boolean>(false);
+  readonly isAddClientSubmitted = signal<boolean>(false);
 
   selectedProductForEdit = signal<ProductListDTO | null>(null);
   selectedPromotionForEdit = signal<PromotionListDTO | null>(null);
   selectedRewardForEdit = signal<RewardListDTO | null>(null);
   selectedSaleForEdit = signal<SaleListDTO | null>(null);
+
+  // FormGroups Reactivos
+  addClientForm = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(200)]],
+    email: ['', [Validators.required, Validators.email]],
+    dni: ['', [Validators.required, Validators.maxLength(50)]]
+  });
 
   // FormGroups Reactivos
   editCompanyForm = this.fb.group({
@@ -213,6 +229,9 @@ export class CompanyDetailPage implements OnInit {
       next: (data) => {
         this.company.set(data);
         this.isLoading.set(false);
+        if (this.currentRole() === Role.COMPANY_ADMIN || this.currentRole() === Role.APP_ADMIN) {
+          this.fetchCompanySales(id);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -226,11 +245,27 @@ export class CompanyDetailPage implements OnInit {
     });
   }
 
+  fetchCompanySales(id: number): void {
+    this.isLoadingSales.set(true);
+    this.saleService.listCompaniesSales(id).subscribe({
+      next: (page) => {
+        this.sales.set(page?.content || []);
+        this.isLoadingSales.set(false);
+      },
+      error: () => {
+        this.isLoadingSales.set(false);
+      }
+    });
+  }
+
   setTab(tab: CompanyDetailTab): void {
     if (tab === 'sales' && (this.currentRole() !== Role.COMPANY_ADMIN && this.currentRole() !== Role.APP_ADMIN)) {
       return;
     }
     this.activeTab.set(tab);
+    if (tab === 'sales' && this.company()) {
+      this.fetchCompanySales(this.company()!.id);
+    }
   }
 
   goBack(): void {
@@ -344,7 +379,7 @@ export class CompanyDetailPage implements OnInit {
   }
   closeAddSaleModal(): void { this.showAddSaleModal.set(false); }
 
-  openEditSaleModal(sale?: SaleListDTO): void {
+  openEditSaleModal(sale?: SaleListDTO | void): void {
     if (sale) {
       this.selectedSaleForEdit.set(sale);
       this.editSaleForm.patchValue({
@@ -358,6 +393,37 @@ export class CompanyDetailPage implements OnInit {
     this.showEditSaleModal.set(true);
   }
   closeEditSaleModal(): void { this.showEditSaleModal.set(false); }
+
+  openAddClientModal(): void {
+    this.addClientForm.reset({ name: '', email: '', dni: '' });
+    this.modalErrorMessage.set(null);
+    this.isAddClientSubmitted.set(false);
+    this.showAddClientModal.set(true);
+  }
+  closeAddClientModal(): void { this.showAddClientModal.set(false); }
+
+  onAddClientSubmit(): void {
+    this.isAddClientSubmitted.set(true);
+    if (this.addClientForm.invalid || !this.company()) {
+      this.addClientForm.markAllAsTouched();
+      return;
+    }
+    const val = this.addClientForm.getRawValue();
+    const dto: PointsAccountRequestDTO = {
+      companyId: this.company()!.id,
+      name: val.name!,
+      email: val.email!,
+      dni: val.dni!
+    };
+    this.modalErrorMessage.set(null);
+    this.pointsAccountService.registerClientAndCreateAccount(dto).subscribe({
+      next: () => {
+        this.closeAddClientModal();
+        this.fetchCompanyDetails(this.company()!.id);
+      },
+      error: (err) => this.modalErrorMessage.set(err.error?.message || 'Error al asociar el cliente.')
+    });
+  }
 
   // ACTIONS SUBMITS BACKEND
   onEditCompanySubmit(): void {
@@ -554,7 +620,9 @@ export class CompanyDetailPage implements OnInit {
     this.saleService.addSale(dto).subscribe({
       next: () => {
         this.closeAddSaleModal();
-        this.fetchCompanyDetails(this.company()!.id);
+        const compId = this.company()!.id;
+        this.fetchCompanySales(compId);
+        this.fetchCompanyDetails(compId);
       },
       error: (err) => this.modalErrorMessage.set(err.error?.message || 'Error al registrar la venta.')
     });

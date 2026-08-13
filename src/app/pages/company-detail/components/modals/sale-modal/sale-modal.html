@@ -33,13 +33,13 @@
         <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">DNI del Cliente *</label>
         <input 
           type="text" 
-          formControlName="customerDni" 
+          formControlName="userDni" 
           placeholder="Ej. 40123456" 
-          [class.border-rose-500]="isFieldInvalid(form, 'customerDni', isSubmitted)"
-          [class.focus:ring-rose-500]="isFieldInvalid(form, 'customerDni', isSubmitted)"
+          [class.border-rose-500]="isFieldInvalid(form, 'userDni', isSubmitted)"
+          [class.focus:ring-rose-500]="isFieldInvalid(form, 'userDni', isSubmitted)"
           class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
-        @if (isFieldInvalid(form, 'customerDni', isSubmitted)) {
-          <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'customerDni') }}</p>
+        @if (isFieldInvalid(form, 'userDni', isSubmitted)) {
+          <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'userDni') }}</p>
         }
       </div>
 

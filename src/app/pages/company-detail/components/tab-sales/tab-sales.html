@@ -6,66 +6,91 @@
     </div>
 
     @if (currentRole !== RoleEnum.USER) {
-      <button 
-        (click)="addSale.emit()"
-        class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        + Registrar Venta
-      </button>
+      <div class="flex flex-wrap items-center gap-3">
+        <button 
+          (click)="addClient.emit()"
+          class="min-h-[44px] px-5 py-2.5 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#E3E3E3] dark:border-[#333333] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          Asociar Cliente
+        </button>
+        <button 
+          (click)="addSale.emit()"
+          class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Registrar Venta
+        </button>
+      </div>
     }
   </div>
 
-  <!-- Tabla Visual de Ventas -->
-  <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs text-[#5F6368] dark:text-[#9AA0A6]">
-        <thead class="bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] font-extrabold uppercase tracking-wider border-b border-[#E3E3E3] dark:border-[#333333]">
-          <tr>
-            <th class="p-4">ID Venta</th>
-            <th class="p-4">Cliente (DNI / Email)</th>
-            <th class="p-4">Monto ($)</th>
-            <th class="p-4">Puntos Generados</th>
-            <th class="p-4">Fecha</th>
-            <th class="p-4 text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#E3E3E3]/60 dark:divide-[#333333]/60 font-medium">
-          <tr class="hover:bg-[#F8F9FA]/80 dark:hover:bg-[#1E1E1E]/80 transition-colors">
-            <td class="p-4 font-bold text-[#1A73E8] dark:text-[#8AB4F8]">#V-1001</td>
-            <td class="p-4 font-black text-[#1F1F1F] dark:text-[#E3E3E3]">cliente@correo.com</td>
-            <td class="p-4 font-bold text-emerald-600 dark:text-emerald-400">$1,500.00</td>
-            <td class="p-4 font-black text-[#1A73E8] dark:text-[#8AB4F8]">+150 pts</td>
-            <td class="p-4 text-[#5F6368] dark:text-[#9AA0A6]">06/08/2026</td>
-            <td class="p-4 text-right">
-              @if (currentRole !== RoleEnum.USER) {
-                <button 
-                  (click)="editSale.emit()"
-                  class="min-h-[44px] px-3.5 py-2 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
-                  Editar
-                </button>
-              }
-            </td>
-          </tr>
-          <tr class="hover:bg-[#F8F9FA]/80 dark:hover:bg-[#1E1E1E]/80 transition-colors">
-            <td class="p-4 font-bold text-[#1A73E8] dark:text-[#8AB4F8]">#V-1002</td>
-            <td class="p-4 font-black text-[#1F1F1F] dark:text-[#E3E3E3]">juan.perez@gmail.com</td>
-            <td class="p-4 font-bold text-emerald-600 dark:text-emerald-400">$2,400.00</td>
-            <td class="p-4 font-black text-[#1A73E8] dark:text-[#8AB4F8]">+240 pts</td>
-            <td class="p-4 text-[#5F6368] dark:text-[#9AA0A6]">05/08/2026</td>
-            <td class="p-4 text-right">
-              @if (currentRole !== RoleEnum.USER) {
-                <button 
-                  (click)="editSale.emit()"
-                  class="min-h-[44px] px-3.5 py-2 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
-                  Editar
-                </button>
-              }
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  @if (isLoading) {
+    <div class="flex flex-col items-center justify-center py-16 text-[#5F6368] dark:text-[#9AA0A6] bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl border border-[#E3E3E3] dark:border-[#333333]">
+      <div class="w-10 h-10 border-4 border-[#1A73E8] dark:border-[#8AB4F8] border-t-transparent rounded-full animate-spin"></div>
+      <span class="mt-4 text-xs font-bold">Cargando ventas...</span>
     </div>
-  </div>
+  } @else if (sales.length === 0) {
+    <div class="text-center py-14 px-6 bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#E8F0FE] dark:bg-[#1E1E1E] flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8]">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <h4 class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Sin ventas registradas</h4>
+      <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto mb-6 leading-relaxed">Aún no se han registrado transacciones de ventas para esta sucursal.</p>
+      @if (currentRole !== RoleEnum.USER) {
+        <button 
+          (click)="addSale.emit()"
+          class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
+          Registrar Primera Venta
+        </button>
+      }
+    </div>
+  } @else {
+    <!-- Tabla Visual de Ventas -->
+    <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+          <thead class="bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] font-extrabold uppercase tracking-wider border-b border-[#E3E3E3] dark:border-[#333333]">
+            <tr>
+              <th class="p-4">ID Venta</th>
+              <th class="p-4">Cliente (DNI / Email)</th>
+              <th class="p-4">Monto ($)</th>
+              <th class="p-4">Puntos Generados</th>
+              <th class="p-4">Fecha</th>
+              <th class="p-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#E3E3E3]/60 dark:divide-[#333333]/60 font-medium">
+            @for (sale of sales; track sale.id) {
+              <tr class="hover:bg-[#F8F9FA]/80 dark:hover:bg-[#1E1E1E]/80 transition-colors">
+                <td class="p-4 font-bold text-[#1A73E8] dark:text-[#8AB4F8]">#V-{{ sale.id }}</td>
+                <td class="p-4 font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                  {{ sale.userEmail || sale.userDni || sale.userName || sale.user?.email || sale.user?.dni || ('Cliente #' + sale.id) }}
+                </td>
+                <td class="p-4 font-bold text-emerald-600 dark:text-emerald-400">${{ sale.amount | number:'1.2-2' }}</td>
+                <td class="p-4 font-black text-[#1A73E8] dark:text-[#8AB4F8]">+{{ getCalculatedPoints(sale) }} pts</td>
+                <td class="p-4 text-[#5F6368] dark:text-[#9AA0A6]">
+                  {{ sale.createdAt ? (sale.createdAt | date:'shortDate') : '-' }}
+                </td>
+                <td class="p-4 text-right">
+                  @if (currentRole !== RoleEnum.USER) {
+                    <button 
+                      (click)="editSale.emit(sale)"
+                      class="min-h-[44px] px-3.5 py-2 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
+                      Editar
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
 </div>
+

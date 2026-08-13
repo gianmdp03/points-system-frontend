@@ -15,6 +15,7 @@ export class TabOverviewComponent {
   @Input() userPointsBalance: number | null = null;
 
   @Output() editCompany = new EventEmitter<void>();
+  @Output() addClient = new EventEmitter<void>();
 
   readonly RoleEnum = Role;
 }

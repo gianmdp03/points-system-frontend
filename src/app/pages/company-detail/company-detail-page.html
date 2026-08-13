@@ -59,7 +59,8 @@
             [company]="comp"
             [currentRole]="currentRole()"
             [userPointsBalance]="userPointsBalance()"
-            (editCompany)="openEditCompanyModal()">
+            (editCompany)="openEditCompanyModal()"
+            (addClient)="openAddClientModal()">
           </app-tab-overview>
         }
 
@@ -98,10 +99,14 @@
         <!-- TAB 5: VENTAS & REGISTRO DE TRANSACCIONES -->
         @if (activeTab() === 'sales' && (currentRole() === RoleEnum.COMPANY_ADMIN || currentRole() === RoleEnum.APP_ADMIN)) {
           <app-tab-sales
-            [sales]="[]"
+            [sales]="sales()"
+            [isLoading]="isLoadingSales()"
+            [amountStep]="comp.amountStep"
+            [pointsPerStep]="comp.pointsPerStep"
             [currentRole]="currentRole()"
             (addSale)="openAddSaleModal()"
-            (editSale)="openEditSaleModal()">
+            (addClient)="openAddClientModal()"
+            (editSale)="openEditSaleModal($event)">
           </app-tab-sales>
         }
 
@@ -208,4 +213,14 @@
     (close)="closeEditSaleModal()"
     (submitForm)="closeEditSaleModal()">
   </app-sale-modal>
+}
+
+@if (showAddClientModal()) {
+  <app-client-modal
+    [form]="addClientForm"
+    [isSubmitted]="isAddClientSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    (close)="closeAddClientModal()"
+    (submitForm)="onAddClientSubmit()">
+  </app-client-modal>
 }
