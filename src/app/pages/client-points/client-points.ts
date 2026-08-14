@@ -1,25 +1,31 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ClientPublicService } from '../../core/services/client-public-service';
 import { AppConfigService } from '../../core/services/app-config-service';
-import { CompanyListDTO } from '../../core/models';
+import { AuthService } from '../../core/services/auth-service';
+import { AiChatService } from '../../core/services/ai-chat-service';
+import { CompanyListDTO, CompanyPublicDetailDTO } from '../../core/models';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
 import { CountrySelectComponent } from '../../components/country-select/country-select';
 
 const STORAGE_KEY_DNI = 'pointly_client_dni';
 const STORAGE_KEY_COUNTRY = 'pointly_client_country';
 
+export type CatalogTab = 'rewards' | 'promotions' | 'products';
+
 @Component({
   selector: 'app-client-points-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CountrySelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, CountrySelectComponent],
   templateUrl: './client-points.html',
   styleUrl: './client-points.css'
 })
 export class ClientPointsPage implements OnInit {
   protected readonly configService = inject(AppConfigService);
+  protected readonly authService = inject(AuthService);
+  protected readonly chatService = inject(AiChatService);
   private readonly clientPublicService = inject(ClientPublicService);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
@@ -41,6 +47,12 @@ export class ClientPointsPage implements OnInit {
   readonly companies = signal<CompanyListDTO[]>([]);
   readonly searchedDni = signal<string>('');
   readonly searchedCountry = signal<string>('');
+
+  // Estado del Catálogo Público
+  readonly selectedCompanyCatalog = signal<CompanyPublicDetailDTO | null>(null);
+  readonly isLoadingCatalog = signal<boolean>(false);
+  readonly catalogErrorMessage = signal<string | null>(null);
+  readonly activeCatalogTab = signal<CatalogTab>('rewards');
 
   ngOnInit(): void {
     // 1. Check Query Params for QR code flow (?dni=...&country=...)
@@ -131,4 +143,56 @@ export class ClientPointsPage implements OnInit {
     this.errorMessage.set(null);
     this.searchForm.patchValue({ dni: '' });
   }
+
+  // Visualización del Catálogo Público (Premios, Promociones activas y Productos)
+  viewCompanyCatalog(company: CompanyListDTO): void {
+    const country = this.searchedCountry();
+    const dni = this.searchedDni();
+    if (!country || !dni) return;
+
+    this.isLoadingCatalog.set(true);
+    this.catalogErrorMessage.set(null);
+    this.activeCatalogTab.set('rewards');
+
+    this.clientPublicService.getCompanyPublicDetail(country, dni, company.id).subscribe({
+      next: (detail) => {
+        this.selectedCompanyCatalog.set(detail);
+        this.isLoadingCatalog.set(false);
+      },
+      error: (err) => {
+        this.isLoadingCatalog.set(false);
+        this.catalogErrorMessage.set(
+          err.status === 404 || err.status === 403
+            ? (err.error?.message || 'Solo puedes consultar el catálogo de comercios a los que estés asociado.')
+            : 'Error al consultar el catálogo del comercio.'
+        );
+      }
+    });
+  }
+
+  closeCatalogModal(): void {
+    this.selectedCompanyCatalog.set(null);
+    this.catalogErrorMessage.set(null);
+  }
+
+  setCatalogTab(tab: CatalogTab): void {
+    this.activeCatalogTab.set(tab);
+  }
+
+  askAiAboutCompany(companyName: string): void {
+    this.closeCatalogModal();
+    this.chatService.openChat();
+    this.chatService.sendMessage(`¿Cómo funcionan los puntos, promociones activas y premios en "${companyName}"?`);
+  }
+
+  formatDate(dateStr?: string): string {
+    if (!dateStr) return '';
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  }
 }
+

@@ -47,3 +47,18 @@ export interface CompanyUpdateDTO {
   amountStep?: number;
   pointsPerStep?: number;
 }
+
+export interface CompanyPublicDetailDTO {
+  id: number;
+  name: string;
+  companyDetails: CompanyDetails;
+  amountStep: number;
+  pointsPerStep: number;
+  isEnabled: boolean;
+  clientBalance: number;
+  clientName: string;
+  products: ProductListDTO[];
+  activePromotions: PromotionListDTO[];
+  rewards: RewardListDTO[];
+}
+
