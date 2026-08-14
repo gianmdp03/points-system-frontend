@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
 import { AppConfigService } from '../../core/services/app-config-service';
 import { Role } from '../../core/models';
@@ -93,15 +93,15 @@ export class Register implements OnInit {
     }
   }
 
-  async onOAuth(provider: 'google' | 'github'): Promise<void> {
+  async onGoogleLogin(): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const result = await this.authService.loginWithOAuth(provider);
+    const result = await this.authService.loginWithOAuth('google');
     this.isLoading.set(false);
 
     if (!result.success) {
-      this.errorMessage.set(result.error || 'No se pudo conectar con el proveedor.');
+      this.errorMessage.set(result.error || 'No se pudo conectar con Google.');
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
@@ -15,15 +15,44 @@ export class Header implements OnInit {
   protected readonly configService = inject(AppConfigService);
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly elementRef = inject(ElementRef);
   
   isDarkMode = signal<boolean>(false);
   isMobileMenuOpen = signal<boolean>(false);
+  isUserMenuOpen = signal<boolean>(false);
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update(v => !v);
+    if (this.isMobileMenuOpen()) {
+      this.isUserMenuOpen.set(false);
+    }
   }
 
   closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
+  }
+
+  toggleUserMenu(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isUserMenuOpen.update(v => !v);
+  }
+
+  closeUserMenu(): void {
+    this.isUserMenuOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.isUserMenuOpen.set(false);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.isUserMenuOpen.set(false);
     this.isMobileMenuOpen.set(false);
   }
 
@@ -51,6 +80,7 @@ export class Header implements OnInit {
 
   scrollToSection(fragment: string): void {
     this.closeMobileMenu();
+    this.closeUserMenu();
     if (typeof window !== 'undefined') {
       const currentUrl = this.router.url.split('#')[0];
       if (currentUrl === '/' || currentUrl === '') {
@@ -65,6 +95,8 @@ export class Header implements OnInit {
   }
 
   async logout(): Promise<void> {
+    this.closeUserMenu();
+    this.closeMobileMenu();
     await this.authService.logout();
     this.router.navigate(['/']);
   }

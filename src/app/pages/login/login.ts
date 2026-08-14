@@ -61,15 +61,15 @@ export class Login {
     }
   }
 
-  async onOAuth(provider: 'google' | 'github'): Promise<void> {
+  async onGoogleLogin(): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const result = await this.authService.loginWithOAuth(provider);
+    const result = await this.authService.loginWithOAuth('google');
     this.isLoading.set(false);
 
     if (!result.success) {
-      this.errorMessage.set(result.error || 'No se pudo conectar con el proveedor.');
+      this.errorMessage.set(result.error || 'No se pudo conectar con Google.');
     }
   }
 

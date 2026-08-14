@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient, AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 
@@ -29,7 +29,7 @@ export class SupabaseService {
     return await this.supabase.auth.signInWithPassword({ email, password: pass });
   }
 
-  async signInWithOAuth(provider: 'google' | 'github') {
+  async signInWithOAuth(provider: 'google' = 'google') {
     const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : 'http://localhost:4200/dashboard';
     return await this.supabase.auth.signInWithOAuth({
       provider,
@@ -46,6 +46,12 @@ export class SupabaseService {
       options: {
         emailRedirectTo: redirectUrl
       }
+    });
+  }
+
+  async updateUserMetadata(userMetadata: { name?: string; dni?: string; role?: string }) {
+    return await this.supabase.auth.updateUser({
+      data: userMetadata
     });
   }
 

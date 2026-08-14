@@ -15,11 +15,20 @@ export class AuthService {
   readonly userEmail = signal<string | null>(null);
   readonly userId = signal<string | null>(null);
   readonly userName = signal<string | null>(null);
+  readonly userDni = signal<string | null>(null);
+
+  // Indica si el usuario inició con Google y necesita completar su DNI
+  readonly needsDni = signal<boolean>(false);
 
   readonly isLoginModalOpen = signal<boolean>(false);
 
   displayName(): string {
     return this.userName() || (this.userEmail() ? this.userEmail()!.split('@')[0] : 'Administrador');
+  }
+
+  userInitial(): string {
+    const name = this.displayName();
+    return name ? name.charAt(0).toUpperCase() : 'A';
   }
 
   constructor() {
@@ -55,6 +64,15 @@ export class AuthService {
       this.userName.set(metaName);
     }
 
+    const metaDni = user.user_metadata?.dni;
+    if (metaDni && metaDni !== 'No registrado' && metaDni !== 'null' && metaDni.trim().length > 0) {
+      this.userDni.set(metaDni.trim());
+      this.needsDni.set(false);
+    } else {
+      this.userDni.set(null);
+      this.needsDni.set(true);
+    }
+
     // Initial check from Supabase metadata if present
     const roleFromMetadata = user.user_metadata?.role || user.app_metadata?.role;
     if (roleFromMetadata && Object.values(Role).includes(roleFromMetadata as Role)) {
@@ -70,6 +88,10 @@ export class AuthService {
         if (profile?.name) {
           this.userName.set(profile.name);
         }
+        if (profile?.dni && profile.dni !== 'No registrado' && profile.dni.trim().length > 0) {
+          this.userDni.set(profile.dni.trim());
+          this.needsDni.set(false);
+        }
       },
       error: (err) => {
         console.warn('Could not fetch user profile from backend API', err);
@@ -82,6 +104,8 @@ export class AuthService {
     this.userEmail.set(null);
     this.userId.set(null);
     this.userName.set(null);
+    this.userDni.set(null);
+    this.needsDni.set(false);
     this.currentRole.set(Role.COMPANY_ADMIN);
   }
 
@@ -120,7 +144,7 @@ export class AuthService {
     }
   }
 
-  async loginWithOAuth(provider: 'google' | 'github'): Promise<{ success: boolean; error?: string }> {
+  async loginWithOAuth(provider: 'google' = 'google'): Promise<{ success: boolean; error?: string }> {
     try {
       const { error } = await this.supabase.signInWithOAuth(provider);
       if (error) {
@@ -141,6 +165,24 @@ export class AuthService {
       return { success: true };
     } catch (err: any) {
       return { success: false, error: err.message || 'Error al enviar enlace mágico.' };
+    }
+  }
+
+  async updateDni(dni: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const cleanDni = dni.trim();
+      const { error } = await this.supabase.updateUserMetadata({
+        dni: cleanDni,
+        role: this.currentRole()
+      });
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      this.userDni.set(cleanDni);
+      this.needsDni.set(false);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Error al guardar tu DNI.' };
     }
   }
 

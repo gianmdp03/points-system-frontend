@@ -1,0 +1,65 @@
+@if (authService.isLoggedIn() && authService.needsDni()) {
+  <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity animate-fade-in">
+    <div class="relative w-full max-w-md bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-[32px] p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-2xl z-10 transition-all">
+      
+      <!-- Icon & Header -->
+      <div class="text-center mb-6 space-y-2">
+        <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] text-[#1A73E8] dark:text-[#8AB4F8] flex items-center justify-center shadow-xs">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+          </svg>
+        </div>
+
+        <h3 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+          ¡Casi listo! Completa tu DNI
+        </h3>
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
+          Has iniciado sesión con Google como <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">{{ authService.displayName() }}</strong>. Para vincular tu cuenta de comercio en Pointly, ingresa tu número de DNI o documento.
+        </p>
+      </div>
+
+      <!-- Error Alert -->
+      @if (errorMessage()) {
+        <div class="mb-4 p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
+          <svg class="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Formulario -->
+      <form [formGroup]="dniForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-2">
+            Número de Documento (DNI) *
+          </label>
+          <input 
+            type="text"
+            formControlName="dni"
+            placeholder="Ej: 38450123"
+            [class.border-rose-500]="isFieldInvalid(dniForm, 'dni', isSubmitted())"
+            class="w-full px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+          @if (isFieldInvalid(dniForm, 'dni', isSubmitted())) {
+            <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span>{{ getFieldError(dniForm, 'dni') }}</span>
+            </p>
+          }
+        </div>
+
+        <button 
+          type="submit"
+          [disabled]="isLoading()"
+          class="w-full py-3.5 px-6 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 shadow-md">
+          @if (isLoading()) {
+            <div class="w-4 h-4 border-2 border-white dark:border-[#131314] border-t-transparent rounded-full animate-spin"></div>
+            <span>Guardando datos...</span>
+          } @else {
+            <span>Continuar al Panel</span>
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+}
