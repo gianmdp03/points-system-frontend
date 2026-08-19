@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Role, UserDetailDTO } from '../models';
 import { SupabaseService } from './supabase-service';
 import { UserService } from './user-service';
+import { SubscriptionStateService } from './subscription-state-service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { UserService } from './user-service';
 export class AuthService {
   private readonly supabase = inject(SupabaseService);
   private readonly userService = inject(UserService);
+  private readonly subscriptionState = inject(SubscriptionStateService);
 
   readonly isLoggedIn = signal<boolean>(false);
   readonly currentRole = signal<Role>(Role.COMPANY_ADMIN);
@@ -97,6 +99,9 @@ export class AuthService {
         console.warn('Could not fetch user profile from backend API', err);
       }
     });
+
+    // Load subscription details for the logged in user
+    this.subscriptionState.loadSubscription();
   }
 
   private clearSessionData() {
@@ -107,6 +112,7 @@ export class AuthService {
     this.userDni.set(null);
     this.needsDni.set(false);
     this.currentRole.set(Role.COMPANY_ADMIN);
+    this.subscriptionState.clearSubscription();
   }
 
   async login(email: string, pass: string): Promise<{ success: boolean; error?: string }> {

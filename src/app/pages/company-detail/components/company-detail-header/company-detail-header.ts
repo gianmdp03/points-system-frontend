@@ -1,15 +1,19 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { CompanyDetailDTO, Role } from '../../../../core/models';
+import { SubscriptionStateService } from '../../../../core/services/subscription-state-service';
 
 @Component({
   selector: 'app-company-detail-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './company-detail-header.html',
   host: { class: 'block' }
 })
 export class CompanyDetailHeaderComponent {
+  protected readonly subscriptionState = inject(SubscriptionStateService);
+
   @Input({ required: true }) company!: CompanyDetailDTO;
   @Input({ required: true }) currentRole!: Role | null;
 
@@ -17,4 +21,5 @@ export class CompanyDetailHeaderComponent {
   @Output() editCompany = new EventEmitter<void>();
 
   readonly RoleEnum = Role;
+  readonly currentPlan = computed(() => this.subscriptionState.currentPlan());
 }

@@ -1,18 +1,71 @@
 <div class="flex flex-col gap-6 sm:gap-8">
+  
+  <!-- Preventive Upgrade Banner if Plan BASIC -->
+  @if (!canCreatePromotions()) {
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+      <div class="flex items-start gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div class="space-y-0.5">
+          <div class="flex items-center gap-2">
+            <h4 class="font-black text-sm text-[#1F1F1F] dark:text-[#E3E3E3]">
+              Función Exclusiva para Planes PRO & ENTERPRISE
+            </h4>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200">
+              Tu Plan: {{ currentPlan() }}
+            </span>
+          </div>
+          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed max-w-2xl">
+            Crea promociones con multiplicadores de puntos (2x, 3x, etc.) para impulsar tus ventas en días especiales. Actualiza a PRO para desbloquear esta función.
+          </p>
+        </div>
+      </div>
+
+      <a 
+        routerLink="/dashboard/pricing" 
+        class="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs rounded-xl shadow-xs transition flex-shrink-0 cursor-pointer gap-1.5">
+        <span>Hacer Upgrade</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+  }
+
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
       <h3 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Promociones Especiales</h3>
       <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">Total: {{ promotions.length }} {{ promotions.length === 1 ? 'promoción' : 'promociones' }}</p>
     </div>
 
-    <button 
-      (click)="addPromotion.emit()"
-      class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-      Agregar Promoción
-    </button>
+    <!-- Action button with lock / standard styling -->
+    @if (canCreatePromotions()) {
+      <button 
+        (click)="onAddPromotionClick()"
+        type="button"
+        class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Agregar Promoción
+      </button>
+    } @else {
+      <button 
+        (click)="onAddPromotionClick()"
+        type="button"
+        class="min-h-[44px] px-5 py-2.5 bg-[#F8F9FA] dark:bg-[#1E1E1E] hover:bg-amber-50 dark:hover:bg-amber-950/30 text-amber-700 dark:text-amber-300 font-bold text-xs rounded-xl border border-amber-300 dark:border-amber-800/80 shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <span>Agregar Promoción</span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white uppercase tracking-wider">
+          PRO
+        </span>
+      </button>
+    }
   </div>
 
   @if (promotions.length === 0) {
@@ -23,12 +76,31 @@
         </svg>
       </div>
       <h4 class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Sin promociones activas</h4>
-      <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto mb-6 leading-relaxed">Actualmente no hay campañas promocionales vigentes en esta sucursal.</p>
-      <button 
-        (click)="addPromotion.emit()"
-        class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
-        Crear Primera Promoción
-      </button>
+      <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto mb-6 leading-relaxed">
+        @if (canCreatePromotions()) {
+          Actualmente no hay campañas promocionales vigentes en esta sucursal.
+        } @else {
+          Crea campañas promocionales con multiplicadores de puntos cuando actualices a un plan superior.
+        }
+      </p>
+      
+      @if (canCreatePromotions()) {
+        <button 
+          (click)="onAddPromotionClick()"
+          type="button"
+          class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
+          Crear Primera Promoción
+        </button>
+      } @else {
+        <a 
+          routerLink="/dashboard/pricing"
+          class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs rounded-full shadow-md cursor-pointer gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Desbloquear con Plan PRO
+        </a>
+      }
     </div>
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
@@ -50,6 +122,7 @@
             
             <button 
               (click)="editPromotion.emit(promo)"
+              type="button"
               class="min-h-[44px] px-4 py-2 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
               Editar
             </button>

@@ -7,3 +7,4 @@ export * from './product.model';
 export * from './promotion.model';
 export * from './reward.model';
 export * from './sale.model';
+export * from './subscription.model';

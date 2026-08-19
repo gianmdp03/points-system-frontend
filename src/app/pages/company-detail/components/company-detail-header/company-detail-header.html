@@ -1,14 +1,25 @@
 <div class="flex flex-col gap-6 sm:gap-8">
-  <!-- Botón Volver al Dashboard -->
-  <div class="flex items-center justify-between">
+  <!-- Botón Volver al Dashboard & Badges -->
+  <div class="flex items-center justify-between flex-wrap gap-3">
     <button 
       (click)="back.emit()" 
+      type="button"
       class="inline-flex items-center gap-2 min-h-[44px] px-4 py-2 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#F8F9FA] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all cursor-pointer">
       <svg class="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
       Volver al Panel
     </button>
+
+    @if (currentRole === RoleEnum.COMPANY_ADMIN) {
+      <a 
+        routerLink="/dashboard/pricing"
+        class="inline-flex items-center gap-2 min-h-[44px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E8F0FE] dark:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 hover:bg-[#1A73E8]/15 transition cursor-pointer">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Plan: <strong>{{ currentPlan() }}</strong></span>
+        <span class="text-[10px] uppercase underline ml-1">Upgrade</span>
+      </a>
+    }
   </div>
 
   <!-- Header Banner de la Empresa (Estilo Material 3 / Plano) -->
@@ -52,6 +63,7 @@
 
         <button 
           (click)="editCompany.emit()"
+          type="button"
           class="min-h-[44px] px-5 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-2xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

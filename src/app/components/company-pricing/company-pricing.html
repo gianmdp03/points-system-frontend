@@ -1,83 +1,141 @@
-<section id="precios" class="space-y-16 py-8">
-    <div class="text-center max-w-2xl mx-auto space-y-4">
-        <span class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold uppercase tracking-wider text-xs">Planes Flexibles</span>
-        <h2 class="text-3xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">Precios para todo tamaño de negocio</h2>
-        <p class="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-base">Elige el plan que mejor se adapte a tu volumen de clientes. Cancela o cambia de plan en cualquier momento.</p>
-    </div>
+<section id="precios" class="space-y-12 py-8">
+  <div class="text-center max-w-3xl mx-auto space-y-4 px-4">
+    <span class="text-[#1A73E8] dark:text-[#8AB4F8] font-black uppercase tracking-widest text-xs px-3.5 py-1.5 rounded-full bg-[#E8F0FE] dark:bg-[#1A73E8]/10 border border-[#1A73E8]/20">
+      Planes & Precios Flexibles
+    </span>
+    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+      Escala tu programa de fidelización
+    </h2>
+    <p class="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-sm sm:text-base leading-relaxed">
+      Elige el plan ideal según tu volumen de clientes, sucursales y campañas. Actualiza o cancela cuando quieras con total flexibilidad.
+    </p>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-        <!-- Plan Inicial / Starter -->
-        <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-[32px] p-8 md:p-10 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-8">
-            <div class="space-y-6">
-                <div class="space-y-2">
-                    <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">Plan Emprendedor</h3>
-                    <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Ideal para pequeños locales o comercios en etapa inicial.</p>
-                </div>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">$19</span>
-                    <span class="text-sm text-[#5F6368] dark:text-[#9AA0A6] font-medium">/ mes</span>
-                </div>
-                <ul class="space-y-3.5 text-sm text-[#1F1F1F] dark:text-[#E3E3E3] border-t border-[#E3E3E3] dark:border-[#333333] pt-6">
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Hasta 500 usuarios activos</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Dashboard básico de métricas</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> App móvil para escaneo QR</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Soporte por Email</li>
-                </ul>
+    @if (errorMessage()) {
+      <div class="mt-4 p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl text-xs sm:text-sm font-semibold text-rose-700 dark:text-rose-300 flex items-center justify-center gap-2 max-w-xl mx-auto">
+        <svg class="w-5 h-5 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch max-w-7xl mx-auto px-4 sm:px-6">
+    @for (p of plansList; track p.plan) {
+      <div 
+        [class]="p.isPopular 
+          ? 'bg-[#FFFFFF] dark:bg-[#131314] rounded-[32px] p-7 sm:p-9 border-2 border-[#1A73E8] dark:border-[#8AB4F8] relative flex flex-col justify-between space-y-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform md:-translate-y-2' 
+          : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-[32px] p-7 sm:p-9 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-8 shadow-xs hover:border-[#C4C7C5] dark:hover:border-[#5E6266] transition-all duration-300'">
+        
+        <!-- Popular Badge -->
+        @if (p.isPopular) {
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-wider shadow-sm">
+            Más Popular
+          </div>
+        }
+
+        <!-- Active Plan Badge -->
+        @if (isLoggedIn() && currentPlan() === p.plan) {
+          <div class="absolute top-4 right-4 bg-emerald-500 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs">
+            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            Plan Actual
+          </div>
+        }
+
+        <div class="space-y-6">
+          <div class="space-y-2 pt-2">
+            <div class="flex items-center gap-2">
+              <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">{{ p.name }}</h3>
             </div>
-            <a routerLink="/register" [queryParams]="{ role: 'COMPANY_ADMIN' }" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition cursor-pointer">
-                Empezar Prueba
-            </a>
+            <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] min-h-[36px] leading-relaxed">{{ p.tagline }}</p>
+          </div>
+
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-4xl sm:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">${{ p.priceMonthly }}</span>
+            <span class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] font-semibold">USD / mes</span>
+          </div>
+
+          <!-- Feature Highlights / Limits -->
+          <div class="grid grid-cols-2 gap-2 pt-3 border-t border-[#E3E3E3] dark:border-[#333333] text-[11px]">
+            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Clientes</span>
+              <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
+                {{ p.maxClients === -1 ? 'Ilimitados' : (p.maxClients | number) }}
+              </strong>
+            </div>
+            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Sucursales</span>
+              <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
+                {{ p.maxCompanies === -1 ? 'Ilimitadas' : p.maxCompanies }}
+              </strong>
+            </div>
+            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Premios</span>
+              <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
+                {{ p.maxRewards === -1 ? 'Ilimitados' : p.maxRewards }}
+              </strong>
+            </div>
+            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Promociones</span>
+              <strong [class]="p.canCreatePromotions ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-[#5F6368] dark:text-[#9AA0A6] font-bold'">
+                {{ p.canCreatePromotions ? 'Habilitadas' : 'No incluidas' }}
+              </strong>
+            </div>
+          </div>
+
+          <!-- Feature List -->
+          <ul class="space-y-3 text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] pt-3">
+            @for (feature of p.features; track feature) {
+              <li class="flex items-start gap-2.5">
+                <span class="text-emerald-500 font-bold flex-shrink-0 mt-0.5">✓</span>
+                <span class="leading-relaxed">{{ feature }}</span>
+              </li>
+            }
+          </ul>
         </div>
 
-        <!-- Plan Pro / Pyme (RECOMENDADO) -->
-        <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-[32px] p-8 md:p-10 border-2 border-[#1A73E8] dark:border-[#8AB4F8] relative flex flex-col justify-between space-y-8">
-            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
-                Más Popular
-            </div>
-            <div class="space-y-6 pt-2">
-                <div class="space-y-2">
-                    <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">Plan Crecimiento</h3>
-                    <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Para marcas en expansión que buscan automatizar su fidelización.</p>
-                </div>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-5xl font-black text-[#1A73E8] dark:text-[#8AB4F8]">$49</span>
-                    <span class="text-sm text-[#5F6368] dark:text-[#9AA0A6] font-medium">/ mes</span>
-                </div>
-                <ul class="space-y-3.5 text-sm text-[#1F1F1F] dark:text-[#E3E3E3] border-t border-[#E3E3E3] dark:border-[#333333] pt-6">
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Hasta 5,000 usuarios activos</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Analytics avanzado + Exportación</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Integración Ecommerce / POS</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Campañas automáticas por Email/Push</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Soporte Prioritario WhatsApp</li>
-                </ul>
-            </div>
-            <a routerLink="/register" [queryParams]="{ role: 'COMPANY_ADMIN' }" class="w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-4 rounded-full transition cursor-pointer">
-                Probar 30 Días Gratis
+        <!-- Action Button -->
+        <div class="pt-4">
+          @if (isLoggedIn()) {
+            @if (currentPlan() === p.plan && subscriptionState.isSubscribed()) {
+              <button 
+                type="button"
+                disabled
+                class="w-full text-center py-3.5 px-6 rounded-full font-bold text-xs sm:text-sm bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 cursor-default flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Tu Plan Actual
+              </button>
+            } @else {
+              <button 
+                type="button"
+                (click)="onSelectPlan(p.plan)"
+                [disabled]="loadingPlan() !== null"
+                [class]="p.isPopular 
+                  ? 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold py-4 px-6 rounded-full transition shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]'
+                  : 'w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]'">
+                @if (loadingPlan() === p.plan) {
+                  <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                  <span>Iniciando Checkout...</span>
+                } @else {
+                  <span>{{ currentPlan() === p.plan ? 'Reactivar Plan' : 'Contratar ' + p.name }}</span>
+                }
+              </button>
+            }
+          } @else {
+            <a 
+              routerLink="/register" 
+              [queryParams]="{ role: 'COMPANY_ADMIN', plan: p.plan }" 
+              [class]="p.isPopular 
+                ? 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold py-4 px-6 rounded-full transition shadow-md cursor-pointer flex items-center justify-center min-h-[44px]'
+                : 'w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center min-h-[44px]'">
+              Empezar Prueba
             </a>
+          }
         </div>
 
-        <!-- Plan Corporativo -->
-        <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-[32px] p-8 md:p-10 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-8">
-            <div class="space-y-6">
-                <div class="space-y-2">
-                    <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">Plan Corporativo</h3>
-                    <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Franquicias o cadenas con múltiples sucursales.</p>
-                </div>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">$99</span>
-                    <span class="text-sm text-[#5F6368] dark:text-[#9AA0A6] font-medium">/ mes</span>
-                </div>
-                <ul class="space-y-3.5 text-sm text-[#1F1F1F] dark:text-[#E3E3E3] border-t border-[#E3E3E3] dark:border-[#333333] pt-6">
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Usuarios ilimitados</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Multi-sucursal y Roles de empleado</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Marca Blanca (Tu propio logo y dominio)</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> API custom de integración</li>
-                    <li class="flex items-center gap-3"><span class="text-emerald-500 font-bold">✓</span> Ejecutivo de cuenta dedicado</li>
-                </ul>
-            </div>
-            <a routerLink="/register" [queryParams]="{ role: 'COMPANY_ADMIN' }" class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 rounded-full transition cursor-pointer">
-                Contactar Ventas
-            </a>
-        </div>
-    </div>
+      </div>
+    }
+  </div>
 </section>

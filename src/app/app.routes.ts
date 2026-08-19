@@ -6,11 +6,15 @@ import { DashboardPage } from './pages/dashboard/dashboard-page';
 import { CompanyDetailPage } from './pages/company-detail/company-detail-page';
 import { ClientPointsPage } from './pages/client-points/client-points';
 
+import { PricingPage } from './pages/pricing/pricing-page';
+
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'dashboard', component: DashboardPage },
+  { path: 'pricing', component: PricingPage },
+  { path: 'dashboard/pricing', component: PricingPage },
   { path: 'companies/:id', component: CompanyDetailPage },
   { path: 'points', component: ClientPointsPage },
   { path: 'my-points', redirectTo: 'points', pathMatch: 'full' },
