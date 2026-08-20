@@ -22,23 +22,38 @@ export class RoleAdminViewComponent {
   @Output() editCompany = new EventEmitter<CompanyListDTO | undefined>();
   @Output() toggleStatus = new EventEmitter<CompanyListDTO>();
 
+  readonly SubscriptionPlanEnum = SubscriptionPlan;
+  readonly currentPlan = computed(() => this.subscriptionState.currentPlan());
   readonly maxCompanies = computed(() => this.subscriptionState.maxCompanies());
+
   readonly hasReachedCompanyLimit = computed(() => {
+    if (this.currentPlan() === SubscriptionPlan.NONE) return true;
     const max = this.maxCompanies();
     if (max === -1) return false;
     return this.companies.length >= max;
   });
 
   onAddCompanyClick(): void {
-    if (this.hasReachedCompanyLimit()) {
+    if (this.currentPlan() === SubscriptionPlan.NONE) {
       this.planLimitModalService.open({
-        title: 'Límite de Sucursales Alcanzado',
-        message: `Has alcanzado el límite de ${this.maxCompanies()} sucursal(es) permitida(s) en tu plan ${this.subscriptionState.currentPlan()}. Actualiza a un plan superior para registrar más empresas.`,
-        targetPlan: this.subscriptionState.currentPlan() === SubscriptionPlan.BASIC ? SubscriptionPlan.PRO : SubscriptionPlan.ENTERPRISE,
+        title: 'Sin Plan Activo',
+        message: 'No posees un plan de suscripción activo ni periodo de prueba. Por favor, selecciona un plan para crear y administrar sucursales.',
+        targetPlan: SubscriptionPlan.BASIC,
         upgradeRoute: '/dashboard/pricing'
       });
       return;
     }
+
+    if (this.hasReachedCompanyLimit()) {
+      this.planLimitModalService.open({
+        title: 'Límite de Sucursales Alcanzado',
+        message: `Has alcanzado el límite de ${this.maxCompanies()} sucursal(es) permitida(s) en tu plan ${this.currentPlan()}. Actualiza a un plan superior para registrar más empresas.`,
+        targetPlan: this.currentPlan() === SubscriptionPlan.BASIC ? SubscriptionPlan.PRO : SubscriptionPlan.ENTERPRISE,
+        upgradeRoute: '/dashboard/pricing'
+      });
+      return;
+    }
+
     this.addCompany.emit();
   }
 }

@@ -18,6 +18,10 @@ export interface CompanyListDTO {
   amountStep: number;
   pointsPerStep: number;
   isEnabled: boolean;
+  isPointsExpirationEnabled?: boolean;
+  pointsExpirationDays?: number | null;
+  isInactiveClientPurgeEnabled?: boolean;
+  inactiveClientPurgeDays?: number | null;
 }
 
 export interface CompanyDetailDTO {
@@ -27,6 +31,10 @@ export interface CompanyDetailDTO {
   amountStep: number;
   pointsPerStep: number;
   isEnabled: boolean;
+  isPointsExpirationEnabled?: boolean;
+  pointsExpirationDays?: number | null;
+  isInactiveClientPurgeEnabled?: boolean;
+  inactiveClientPurgeDays?: number | null;
   appAdminOwner?: string;
   pointsAccounts?: PointsAccountDetailDTO[];
   products?: ProductListDTO[];
@@ -39,6 +47,10 @@ export interface CompanyRequestDTO {
   companyDetails: CompanyDetails;
   amountStep: number;
   pointsPerStep: number;
+  isPointsExpirationEnabled?: boolean;
+  pointsExpirationDays?: number | null;
+  isInactiveClientPurgeEnabled?: boolean;
+  inactiveClientPurgeDays?: number | null;
 }
 
 export interface CompanyUpdateDTO {
@@ -46,6 +58,10 @@ export interface CompanyUpdateDTO {
   companyDetails?: Partial<CompanyDetails>;
   amountStep?: number;
   pointsPerStep?: number;
+  isPointsExpirationEnabled?: boolean;
+  pointsExpirationDays?: number | null;
+  isInactiveClientPurgeEnabled?: boolean;
+  inactiveClientPurgeDays?: number | null;
 }
 
 export interface CompanyPublicDetailDTO {
@@ -57,8 +73,11 @@ export interface CompanyPublicDetailDTO {
   isEnabled: boolean;
   clientBalance: number;
   clientName: string;
+  isPointsExpirationEnabled?: boolean;
+  pointsExpirationDays?: number | null;
+  isInactiveClientPurgeEnabled?: boolean;
+  inactiveClientPurgeDays?: number | null;
   products: ProductListDTO[];
   activePromotions: PromotionListDTO[];
   rewards: RewardListDTO[];
 }
-

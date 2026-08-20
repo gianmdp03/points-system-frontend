@@ -1,4 +1,6 @@
 export enum SubscriptionPlan {
+  NONE = 'NONE',
+  FREE_TRIAL = 'FREE_TRIAL',
   BASIC = 'BASIC',
   PRO = 'PRO',
   ENTERPRISE = 'ENTERPRISE'
@@ -42,7 +44,7 @@ export interface SubscriptionResponseDTO {
 }
 
 export interface SubscriptionDetailDTO {
-  id: number;
+  id: number | null;
   userId: string;
   plan: SubscriptionPlan;
   billingPeriod: BillingPeriod;
@@ -50,10 +52,10 @@ export interface SubscriptionDetailDTO {
   provider: PaymentProvider;
   price: number;
   currency: string;
-  externalSubscriptionId?: string;
-  startDate?: string;
-  nextBillingDate?: string;
-  cancelledAt?: string;
+  externalSubscriptionId?: string | null;
+  startDate?: string | null;
+  nextBillingDate?: string | null;
+  cancelledAt?: string | null;
 }
 
 export interface PlanConfig {
@@ -67,10 +69,49 @@ export interface PlanConfig {
   maxCompanies: number; // -1 means unlimited
   canCreatePromotions: boolean;
   isPopular?: boolean;
+  isHidden?: boolean; // Hidden from public pricing purchase cards (e.g. NONE, FREE_TRIAL)
   features: string[];
 }
 
 export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
+  [SubscriptionPlan.NONE]: {
+    plan: SubscriptionPlan.NONE,
+    name: 'Sin Plan Activo',
+    tagline: 'No posees un plan de suscripción activo ni periodo de prueba.',
+    priceMonthly: 0,
+    currency: 'USD',
+    maxClients: 0,
+    maxRewards: 0,
+    maxCompanies: 0,
+    canCreatePromotions: false,
+    isPopular: false,
+    isHidden: true,
+    features: [
+      'Sin sucursales habilitadas',
+      'Sin clientes habilitados',
+      'Requiere contratar un plan para operar'
+    ]
+  },
+  [SubscriptionPlan.FREE_TRIAL]: {
+    plan: SubscriptionPlan.FREE_TRIAL,
+    name: 'Prueba Gratuita',
+    tagline: 'Periodo de prueba activo de 30 días sin costo.',
+    priceMonthly: 0,
+    currency: 'USD',
+    maxClients: 100,
+    maxRewards: 5,
+    maxCompanies: 1,
+    canCreatePromotions: true,
+    isPopular: false,
+    isHidden: true,
+    features: [
+      '1 sucursal comercial',
+      'Hasta 100 clientes registrados',
+      'Hasta 5 premios o recompensas',
+      'Campañas de promociones y multiplicadores habilitadas',
+      'Prueba de 30 días incluida'
+    ]
+  },
   [SubscriptionPlan.BASIC]: {
     plan: SubscriptionPlan.BASIC,
     name: 'Plan Emprendedor',
@@ -82,6 +123,7 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     maxCompanies: 1,
     canCreatePromotions: false,
     isPopular: false,
+    isHidden: false,
     features: [
       'Hasta 100 clientes registrados',
       'Hasta 5 premios o recompensas',
@@ -102,6 +144,7 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     maxCompanies: 3,
     canCreatePromotions: true,
     isPopular: true,
+    isHidden: false,
     features: [
       'Hasta 1,000 clientes registrados',
       'Premios y recompensas ilimitados',
@@ -122,6 +165,7 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     maxCompanies: -1,
     canCreatePromotions: true,
     isPopular: false,
+    isHidden: false,
     features: [
       'Clientes ilimitados',
       'Premios y recompensas ilimitados',

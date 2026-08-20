@@ -35,9 +35,12 @@ export class TabPromotionsComponent {
 
   onAddPromotionClick(): void {
     if (!this.canCreatePromotions()) {
+      const isNone = this.currentPlan() === SubscriptionPlan.NONE;
       this.planLimitModalService.open({
-        title: 'Promociones no disponibles en Plan BASIC',
-        message: 'Tu plan BASIC no incluye la creación de campañas promocionales. Actualiza al Plan PRO o ENTERPRISE para multiplicar los puntos y fidelizar a tus clientes.',
+        title: isNone ? 'Sin Plan Activo' : 'Promociones no disponibles en Plan BASIC',
+        message: isNone 
+          ? 'No posees un plan de suscripción activo ni periodo de prueba. Suscríbete a PRO o ENTERPRISE para crear campañas de promociones y multiplicar puntos.'
+          : 'Tu plan BASIC no incluye la creación de campañas promocionales. Actualiza al Plan PRO o ENTERPRISE para multiplicar los puntos y fidelizar a tus clientes.',
         targetPlan: SubscriptionPlan.PRO,
         upgradeRoute: '/dashboard/pricing'
       });

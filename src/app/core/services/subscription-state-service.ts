@@ -18,24 +18,41 @@ import { SubscriptionService } from './subscription-service';
 export class SubscriptionStateService {
   private readonly subscriptionService = inject(SubscriptionService);
 
-  readonly subscription = signal<SubscriptionDetailDTO | null>(null);
+  readonly currentSubscription = signal<SubscriptionDetailDTO | null>(null);
+  // Alias for backward compatibility
+  readonly subscription = this.currentSubscription;
+
   readonly isLoading = signal<boolean>(false);
   readonly isSubscribing = signal<boolean>(false);
+  readonly isUpgrading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
+  readonly successMessage = signal<string | null>(null);
 
   // Computed signals
   readonly currentPlan = computed<SubscriptionPlan>(() => {
-    const sub = this.subscription();
-    return sub?.plan || SubscriptionPlan.BASIC;
+    const sub = this.currentSubscription();
+    return sub?.plan || SubscriptionPlan.NONE;
   });
 
   readonly isSubscribed = computed<boolean>(() => {
-    const sub = this.subscription();
-    return sub?.status === SubscriptionStatus.ACTIVE;
+    const sub = this.currentSubscription();
+    return (
+      sub?.status === SubscriptionStatus.ACTIVE &&
+      this.currentPlan() !== SubscriptionPlan.NONE
+    );
+  });
+
+  readonly isFreeTrial = computed<boolean>(() => {
+    return this.currentPlan() === SubscriptionPlan.FREE_TRIAL;
+  });
+
+  readonly isProOrEnterprise = computed<boolean>(() => {
+    const plan = this.currentPlan();
+    return plan === SubscriptionPlan.PRO || plan === SubscriptionPlan.ENTERPRISE || plan === SubscriptionPlan.FREE_TRIAL;
   });
 
   readonly currentPlanConfig = computed<PlanConfig>(() => {
-    return PLAN_CONFIGS[this.currentPlan()];
+    return PLAN_CONFIGS[this.currentPlan()] || PLAN_CONFIGS[SubscriptionPlan.NONE];
   });
 
   readonly canCreatePromotions = computed<boolean>(() => {
@@ -58,16 +75,16 @@ export class SubscriptionStateService {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.subscriptionService.getMySubscription().subscribe({
+    this.subscriptionService.getCurrentSubscription().subscribe({
       next: (sub: SubscriptionDetailDTO) => {
-        this.subscription.set(sub);
+        this.currentSubscription.set(sub);
         this.isLoading.set(false);
       },
       error: (err) => {
         this.isLoading.set(false);
-        // If not found (404), user doesn't have an active custom subscription yet, keep BASIC
+        // If not found (404), user has no active subscription (NONE)
         if (err.status === 404) {
-          this.subscription.set(null);
+          this.currentSubscription.set(null);
         } else {
           this.error.set(err.error?.message || 'Error al cargar la suscripción.');
         }
@@ -76,8 +93,41 @@ export class SubscriptionStateService {
   }
 
   clearSubscription(): void {
-    this.subscription.set(null);
+    this.currentSubscription.set(null);
     this.error.set(null);
+    this.successMessage.set(null);
+  }
+
+  changePlan(plan: SubscriptionPlan): Promise<{ success: boolean; data?: SubscriptionDetailDTO; error?: string }> {
+    this.isUpgrading.set(true);
+    this.error.set(null);
+    this.successMessage.set(null);
+
+    return new Promise((resolve) => {
+      this.subscriptionService.changeSubscriptionPlan(plan).subscribe({
+        next: (updatedSub: SubscriptionDetailDTO) => {
+          this.currentSubscription.set(updatedSub);
+          this.isUpgrading.set(false);
+          const planName = PLAN_CONFIGS[plan]?.name || plan;
+          this.successMessage.set(`¡Plan actualizado exitosamente a ${planName}!`);
+          resolve({ success: true, data: updatedSub });
+        },
+        error: (err) => {
+          this.isUpgrading.set(false);
+          const errorMsg =
+            err.error?.message ||
+            (typeof err.error === 'string' ? err.error : null) ||
+            err.message ||
+            'Error al cambiar de plan.';
+          this.error.set(errorMsg);
+          resolve({ success: false, error: errorMsg });
+        }
+      });
+    });
+  }
+
+  upgrade(plan: SubscriptionPlan): Promise<{ success: boolean; data?: SubscriptionDetailDTO; error?: string }> {
+    return this.changePlan(plan);
   }
 
   subscribe(
@@ -101,8 +151,9 @@ export class SubscriptionStateService {
       this.subscriptionService.createSubscription(dto).subscribe({
         next: (res: SubscriptionResponseDTO) => {
           this.isSubscribing.set(false);
+          this.loadSubscription();
           // If checkoutUrl is provided, redirect
-          if (res.checkoutUrl && typeof window !== 'undefined') {
+          if (res.checkoutUrl && typeof window !== 'undefined' && !res.checkoutUrl.includes('mock.local')) {
             window.location.href = res.checkoutUrl;
           }
           resolve({ success: true, data: res });
@@ -122,7 +173,7 @@ export class SubscriptionStateService {
     return new Promise((resolve) => {
       this.subscriptionService.cancelSubscription().subscribe({
         next: () => {
-          this.subscription.set(null);
+          this.currentSubscription.set(null);
           this.isLoading.set(false);
           resolve({ success: true });
         },

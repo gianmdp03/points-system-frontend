@@ -14,7 +14,7 @@ export interface ChatMessage {
 const INITIAL_MESSAGE: ChatMessage = {
   id: 'msg-init',
   sender: 'assistant',
-  text: '¡Hola! 👋 Soy tu asistente inteligente de **Pointly** impulsado por IA. ¿En qué te puedo ayudar hoy con respecto a tus puntos, canjes, comercios o promociones?',
+  text: '¡Hola! 👋 Soy tu asistente inteligente de **Pointly** impulsado por IA. ¿En qué te puedo ayudar hoy con respecto a tus puntos, canjes, comercios, promociones o planes de suscripción?',
   timestamp: new Date()
 };
 
@@ -31,9 +31,9 @@ export class AiChatService {
   readonly hasUnread = signal<boolean>(false);
 
   readonly suggestedPrompts: string[] = [
+    '¿Cuáles son los planes y precios para comercios?',
+    '¿Qué diferencias hay entre el plan BASIC y PRO?',
     '¿Cómo consulto mis puntos con DNI?',
-    '¿Cómo se suman puntos con las compras?',
-    '¿Cómo canjeo una recompensa?',
     '¿Qué beneficios ofrece Pointly a comercios?'
   ];
 

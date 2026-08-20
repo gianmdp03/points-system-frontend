@@ -5,11 +5,13 @@ import { UserInfo } from '../../components/user-info/user-info';
 import { CompanyInfo } from '../../components/company-info/company-info';
 import { CompanyPricing } from '../../components/company-pricing/company-pricing';
 import { Faq } from '../../components/faq/faq';
+import { CompanyQuickActionsComponent } from '../../components/company-quick-actions/company-quick-actions';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
+    CompanyQuickActionsComponent,
     Hero,
     CarouselComponent,
     UserInfo,
@@ -21,5 +23,3 @@ import { Faq } from '../../components/faq/faq';
   styleUrl: './home.css'
 })
 export class Home {}
-
-

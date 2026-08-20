@@ -1,7 +1,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
   
   <!-- Detalles de Ubicación & Contacto -->
-  <div class="lg:col-span-2 bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-xs flex flex-col justify-between space-y-6">
+  <div class="lg:col-span-2 bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-xs flex flex-col justify-between space-y-6">
     <div class="space-y-6">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
@@ -11,7 +11,7 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg sm:text-xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">Información Comercial</h3>
+            <h3 class="text-lg sm:text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Información Comercial</h3>
             <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Datos registrados en el sistema de puntos</p>
           </div>
         </div>
@@ -41,6 +41,35 @@
             <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block mb-1">País / Código Postal</span>
             <span class="text-xs sm:text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">{{ details.country }} ({{ details.zipCode }})</span>
           </div>
+          <div class="p-4 bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3]/60 dark:border-[#333333]/60 sm:col-span-2">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block mb-1">Política de Vencimiento de Puntos</span>
+            @if (company.isPointsExpirationEnabled && company.pointsExpirationDays) {
+              <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>Vencimiento activo: <strong>{{ company.pointsExpirationDays }} días</strong> desde su emisión (los puntos más antiguos vencen primero).</span>
+              </div>
+            } @else {
+              <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Los puntos no vencen.</span>
+              </div>
+            }
+          </div>
+
+          <div class="p-4 bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3]/60 dark:border-[#333333]/60 sm:col-span-2">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block mb-1">Limpieza de Clientes Inactivos</span>
+            @if (company.isInactiveClientPurgeEnabled && company.inactiveClientPurgeDays) {
+              <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>Baja automática tras <strong>{{ company.inactiveClientPurgeDays }} días</strong> sin actividad para liberar cupo.</span>
+              </div>
+            } @else {
+              <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Las cuentas inactivas se conservan indefinidamente.</span>
+              </div>
+            }
+          </div>
         </div>
       } @else {
         <div class="pt-6 border-t border-[#E3E3E3] dark:border-[#333333]">
@@ -51,28 +80,51 @@
   </div>
 
   <!-- Resumen de Métricas / Puntos -->
-  <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-xs flex flex-col justify-between space-y-6">
+  <div class="bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-xs flex flex-col justify-between space-y-6">
     <div>
-      <h3 class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Resumen de Sucursal</h3>
+      <h3 class="text-lg font-bold text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Resumen de Sucursal</h3>
       <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mb-6">Métricas generales de la sucursal</p>
 
       <div class="p-6 bg-[#E8F0FE] dark:bg-[#1E1E1E] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 rounded-2xl text-center space-y-3">
         <span class="text-[10px] uppercase font-extrabold text-[#1A73E8] dark:text-[#8AB4F8] tracking-wider">Clientes Registrados</span>
-        <div class="text-4xl font-black text-[#1A73E8] dark:text-[#8AB4F8]">
+        <div class="text-4xl font-bold text-[#1A73E8] dark:text-[#8AB4F8]">
           {{ company.pointsAccounts?.length || 0 }}
         </div>
-        <button 
-          (click)="addClient.emit()" 
-          class="w-full min-h-[44px] py-2.5 px-4 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer mt-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
-          Asociar Nuevo Cliente
-        </button>
+        <div class="flex flex-col gap-2 mt-2">
+          <button 
+            (click)="addClient.emit()" 
+            class="w-full min-h-[44px] py-2.5 px-4 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Asociar Nuevo Cliente
+          </button>
+
+          <button 
+            (click)="generateQr.emit()" 
+            class="w-full min-h-[44px] py-2.5 px-4 bg-[#FFFFFF] hover:bg-[#F8F9FA] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+            Generar QR de Registro
+          </button>
+        </div>
       </div>
     </div>
 
     <div class="pt-6 border-t border-[#E3E3E3] dark:border-[#333333] text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] space-y-3">
+      <div class="flex justify-between">
+        <span>Vencimiento de Puntos:</span>
+        <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">
+          {{ (company.isPointsExpirationEnabled && company.pointsExpirationDays) ? (company.pointsExpirationDays + ' días') : 'No vencen' }}
+        </strong>
+      </div>
+      <div class="flex justify-between">
+        <span>Purga de Inactivos:</span>
+        <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">
+          {{ (company.isInactiveClientPurgeEnabled && company.inactiveClientPurgeDays) ? (company.inactiveClientPurgeDays + ' días') : 'Desactivada' }}
+        </strong>
+      </div>
       <div class="flex justify-between">
         <span>Productos en Catálogo:</span>
         <span class="font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">{{ company.products?.length || 0 }}</span>
@@ -89,31 +141,49 @@
   </div>
 
   <!-- Tabla de Clientes y Cuentas de Puntos -->
-  <div class="lg:col-span-3 bg-[#FFFFFF] dark:bg-[#131314] rounded-3xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-xs space-y-6">
+  <div class="lg:col-span-3 bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-xs space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h3 class="text-lg sm:text-xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">Clientes y Cuentas de Puntos</h3>
+        <h3 class="text-lg sm:text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Clientes y Cuentas de Puntos</h3>
         <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">Clientes vinculados y sus saldos de puntos acumulados</p>
       </div>
 
-      <button 
-        (click)="addClient.emit()" 
-        class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-        </svg>
-        Asociar Cliente
-      </button>
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <button 
+          (click)="checkPoints.emit()" 
+          class="min-h-[44px] px-4 py-2.5 bg-[#F8F9FA] hover:bg-[#E8F0FE] dark:bg-[#1E1E1E] dark:hover:bg-[#282A2C] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30 dark:border-[#8AB4F8]/30 font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          Consultar Puntos
+        </button>
+
+        <button 
+          (click)="addClient.emit()" 
+          class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          Asociar Cliente
+        </button>
+      </div>
     </div>
 
     @if (!company.pointsAccounts || company.pointsAccounts.length === 0) {
       <div class="text-center py-10 px-6 bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3]/60 dark:border-[#333333]/60">
         <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto mb-4">No hay clientes asociados aún a esta sucursal.</p>
-        <button 
-          (click)="addClient.emit()" 
-          class="inline-flex items-center justify-center min-h-[44px] px-6 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
-          Asociar Primer Cliente
-        </button>
+        <div class="flex items-center justify-center gap-3 flex-wrap">
+          <button 
+            (click)="checkPoints.emit()" 
+            class="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 bg-[#FFFFFF] dark:bg-[#131314] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30 dark:border-[#8AB4F8]/30 font-bold text-xs rounded-full shadow-xs cursor-pointer">
+            Consultar Saldo DNI
+          </button>
+          <button 
+            (click)="addClient.emit()" 
+            class="inline-flex items-center justify-center min-h-[44px] px-6 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
+            Asociar Primer Cliente
+          </button>
+        </div>
       </div>
     } @else {
       <div class="overflow-x-auto">

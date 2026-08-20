@@ -16,6 +16,8 @@ export class TabOverviewComponent {
 
   @Output() editCompany = new EventEmitter<void>();
   @Output() addClient = new EventEmitter<void>();
+  @Output() checkPoints = new EventEmitter<void>();
+  @Output() generateQr = new EventEmitter<void>();
 
   readonly RoleEnum = Role;
 }

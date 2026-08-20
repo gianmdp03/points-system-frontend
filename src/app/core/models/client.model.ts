@@ -14,3 +14,12 @@ export interface ClientRequestDTO {
   email?: string;
   phone?: string;
 }
+
+export interface ClientJoinRequestDTO {
+  companyId: number;
+  dni: string;
+  country: string;
+  name: string;
+  email?: string;
+  phone?: string;
+}

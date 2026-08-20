@@ -7,13 +7,23 @@
 
     <div class="flex flex-wrap items-center gap-3">
       <button 
+        (click)="checkPoints.emit()"
+        class="min-h-[44px] px-4 py-2.5 bg-[#FFFFFF] hover:bg-[#F8F9FA] dark:bg-[#131314] dark:hover:bg-[#282A2C] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30 dark:border-[#8AB4F8]/30 font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        Consultar Puntos
+      </button>
+
+      <button 
         (click)="addClient.emit()"
-        class="min-h-[44px] px-5 py-2.5 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#E3E3E3] dark:border-[#333333] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+        class="min-h-[44px] px-4 py-2.5 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#E3E3E3] dark:border-[#333333] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
         <svg class="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
         </svg>
         Asociar Cliente
       </button>
+
       <button 
         (click)="addSale.emit()"
         class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
@@ -39,11 +49,18 @@
       </div>
       <h4 class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Sin ventas registradas</h4>
       <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto mb-6 leading-relaxed">Aún no se han registrado transacciones de ventas para esta sucursal.</p>
-      <button 
-        (click)="addSale.emit()"
-        class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
-        Registrar Primera Venta
-      </button>
+      <div class="flex items-center justify-center gap-3 flex-wrap">
+        <button 
+          (click)="checkPoints.emit()" 
+          class="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 bg-[#FFFFFF] dark:bg-[#131314] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30 dark:border-[#8AB4F8]/30 font-bold text-xs rounded-full shadow-xs cursor-pointer">
+          Consultar Saldo DNI
+        </button>
+        <button 
+          (click)="addSale.emit()"
+          class="inline-flex items-center justify-center min-h-[44px] px-6 py-3 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-full shadow-xs cursor-pointer">
+          Registrar Primera Venta
+        </button>
+      </div>
     </div>
   } @else {
     <!-- Tabla Visual de Ventas -->
@@ -63,20 +80,42 @@
           <tbody class="divide-y divide-[#E3E3E3]/60 dark:divide-[#333333]/60 font-medium">
             @for (sale of sales; track sale.id) {
               <tr class="hover:bg-[#F8F9FA]/80 dark:hover:bg-[#1E1E1E]/80 transition-colors">
-                <td class="p-4 font-bold text-[#1A73E8] dark:text-[#8AB4F8]">#V-{{ sale.id }}</td>
-                <td class="p-4 font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
-                  {{ sale.client?.dni ? (sale.client?.dni + (sale.client?.name ? ' - ' + sale.client?.name : '')) : (sale.userDni || sale.userEmail || sale.userName || ('Cliente #' + sale.id)) }}
+                <td class="p-4 font-mono font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
+                  #{{ sale.id }}
                 </td>
-                <td class="p-4 font-bold text-emerald-600 dark:text-emerald-400">${{ sale.amount | number:'1.2-2' }}</td>
-                <td class="p-4 font-black text-[#1A73E8] dark:text-[#8AB4F8]">+{{ getCalculatedPoints(sale) }} pts</td>
-                <td class="p-4 text-[#5F6368] dark:text-[#9AA0A6]">
-                  {{ sale.createdAt ? (sale.createdAt | date:'shortDate') : '-' }}
+                <td class="p-4 font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
+                  <div>
+                    <span class="block text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
+                      {{ sale.client?.name || sale.userName || 'Cliente registrado' }}
+                    </span>
+                    @if (sale.client?.dni || sale.userDni) {
+                      <span class="text-[11px] block font-mono text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">
+                        DNI: {{ sale.client?.dni || sale.userDni }} @if (sale.client?.country) { ({{ sale.client?.country }}) }
+                      </span>
+                    } @else {
+                      <span class="text-[11px] block text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">
+                        Sin DNI registrado
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td class="p-4 font-black text-sm text-[#1F1F1F] dark:text-[#E3E3E3]">
+                  ${{ sale.amount | number }}
+                </td>
+                <td class="p-4 font-black text-emerald-600 dark:text-emerald-400 text-sm">
+                  +{{ getCalculatedPoints(sale) }} pts
+                </td>
+                <td class="p-4 text-[#5F6368] dark:text-[#9AA0A6] whitespace-nowrap">
+                  {{ sale.createdAt ? (sale.createdAt | date:'short') : '-' }}
                 </td>
                 <td class="p-4 text-right">
                   <button 
                     (click)="editSale.emit(sale)"
-                    class="min-h-[44px] px-3.5 py-2 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#1E1E1E] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
-                    Editar
+                    class="p-2 hover:bg-[#E8F0FE] dark:hover:bg-[#1E293B] rounded-xl text-[#1A73E8] dark:text-[#8AB4F8] transition cursor-pointer"
+                    title="Editar Venta">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
                   </button>
                 </td>
               </tr>

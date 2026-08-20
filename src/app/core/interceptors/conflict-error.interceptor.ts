@@ -18,15 +18,17 @@ export const conflictErrorInterceptor: HttpInterceptorFn = (req, next) => {
           errorMessage = errorBody.message;
         } else if (errorBody && typeof errorBody.error === 'string') {
           errorMessage = errorBody.error;
-        } else if (error.message) {
-          errorMessage = error.message;
         }
 
-        planLimitModalService.open({
-          title: 'Límite del Plan Alcanzado',
-          message: errorMessage,
-          upgradeRoute: '/dashboard/pricing'
-        });
+        // Solo abrir el modal de upgrade de plan si el error corresponde explícitamente a un límite/restricción de plan
+        const isPlanLimit = /l[ií]mite|plan|superior|upgrade|cupo|desactiva|suscribete/i.test(errorMessage);
+        if (isPlanLimit) {
+          planLimitModalService.open({
+            title: 'Límite del Plan Alcanzado',
+            message: errorMessage,
+            upgradeRoute: '/dashboard/pricing'
+          });
+        }
       }
 
       return throwError(() => error);

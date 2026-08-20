@@ -36,31 +36,54 @@ export class CompanyPricing {
   readonly currentPlan = computed(() => this.subscriptionState.currentPlan());
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
 
+  getPlanTier(plan: SubscriptionPlan): number {
+    switch (plan) {
+      case SubscriptionPlan.NONE: return 0;
+      case SubscriptionPlan.FREE_TRIAL: return 1;
+      case SubscriptionPlan.BASIC: return 2;
+      case SubscriptionPlan.PRO: return 3;
+      case SubscriptionPlan.ENTERPRISE: return 4;
+      default: return 0;
+    }
+  }
+
+  isCurrentPlan(plan: SubscriptionPlan): boolean {
+    return this.currentPlan() === plan && this.subscriptionState.isSubscribed();
+  }
+
+  isUpgrade(plan: SubscriptionPlan): boolean {
+    const currentTier = this.getPlanTier(this.currentPlan());
+    const targetTier = this.getPlanTier(plan);
+    return targetTier > currentTier;
+  }
+
+  isDowngrade(plan: SubscriptionPlan): boolean {
+    const currentTier = this.getPlanTier(this.currentPlan());
+    const targetTier = this.getPlanTier(plan);
+    return targetTier < currentTier && this.currentPlan() !== SubscriptionPlan.NONE && this.currentPlan() !== SubscriptionPlan.FREE_TRIAL;
+  }
+
   async onSelectPlan(plan: SubscriptionPlan): Promise<void> {
     this.errorMessage.set(null);
 
-    // If not logged in, prompt login modal or register
+    // If not logged in, prompt login modal
     if (!this.isLoggedIn()) {
       this.authService.openLoginModal();
       return;
     }
 
-    // If already on this active plan, nothing to do or inform user
-    if (this.currentPlan() === plan && this.subscriptionState.isSubscribed()) {
+    // If already on this active plan, do nothing
+    if (this.isCurrentPlan(plan)) {
       return;
     }
 
     this.loadingPlan.set(plan);
 
     try {
-      const res = await this.subscriptionState.subscribe(
-        plan,
-        PaymentProvider.MOCK,
-        BillingPeriod.MONTHLY
-      );
-
+      // Both upgrades, downgrades, and free trial transitions go through changePlan
+      const res = await this.subscriptionState.changePlan(plan);
       if (!res.success) {
-        this.errorMessage.set(res.error || 'No se pudo procesar la suscripción. Intenta nuevamente.');
+        this.errorMessage.set(res.error || 'No se pudo procesar el cambio de plan.');
       }
     } catch (err: any) {
       this.errorMessage.set(err?.message || 'Error inesperado al comunicarse con el servidor.');

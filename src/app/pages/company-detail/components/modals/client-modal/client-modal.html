@@ -1,7 +1,7 @@
 <div class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
   <div (click)="close.emit()" class="absolute inset-0"></div>
 
-  <div class="relative w-full max-w-lg bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+  <div class="relative w-full max-w-lg bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-lg z-10 max-h-[90vh] overflow-y-auto">
     <button 
       (click)="close.emit()"
       class="absolute top-5 right-5 p-2 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#131314] rounded-full transition cursor-pointer">
@@ -34,70 +34,70 @@
     <form [formGroup]="form" (ngSubmit)="submitForm.emit()" class="space-y-4">
       <!-- Nombre Completo -->
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">Nombre Completo *</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1.5 h-4 leading-4 truncate">Nombre Completo *</label>
         <input 
           type="text" 
           formControlName="name" 
           placeholder="Ej. Juan Pérez" 
           [class.border-rose-500]="isFieldInvalid(form, 'name', isSubmitted)"
-          [class.focus:ring-rose-500]="isFieldInvalid(form, 'name', isSubmitted)"
-          class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+          class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
         @if (isFieldInvalid(form, 'name', isSubmitted)) {
-          <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'name') }}</p>
+          <p class="text-rose-500 text-xs mt-1.5 font-medium">{{ getFieldError(form, 'name') }}</p>
         }
       </div>
 
-      <!-- País y DNI -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <app-country-select 
-          formControlName="country"
-          label="País"
-          [required]="true"
-          [hasError]="isFieldInvalid(form, 'country', isSubmitted)"
-          [errorMessage]="getFieldError(form, 'country')">
-        </app-country-select>
+      <!-- País y DNI (Alineación Perfecta) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+        <div class="w-full">
+          <app-country-select 
+            formControlName="country"
+            label="País"
+            [required]="true"
+            [hasError]="isFieldInvalid(form, 'country', isSubmitted)"
+            [errorMessage]="getFieldError(form, 'country')">
+          </app-country-select>
+        </div>
 
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">DNI / Identificación *</label>
+        <div class="w-full">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1.5 h-4 leading-4 truncate">DNI / Identificación *</label>
           <input 
             type="text" 
             formControlName="dni" 
             placeholder="Ej. 40123456" 
             [class.border-rose-500]="isFieldInvalid(form, 'dni', isSubmitted)"
-            [class.focus:ring-rose-500]="isFieldInvalid(form, 'dni', isSubmitted)"
-            class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(form, 'dni', isSubmitted)) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'dni') }}</p>
+            <p class="text-rose-500 text-xs mt-1.5 font-medium">{{ getFieldError(form, 'dni') }}</p>
           }
         </div>
       </div>
 
-      <!-- Email (opcional) y Teléfono (opcional) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">
-            Correo Electrónico <span class="text-[#5F6368] font-normal lowercase">(opcional)</span>
+      <!-- Email (opcional) y Teléfono (opcional) (Alineación Perfecta) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+        <div class="w-full">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1.5 h-4 leading-4 truncate">
+            Correo Electrónico (opcional)
           </label>
           <input 
             type="email" 
             formControlName="email" 
             placeholder="cliente@correo.com" 
             [class.border-rose-500]="isFieldInvalid(form, 'email', isSubmitted)"
-            class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(form, 'email', isSubmitted)) {
-            <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError(form, 'email') }}</p>
+            <p class="text-rose-500 text-xs mt-1.5 font-medium">{{ getFieldError(form, 'email') }}</p>
           }
         </div>
 
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1">
-            Teléfono / WhatsApp <span class="text-[#5F6368] font-normal lowercase">(opcional)</span>
+        <div class="w-full">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-1.5 h-4 leading-4 truncate">
+            Teléfono (opcional)
           </label>
           <input 
             type="tel" 
             formControlName="phone" 
             placeholder="+54 9 11 12345678" 
-            class="w-full px-4 py-2.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
         </div>
       </div>
 
@@ -105,12 +105,12 @@
         <button 
           type="button"
           (click)="close.emit()"
-          class="px-5 py-2.5 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
+          class="min-h-[44px] px-5 py-2.5 bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl transition cursor-pointer border border-[#E3E3E3] dark:border-[#333333]">
           Cancelar
         </button>
         <button 
           type="submit"
-          class="px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
+          class="min-h-[44px] px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
           </svg>

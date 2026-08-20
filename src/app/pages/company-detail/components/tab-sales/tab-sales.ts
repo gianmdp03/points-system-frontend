@@ -18,6 +18,7 @@ export class TabSalesComponent {
 
   @Output() addSale = new EventEmitter<void>();
   @Output() addClient = new EventEmitter<void>();
+  @Output() checkPoints = new EventEmitter<void>();
   @Output() editSale = new EventEmitter<SaleListDTO>();
 
   readonly RoleEnum = Role;
@@ -30,4 +31,3 @@ export class TabSalesComponent {
     return Math.floor((sale.amount / this.amountStep) * this.pointsPerStep);
   }
 }
-

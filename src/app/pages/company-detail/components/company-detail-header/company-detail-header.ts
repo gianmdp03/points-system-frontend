@@ -19,6 +19,7 @@ export class CompanyDetailHeaderComponent {
 
   @Output() back = new EventEmitter<void>();
   @Output() editCompany = new EventEmitter<void>();
+  @Output() checkPoints = new EventEmitter<void>();
 
   readonly RoleEnum = Role;
   readonly currentPlan = computed(() => this.subscriptionState.currentPlan());

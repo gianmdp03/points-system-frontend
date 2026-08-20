@@ -1,10 +1,7 @@
 @if (modalService.isOpen()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-all duration-300">
     <!-- Modal Dialog Card -->
-    <div class="relative w-full max-w-lg bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-[32px] p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-2xl overflow-hidden transition-all scale-100 animate-in fade-in zoom-in-95 duration-200">
-      
-      <!-- Top Decorative Glow / Gradient Bar -->
-      <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-500 via-[#1A73E8] to-purple-600"></div>
+    <div class="relative w-full max-w-lg bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-lg overflow-hidden transition-all scale-100 animate-in fade-in zoom-in-95 duration-200">
 
       <!-- Close Button -->
       <button 
@@ -19,17 +16,17 @@
 
       <!-- Icon & Header -->
       <div class="text-center pt-2 pb-4 space-y-3">
-        <div class="w-16 h-16 mx-auto rounded-3xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center shadow-xs">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center shadow-xs">
           <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
 
         <div class="space-y-1">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
             Límite Alcanzado
           </span>
-          <h3 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+          <h3 class="text-xl sm:text-2xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
             {{ modalService.title() }}
           </h3>
         </div>
@@ -44,8 +41,10 @@
 
       <!-- Upgrade Benefits Callout -->
       <div class="p-3.5 rounded-2xl bg-[#E8F0FE]/50 dark:bg-[#1A73E8]/10 border border-[#1A73E8]/20 flex items-start gap-3 text-xs text-[#5F6368] dark:text-[#9AA0A6] mb-6">
-        <div class="w-5 h-5 rounded-full bg-[#1A73E8] text-white flex items-center justify-center flex-shrink-0 text-[10px] font-bold">
-          ★
+        <div class="w-5 h-5 rounded-full bg-[#1A73E8] text-white flex items-center justify-center flex-shrink-0">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
         </div>
         <div class="space-y-0.5">
           <p class="font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Desbloquea todo el potencial de tu negocio</p>
@@ -62,7 +61,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
-          Hacer Upgrade
+          Mejorar mi Plan
         </button>
 
         <button

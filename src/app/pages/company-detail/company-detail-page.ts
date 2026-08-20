@@ -42,6 +42,8 @@ import { RewardModalComponent } from './components/modals/reward-modal/reward-mo
 import { SaleModalComponent } from './components/modals/sale-modal/sale-modal';
 import { ClientModalComponent } from './components/modals/client-modal/client-modal';
 import { RedeemModalComponent } from './components/modals/redeem-modal/redeem-modal';
+import { CheckPointsModalComponent } from '../../components/company-quick-actions/modals/check-points-modal/check-points-modal';
+import { QrGeneratorComponent } from '../../components/qr-generator/qr-generator';
 
 @Component({
   selector: 'app-company-detail-page',
@@ -61,7 +63,9 @@ import { RedeemModalComponent } from './components/modals/redeem-modal/redeem-mo
     RewardModalComponent,
     SaleModalComponent,
     ClientModalComponent,
-    RedeemModalComponent
+    RedeemModalComponent,
+    CheckPointsModalComponent,
+    QrGeneratorComponent
   ],
   templateUrl: './company-detail-page.html',
   styleUrl: './company-detail-page.css'
@@ -90,6 +94,7 @@ export class CompanyDetailPage implements OnInit {
   readonly activeTab = signal<CompanyDetailTab>('overview');
 
   // Visibilidad de Modales
+  readonly showQrModal = signal<boolean>(false);
   readonly showEditCompanyModal = signal<boolean>(false);
   readonly showAddProductModal = signal<boolean>(false);
   readonly showEditProductModal = signal<boolean>(false);
@@ -101,6 +106,7 @@ export class CompanyDetailPage implements OnInit {
   readonly showEditSaleModal = signal<boolean>(false);
   readonly showAddClientModal = signal<boolean>(false);
   readonly showRedeemModal = signal<boolean>(false);
+  readonly showCheckPointsModal = signal<boolean>(false);
 
   // Flags de submit
   readonly isEditCompanySubmitted = signal<boolean>(false);
@@ -135,6 +141,10 @@ export class CompanyDetailPage implements OnInit {
     name: ['', [Validators.required, Validators.maxLength(300)]],
     amountStep: [100, [Validators.required, Validators.min(1)]],
     pointsPerStep: [10, [Validators.required, Validators.min(1)]],
+    isPointsExpirationEnabled: [false],
+    pointsExpirationDays: [null as number | null],
+    isInactiveClientPurgeEnabled: [false],
+    inactiveClientPurgeDays: [null as number | null],
     address: ['', [Validators.required]],
     city: ['', [Validators.required]],
     province: ['', [Validators.required]],
@@ -207,7 +217,49 @@ export class CompanyDetailPage implements OnInit {
 
   readonly currentRole = this.authService.currentRole;
 
+  private setupExpirationValidators(): void {
+    this.editCompanyForm.get('isPointsExpirationEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+      const daysControl = this.editCompanyForm.get('pointsExpirationDays');
+      if (enabled) {
+        daysControl?.setValidators([Validators.required, Validators.min(1)]);
+        if (!daysControl?.value) {
+          daysControl?.setValue(30);
+        }
+      } else {
+        daysControl?.clearValidators();
+        daysControl?.setValue(null);
+      }
+      daysControl?.updateValueAndValidity();
+    });
+
+    this.editCompanyForm.get('isInactiveClientPurgeEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+      const daysControl = this.editCompanyForm.get('inactiveClientPurgeDays');
+      if (enabled) {
+        daysControl?.setValidators([Validators.required, Validators.min(1)]);
+        if (!daysControl?.value) {
+          daysControl?.setValue(180);
+        }
+      } else {
+        daysControl?.clearValidators();
+        daysControl?.setValue(null);
+      }
+      daysControl?.updateValueAndValidity();
+    });
+  }
+
   ngOnInit(): void {
+    this.setupExpirationValidators();
+
+    const tabParam = this.route.snapshot.queryParamMap.get('tab');
+    if (tabParam && ['overview', 'products', 'promotions', 'rewards', 'sales'].includes(tabParam)) {
+      this.activeTab.set(tabParam as CompanyDetailTab);
+    }
+    this.route.queryParams.subscribe(params => {
+      if (params['tab'] && ['overview', 'products', 'promotions', 'rewards', 'sales'].includes(params['tab'])) {
+        this.activeTab.set(params['tab'] as CompanyDetailTab);
+      }
+    });
+
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       const companyId = Number(idParam);
@@ -270,6 +322,15 @@ export class CompanyDetailPage implements OnInit {
   }
 
   // MODALES OPEN / CLOSE & POPULATE
+  
+  openQrModal(): void {
+    this.showQrModal.set(true);
+  }
+
+  closeQrModal(): void {
+    this.showQrModal.set(false);
+  }
+
   openEditCompanyModal(): void {
     const comp = this.company();
     if (comp) {
@@ -277,6 +338,10 @@ export class CompanyDetailPage implements OnInit {
         name: comp.name,
         amountStep: comp.amountStep,
         pointsPerStep: comp.pointsPerStep,
+        isPointsExpirationEnabled: comp.isPointsExpirationEnabled ?? false,
+        pointsExpirationDays: comp.pointsExpirationDays ?? null,
+        isInactiveClientPurgeEnabled: comp.isInactiveClientPurgeEnabled ?? false,
+        inactiveClientPurgeDays: comp.inactiveClientPurgeDays ?? null,
         address: comp.companyDetails?.address || '',
         city: comp.companyDetails?.city || '',
         province: comp.companyDetails?.province || '',
@@ -410,6 +475,18 @@ export class CompanyDetailPage implements OnInit {
   }
   closeRedeemModal(): void { this.showRedeemModal.set(false); }
 
+  openCheckPointsModal(): void {
+    this.showCheckPointsModal.set(true);
+  }
+  closeCheckPointsModal(): void {
+    this.showCheckPointsModal.set(false);
+  }
+  onCheckPointsGoToSale(data: { dni: string; country: string }): void {
+    this.closeCheckPointsModal();
+    this.openAddSaleModal();
+    this.addSaleForm.patchValue({ dni: data.dni, country: data.country });
+  }
+
   onAddClientSubmit(): void {
     this.isAddClientSubmitted.set(true);
     if (this.addClientForm.invalid || !this.company()) {
@@ -447,6 +524,10 @@ export class CompanyDetailPage implements OnInit {
       name: val.name!,
       amountStep: Number(val.amountStep),
       pointsPerStep: Number(val.pointsPerStep),
+      isPointsExpirationEnabled: !!val.isPointsExpirationEnabled,
+      pointsExpirationDays: val.isPointsExpirationEnabled ? Number(val.pointsExpirationDays) : null,
+      isInactiveClientPurgeEnabled: !!val.isInactiveClientPurgeEnabled,
+      inactiveClientPurgeDays: val.isInactiveClientPurgeEnabled ? Number(val.inactiveClientPurgeDays) : null,
       companyDetails: {
         country: val.country!,
         province: val.province!,

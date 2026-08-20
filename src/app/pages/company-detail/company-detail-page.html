@@ -40,7 +40,8 @@
           [company]="comp"
           [currentRole]="currentRole()"
           (back)="goBack()"
-          (editCompany)="openEditCompanyModal()">
+          (editCompany)="openEditCompanyModal()"
+          (checkPoints)="openCheckPointsModal()">
         </app-company-detail-header>
 
         <!-- Selector de Pestañas -->
@@ -59,7 +60,9 @@
             [company]="comp"
             [currentRole]="currentRole()"
             (editCompany)="openEditCompanyModal()"
-            (addClient)="openAddClientModal()">
+            (addClient)="openAddClientModal()"
+            (checkPoints)="openCheckPointsModal()"
+            (generateQr)="openQrModal()">
           </app-tab-overview>
         }
 
@@ -105,6 +108,7 @@
             [currentRole]="currentRole()"
             (addSale)="openAddSaleModal()"
             (addClient)="openAddClientModal()"
+            (checkPoints)="openCheckPointsModal()"
             (editSale)="openEditSaleModal($event)">
           </app-tab-sales>
         }
@@ -224,6 +228,14 @@
   </app-client-modal>
 }
 
+@if (showCheckPointsModal() && company(); as comp) {
+  <app-check-points-modal
+    [company]="comp"
+    (close)="closeCheckPointsModal()"
+    (goToSale)="onCheckPointsGoToSale($event)">
+  </app-check-points-modal>
+}
+
 @if (showRedeemModal()) {
   <app-redeem-modal
     [form]="redeemForm"
@@ -235,4 +247,39 @@
     (close)="closeRedeemModal()"
     (submitForm)="onRedeemSubmit()">
   </app-redeem-modal>
+}
+
+@if (showQrModal() && company(); as comp) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs transition-all duration-300">
+    <div class="relative w-full max-w-md bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-lg space-y-5 animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Close Button -->
+      <button 
+        (click)="closeQrModal()"
+        type="button"
+        class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] flex items-center justify-center transition cursor-pointer"
+        aria-label="Cerrar modal">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="text-center space-y-1 pt-1">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#E8F0FE] dark:bg-[#131314] text-[#1A73E8] dark:text-[#8AB4F8]">
+          Auto-Registro de Clientes
+        </span>
+        <h3 class="text-xl sm:text-2xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+          Código QR para Clientes
+        </h3>
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] max-w-sm mx-auto">
+          Tus clientes pueden escanear este código en el mostrador para registrarse al instante en <strong>{{ comp.name }}</strong>.
+        </p>
+      </div>
+
+      <!-- QR Generator Component -->
+      <app-qr-generator [companyId]="comp.id" [companyName]="comp.name" />
+
+    </div>
+  </div>
 }

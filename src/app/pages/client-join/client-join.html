@@ -1,0 +1,240 @@
+<div class="min-h-screen bg-[#F8F9FA] dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] py-8 sm:py-16 px-4 flex items-center justify-center transition-colors">
+  
+  <div class="w-full max-w-lg">
+    
+    <!-- Brand Header -->
+    <div class="text-center mb-8">
+      <a routerLink="/" class="inline-flex items-center gap-2.5 mb-3 group cursor-pointer">
+        <img src="logo.svg" alt="Pointly Logo" class="w-9 h-9 object-contain" />
+        <span class="font-black text-2xl tracking-tight text-[#1F1F1F] dark:text-[#E3E3E3] group-hover:text-[#1A73E8] transition-colors">
+          {{ configService.appName() }}
+        </span>
+      </a>
+      <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6]">
+        Portal de auto-registro rápido para clientes
+      </p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-10 border border-[#E3E3E3] dark:border-[#333333] shadow-sm relative overflow-hidden">
+
+      <!-- State 1: Loading Company Info -->
+      @if (isLoadingCompany()) {
+        <div class="py-12 text-center space-y-4">
+          <div class="w-10 h-10 border-4 border-[#1A73E8] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p class="text-sm font-semibold text-[#5F6368] dark:text-[#9AA0A6]">Verificando información del comercio...</p>
+        </div>
+      }
+
+      <!-- State 2: Error loading company -->
+      @else if (errorMessage() && !companyId()) {
+        <div class="py-8 text-center space-y-4">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-200 dark:border-rose-800">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-black">Enlace no válido</h3>
+          <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6]">{{ errorMessage() }}</p>
+          <div class="pt-4">
+            <a routerLink="/" class="inline-flex items-center justify-center min-h-[44px] px-6 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] text-white font-bold text-xs rounded-full transition cursor-pointer">
+              Ir al Inicio
+            </a>
+          </div>
+        </div>
+      }
+
+      <!-- State 3: Registration Success -->
+      @else if (isSuccess()) {
+        <div class="py-6 text-center space-y-6 animate-fade-in">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-800 shadow-sm">
+            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+
+          <div class="space-y-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300">
+              ¡Registro Exitoso!
+            </span>
+            <h3 class="text-2xl sm:text-3xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+              ¡Bienvenido, {{ registeredClientName() }}!
+            </h3>
+            <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-sm mx-auto leading-relaxed">
+              Ya formás parte del programa de fidelización de <strong>{{ companyName() }}</strong>.
+            </p>
+          </div>
+
+          <!-- Instructions Card -->
+          <div class="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] text-left space-y-2.5">
+            <div class="flex items-center gap-2 text-xs font-bold text-[#1A73E8] dark:text-[#8AB4F8]">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>¿Cómo sumar puntos ahora?</span>
+            </div>
+            <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
+              Al realizar tus compras en el local, simplemente indicale tu <strong>DNI ({{ form.get('dni')?.value }})</strong> al cajero o personal de atención para acumular puntos automáticamente.
+            </p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+            <a 
+              routerLink="/points"
+              class="w-full sm:flex-1 min-h-[44px] py-3.5 px-6 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-full shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+              Consultar Mi Saldo y Premios
+            </a>
+          </div>
+        </div>
+      }
+
+      <!-- State 4: Registration Form -->
+      @else {
+        <div class="space-y-6">
+          
+          <!-- Header info of the company -->
+          <div class="space-y-1 text-center sm:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-extrabold bg-[#E8F0FE] dark:bg-[#131314] text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 mb-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Comercio Adherido</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+              Sumate a {{ companyName() }}
+            </h2>
+            <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+              Completá tus datos para acumular puntos y canjear premios exclusivos en esta sucursal.
+            </p>
+          </div>
+
+          <!-- Conflict / General Error Alert -->
+          @if (errorMessage()) {
+            <div [class]="isAlreadyRegistered() ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200' : 'bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200'" class="p-4 rounded-2xl border text-xs leading-relaxed flex items-start gap-3 animate-fade-in">
+              <div class="flex-shrink-0 mt-0.5">
+                @if (isAlreadyRegistered()) {
+                  <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                } @else {
+                  <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                }
+              </div>
+              <div class="space-y-1">
+                <p class="font-bold">{{ errorMessage() }}</p>
+                @if (isAlreadyRegistered()) {
+                  <a routerLink="/points" class="font-extrabold text-[#1A73E8] dark:text-[#8AB4F8] hover:underline block pt-1">
+                    Ver mi saldo de puntos aquí &rarr;
+                  </a>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Form -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+            
+            <!-- País -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5 h-4 leading-4 truncate">
+                País *
+              </label>
+              <select
+                formControlName="country"
+                class="w-full h-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition cursor-pointer">
+                @for (c of countryService.countries(); track c.name) {
+                  <option [value]="c.name">{{ c.name }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- DNI -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5 h-4 leading-4 truncate">
+                DNI o Documento de Identidad *
+              </label>
+              <input
+                type="text"
+                formControlName="dni"
+                placeholder="Ej. 12345678"
+                class="w-full h-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+              @if (getFieldError('dni')) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError('dni') }}</p>
+              }
+            </div>
+
+            <!-- Nombre Completo -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5 h-4 leading-4 truncate">
+                Nombre y Apellido *
+              </label>
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Ej. María García"
+                class="w-full h-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+              @if (getFieldError('name')) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError('name') }}</p>
+              }
+            </div>
+
+            <!-- Email (Opcional) -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5 h-4 leading-4 truncate">
+                Correo Electrónico <span class="text-[10px] font-normal lowercase">(opcional)</span>
+              </label>
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="ejemplo@correo.com"
+                class="w-full h-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+              @if (getFieldError('email')) {
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ getFieldError('email') }}</p>
+              }
+            </div>
+
+            <!-- Teléfono (Opcional) -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5 h-4 leading-4 truncate">
+                Teléfono <span class="text-[10px] font-normal lowercase">(opcional)</span>
+              </label>
+              <input
+                type="tel"
+                formControlName="phone"
+                placeholder="Ej. +54 9 11 1234-5678"
+                class="w-full h-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-3">
+              <button
+                type="submit"
+                [disabled]="isSubmitting() || form.invalid"
+                class="w-full h-12 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 shadow-md">
+                @if (isSubmitting()) {
+                  <div class="w-4 h-4 border-2 border-white dark:border-[#131314] border-t-transparent rounded-full animate-spin"></div>
+                  <span>Registrando...</span>
+                } @else {
+                  <span>Completar Mi Registro</span>
+                }
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      }
+
+    </div>
+
+    <!-- Footer link -->
+    <div class="text-center mt-6 text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+      ¿Ya tenías cuenta en otros comercios? 
+      <a routerLink="/points" class="font-bold text-[#1A73E8] dark:text-[#8AB4F8] hover:underline ml-1">
+        Consultar Puntos
+      </a>
+    </div>
+
+  </div>
+
+</div>

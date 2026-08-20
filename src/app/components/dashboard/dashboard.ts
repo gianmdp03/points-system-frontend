@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { CompanyService } from '../../core/services/company-service';
 import { AuthService } from '../../core/services/auth-service';
 import { CompanyListDTO, Role, CompanyRequestDTO, CompanyUpdateDTO } from '../../core/models';
@@ -64,6 +64,10 @@ export class Dashboard implements OnInit {
     name: ['', [Validators.required, Validators.maxLength(300)]],
     amountStep: [100, [Validators.required, Validators.min(1)]],
     pointsPerStep: [10, [Validators.required, Validators.min(1)]],
+    isPointsExpirationEnabled: [false],
+    pointsExpirationDays: [null as number | null],
+    isInactiveClientPurgeEnabled: [false],
+    inactiveClientPurgeDays: [null as number | null],
     address: ['', [Validators.required]],
     city: ['', [Validators.required]],
     province: ['', [Validators.required]],
@@ -77,12 +81,46 @@ export class Dashboard implements OnInit {
     amountStep: [100, [Validators.required, Validators.min(1)]],
     pointsPerStep: [10, [Validators.required, Validators.min(1)]],
     isEnabled: [true, [Validators.required]],
+    isPointsExpirationEnabled: [false],
+    pointsExpirationDays: [null as number | null],
+    isInactiveClientPurgeEnabled: [false],
+    inactiveClientPurgeDays: [null as number | null],
     address: ['', [Validators.required]],
     city: ['', [Validators.required]],
     province: ['', [Validators.required]],
     country: ['Argentina', [Validators.required]],
     zipCode: ['', [Validators.required]]
   });
+
+  private setupExpirationValidators(form: FormGroup): void {
+    form.get('isPointsExpirationEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+      const daysControl = form.get('pointsExpirationDays');
+      if (enabled) {
+        daysControl?.setValidators([Validators.required, Validators.min(1)]);
+        if (!daysControl?.value) {
+          daysControl?.setValue(30);
+        }
+      } else {
+        daysControl?.clearValidators();
+        daysControl?.setValue(null);
+      }
+      daysControl?.updateValueAndValidity();
+    });
+
+    form.get('isInactiveClientPurgeEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+      const daysControl = form.get('inactiveClientPurgeDays');
+      if (enabled) {
+        daysControl?.setValidators([Validators.required, Validators.min(1)]);
+        if (!daysControl?.value) {
+          daysControl?.setValue(180);
+        }
+      } else {
+        daysControl?.clearValidators();
+        daysControl?.setValue(null);
+      }
+      daysControl?.updateValueAndValidity();
+    });
+  }
 
   openAddCompanyModal(): void {
     this.modalErrorMessage.set(null);
@@ -91,6 +129,10 @@ export class Dashboard implements OnInit {
       name: '',
       amountStep: 100,
       pointsPerStep: 10,
+      isPointsExpirationEnabled: false,
+      pointsExpirationDays: null,
+      isInactiveClientPurgeEnabled: false,
+      inactiveClientPurgeDays: null,
       address: '',
       city: '',
       province: '',
@@ -118,6 +160,10 @@ export class Dashboard implements OnInit {
         amountStep: comp.amountStep,
         pointsPerStep: comp.pointsPerStep,
         isEnabled: comp.isEnabled,
+        isPointsExpirationEnabled: comp.isPointsExpirationEnabled ?? false,
+        pointsExpirationDays: comp.pointsExpirationDays ?? null,
+        isInactiveClientPurgeEnabled: comp.isInactiveClientPurgeEnabled ?? false,
+        inactiveClientPurgeDays: comp.inactiveClientPurgeDays ?? null,
         address: comp.companyDetails?.address || '',
         city: comp.companyDetails?.city || '',
         province: comp.companyDetails?.province || '',
@@ -134,6 +180,9 @@ export class Dashboard implements OnInit {
   }
 
   constructor() {
+    this.setupExpirationValidators(this.addCompanyForm);
+    this.setupExpirationValidators(this.editCompanyForm);
+
     effect(() => {
       const role = this.currentRole();
       if (this.isLoggedIn()) {
@@ -221,6 +270,10 @@ export class Dashboard implements OnInit {
       name: val.name!,
       amountStep: Number(val.amountStep),
       pointsPerStep: Number(val.pointsPerStep),
+      isPointsExpirationEnabled: !!val.isPointsExpirationEnabled,
+      pointsExpirationDays: val.isPointsExpirationEnabled ? Number(val.pointsExpirationDays) : null,
+      isInactiveClientPurgeEnabled: !!val.isInactiveClientPurgeEnabled,
+      inactiveClientPurgeDays: val.isInactiveClientPurgeEnabled ? Number(val.inactiveClientPurgeDays) : null,
       companyDetails: {
         country: val.country!,
         province: val.province!,
@@ -256,6 +309,10 @@ export class Dashboard implements OnInit {
       name: val.name!,
       amountStep: Number(val.amountStep),
       pointsPerStep: Number(val.pointsPerStep),
+      isPointsExpirationEnabled: !!val.isPointsExpirationEnabled,
+      pointsExpirationDays: val.isPointsExpirationEnabled ? Number(val.pointsExpirationDays) : null,
+      isInactiveClientPurgeEnabled: !!val.isInactiveClientPurgeEnabled,
+      inactiveClientPurgeDays: val.isInactiveClientPurgeEnabled ? Number(val.inactiveClientPurgeDays) : null,
       companyDetails: {
         country: val.country!,
         province: val.province!,

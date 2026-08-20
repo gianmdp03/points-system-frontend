@@ -1,0 +1,255 @@
+@if (isCompanyAdmin()) {
+  <section class="w-full mb-8 sm:mb-12 animate-fade-in">
+    <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl p-5 sm:p-7 border border-[#E3E3E3] dark:border-[#333333] shadow-xs space-y-5">
+      
+      <!-- Success Toast Notification -->
+      @if (successMessage()) {
+        <div class="p-3.5 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 rounded-2xl text-xs sm:text-sm font-semibold text-emerald-800 dark:text-emerald-200 flex items-center justify-between gap-3 shadow-xs animate-fade-in">
+          <div class="flex items-center gap-2">
+            <span class="text-base">✓</span>
+            <span>{{ successMessage() }}</span>
+          </div>
+          <button 
+            type="button" 
+            (click)="successMessage.set(null)"
+            class="text-emerald-700 dark:text-emerald-300 hover:opacity-75 p-1 cursor-pointer">
+            ✕
+          </button>
+        </div>
+      }
+
+      <!-- Subscription Alert if NONE or Expired -->
+      @if (subscriptionState.currentPlan() === SubscriptionPlanEnum.NONE) {
+        <div class="p-3.5 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm font-medium text-amber-900 dark:text-amber-200">
+          <span>Actualmente <strong>no posees un plan de suscripción activo</strong>. Selecciona un plan para habilitar todas las operaciones comerciales.</span>
+          <a 
+            routerLink="/dashboard/pricing" 
+            class="inline-flex items-center justify-center min-h-[38px] px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition flex-shrink-0 cursor-pointer shadow-xs">
+            Elegir Plan &rarr;
+          </a>
+        </div>
+      }
+
+      <!-- Header: Empresa Selector + Multiplicador de Promoción al mismo nivel -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E3E3E3] dark:border-[#333333]">
+        <div class="space-y-1">
+          <h2 class="text-base sm:text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight flex items-center gap-2 flex-wrap">
+            <span>Operaciones Rápidas</span>
+            @if (selectedCompany(); as comp) {
+              <span class="text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6]">
+                • {{ comp.name }} ({{ comp.companyDetails?.city || 'Local' }})
+              </span>
+            }
+          </h2>
+          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+            @if (selectedCompany(); as comp) {
+              <span>Regla de puntos: <strong>${{ comp.amountStep }} = {{ comp.pointsPerStep }} pts</strong></span>
+            } @else {
+              <span>Accede a las herramientas frecuentes de tu comercio sin ir al panel.</span>
+            }
+          </p>
+        </div>
+
+        <!-- Derecha: Multiplicador de Promoción + Selector de Tiendas -->
+        <div class="flex items-center gap-3 flex-wrap lg:flex-nowrap flex-shrink-0">
+          
+          <!-- Indicador de Promoción Activa / Apagada x1 (A la altura de las tiendas) -->
+          @if (selectedCompany()) {
+            @if (activePromotion(); as promo) {
+              <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-950/50 border border-amber-500/30 dark:border-amber-700/40 text-amber-800 dark:text-amber-200 text-xs font-bold shadow-xs">
+                <span>🔥</span>
+                <span>Multiplicador <strong>{{ promo.multiplier }}x</strong> Activo</span>
+              </div>
+            } @else {
+              <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] text-[#5F6368] dark:text-[#9AA0A6] text-xs font-medium opacity-65">
+                <span class="text-[11px] font-bold">x1</span>
+                <span>Sin promo activa</span>
+              </div>
+            }
+          }
+
+          <!-- Selector de Empresas si tiene más de 1 -->
+          @if (companies().length > 1) {
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar flex-shrink-0">
+              <span class="text-xs font-bold text-[#5F6368] dark:text-[#9AA0A6] whitespace-nowrap">
+                Sucursal:
+              </span>
+              <div class="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+                @for (comp of companies(); track comp.id) {
+                  <button 
+                    type="button"
+                    (click)="onSelectCompany(comp)"
+                    [class]="selectedCompany()?.id === comp.id 
+                      ? 'min-h-[40px] px-3.5 py-1.5 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer whitespace-nowrap'
+                      : 'min-h-[40px] px-3.5 py-1.5 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] font-semibold text-xs rounded-xl border border-[#E3E3E3] dark:border-[#333333] transition cursor-pointer whitespace-nowrap'">
+                    {{ comp.name }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Main Body: Quick Action Buttons or Empty State -->
+      @if (isLoading()) {
+        <div class="flex items-center justify-center py-8 text-[#5F6368] dark:text-[#9AA0A6] gap-3">
+          <div class="w-5 h-5 border-2 border-[#1A73E8] dark:border-[#8AB4F8] border-t-transparent rounded-full animate-spin"></div>
+          <span class="text-xs font-bold">Cargando tus sucursales...</span>
+        </div>
+      } @else if (companies().length === 0) {
+        <!-- Estado: Sin Empresas Registradas -->
+        <div class="text-center py-6 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-3">
+          <h3 class="text-sm sm:text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+            Aún no tienes sucursales registradas
+          </h3>
+          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto">
+            Crea tu primera empresa o sucursal para definir tu regla de conversión y comenzar a asociar clientes.
+          </p>
+          <button 
+            type="button"
+            (click)="openAddCompanyModal()"
+            class="inline-flex items-center justify-center min-h-[44px] px-6 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
+            + Crear Primera Empresa
+          </button>
+        </div>
+      } @else {
+        <!-- Grid de 4 Botones de Acceso Rápido Directos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          
+          <!-- Botón 1: Asociar Cliente (Modal inline) -->
+          <button 
+            type="button"
+            (click)="openAddClientModal()"
+            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
+            <div class="w-10 h-10 rounded-xl bg-[#1A73E8]/10 dark:bg-[#8AB4F8]/10 text-[#1A73E8] dark:text-[#8AB4F8] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <span class="block text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                Asociar Cliente
+              </span>
+              <span class="block text-[11px] text-[#5F6368] dark:text-[#9AA0A6] truncate">
+                Crear cuenta con DNI
+              </span>
+            </div>
+          </button>
+
+          <!-- Botón 2: Cargar Venta (Modal inline) -->
+          <button 
+            type="button"
+            (click)="openAddSaleModal()"
+            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <span class="block text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                Cargar Venta
+              </span>
+              <span class="block text-[11px] text-[#5F6368] dark:text-[#9AA0A6] truncate">
+                Sumar puntos al instante
+              </span>
+            </div>
+          </button>
+
+          <!-- Botón 3: Consultar Puntos (Modal inline sin recordar usuario) -->
+          <button 
+            type="button"
+            (click)="openCheckPointsModal()"
+            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
+            <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <span class="block text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                Consultar Puntos
+              </span>
+              <span class="block text-[11px] text-[#5F6368] dark:text-[#9AA0A6] truncate">
+                Ver saldo con DNI
+              </span>
+            </div>
+          </button>
+
+          <!-- Botón 4: Canjear Recompensas (Redirección directa a la sección de premios) -->
+          @if (selectedCompany(); as comp) {
+            <a 
+              [routerLink]="['/companies', comp.id]"
+              [queryParams]="{ tab: 'rewards' }"
+              class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center justify-between gap-3 group shadow-xs">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform text-lg">
+                  🎁
+                </div>
+                <div class="min-w-0">
+                  <span class="block text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                    Canjear Premios
+                  </span>
+                  <span class="block text-[11px] text-[#5F6368] dark:text-[#9AA0A6] truncate">
+                    Ir al catálogo de premios
+                  </span>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-[#1A73E8] dark:text-[#8AB4F8] opacity-0 group-hover:opacity-100 transition-opacity">
+                &rarr;
+              </span>
+            </a>
+          }
+
+        </div>
+      }
+
+    </div>
+  </section>
+}
+
+<!-- MODAL ASOCIAR CLIENTE (Inline) -->
+@if (showAddClientModal()) {
+  <app-client-modal 
+    [form]="addClientForm"
+    [isSubmitted]="isAddClientSubmitted()"
+    [isLoading]="isClientLoading()"
+    [errorMessage]="clientErrorMessage()"
+    (close)="closeAddClientModal()"
+    (submitForm)="onAddClientSubmit()">
+  </app-client-modal>
+}
+
+<!-- MODAL CARGAR VENTA (Inline) -->
+@if (showAddSaleModal()) {
+  <app-sale-modal 
+    [form]="addSaleForm"
+    [isEdit]="false"
+    [isSubmitted]="isAddSaleSubmitted()"
+    [isLoading]="isSaleLoading()"
+    [errorMessage]="saleErrorMessage()"
+    (close)="closeAddSaleModal()"
+    (submitForm)="onAddSaleSubmit()">
+  </app-sale-modal>
+}
+
+<!-- MODAL CONSULTAR PUNTOS (Inline sin recordar usuario) -->
+@if (showCheckPointsModal() && selectedCompany(); as comp) {
+  <app-check-points-modal 
+    [company]="comp"
+    (close)="closeCheckPointsModal()"
+    (goToSale)="onCheckPointsGoToSale($event)">
+  </app-check-points-modal>
+}
+
+<!-- MODAL CREAR EMPRESA (Inline si tiene 0 empresas) -->
+@if (showAddCompanyModal()) {
+  <app-add-company-modal 
+    [form]="addCompanyForm"
+    [isSubmitted]="isAddCompanySubmitted()"
+    [errorMessage]="companyErrorMessage()"
+    (close)="closeAddCompanyModal()"
+    (submitForm)="onAddCompanySubmit()">
+  </app-add-company-modal>
+}
