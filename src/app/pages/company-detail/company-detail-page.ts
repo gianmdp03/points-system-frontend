@@ -103,7 +103,6 @@ export class CompanyDetailPage implements OnInit {
   readonly showAddRewardModal = signal<boolean>(false);
   readonly showEditRewardModal = signal<boolean>(false);
   readonly showAddSaleModal = signal<boolean>(false);
-  readonly showEditSaleModal = signal<boolean>(false);
   readonly showAddClientModal = signal<boolean>(false);
   readonly showRedeemModal = signal<boolean>(false);
   readonly showCheckPointsModal = signal<boolean>(false);
@@ -117,7 +116,6 @@ export class CompanyDetailPage implements OnInit {
   readonly isAddRewardSubmitted = signal<boolean>(false);
   readonly isEditRewardSubmitted = signal<boolean>(false);
   readonly isAddSaleSubmitted = signal<boolean>(false);
-  readonly isEditSaleSubmitted = signal<boolean>(false);
   readonly isAddClientSubmitted = signal<boolean>(false);
   readonly isRedeemSubmitted = signal<boolean>(false);
   readonly isRedeemLoading = signal<boolean>(false);
@@ -125,7 +123,6 @@ export class CompanyDetailPage implements OnInit {
   selectedProductForEdit = signal<ProductListDTO | null>(null);
   selectedPromotionForEdit = signal<PromotionListDTO | null>(null);
   selectedRewardForEdit = signal<RewardListDTO | null>(null);
-  selectedSaleForEdit = signal<SaleListDTO | null>(null);
   selectedRewardForRedeem = signal<RewardListDTO | null>(null);
 
   // FormGroups Reactivos
@@ -198,13 +195,6 @@ export class CompanyDetailPage implements OnInit {
   });
 
   addSaleForm = this.fb.group({
-    country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
-    dni: ['', [Validators.required, Validators.maxLength(20)]],
-    amount: [1000, [Validators.required, Validators.min(1)]]
-  });
-
-  editSaleForm = this.fb.group({
-    id: [0, [Validators.required]],
     country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
     dni: ['', [Validators.required, Validators.maxLength(20)]],
     amount: [1000, [Validators.required, Validators.min(1)]]
@@ -440,22 +430,6 @@ export class CompanyDetailPage implements OnInit {
     this.showAddSaleModal.set(true);
   }
   closeAddSaleModal(): void { this.showAddSaleModal.set(false); }
-
-  openEditSaleModal(sale?: SaleListDTO | void): void {
-    if (sale) {
-      this.selectedSaleForEdit.set(sale);
-      this.editSaleForm.patchValue({
-        id: sale.id,
-        country: sale.client?.country || 'Argentina',
-        dni: sale.client?.dni || sale.userDni || '',
-        amount: sale.amount
-      });
-    }
-    this.modalErrorMessage.set(null);
-    this.isEditSaleSubmitted.set(false);
-    this.showEditSaleModal.set(true);
-  }
-  closeEditSaleModal(): void { this.showEditSaleModal.set(false); }
 
   openAddClientModal(): void {
     this.addClientForm.reset({ name: '', country: 'Argentina', dni: '', email: '', phone: '' });

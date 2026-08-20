@@ -108,8 +108,7 @@
             [currentRole]="currentRole()"
             (addSale)="openAddSaleModal()"
             (addClient)="openAddClientModal()"
-            (checkPoints)="openCheckPointsModal()"
-            (editSale)="openEditSaleModal($event)">
+            (checkPoints)="openCheckPointsModal()">
           </app-tab-sales>
         }
 
@@ -199,22 +198,10 @@
 @if (showAddSaleModal()) {
   <app-sale-modal
     [form]="addSaleForm"
-    [isEdit]="false"
     [isSubmitted]="isAddSaleSubmitted()"
     [errorMessage]="modalErrorMessage()"
     (close)="closeAddSaleModal()"
     (submitForm)="onAddSaleSubmit()">
-  </app-sale-modal>
-}
-
-@if (showEditSaleModal()) {
-  <app-sale-modal
-    [form]="editSaleForm"
-    [isEdit]="true"
-    [isSubmitted]="isEditSaleSubmitted()"
-    [errorMessage]="modalErrorMessage()"
-    (close)="closeEditSaleModal()"
-    (submitForm)="closeEditSaleModal()">
   </app-sale-modal>
 }
 

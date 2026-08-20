@@ -225,7 +225,6 @@
 @if (showAddSaleModal()) {
   <app-sale-modal 
     [form]="addSaleForm"
-    [isEdit]="false"
     [isSubmitted]="isAddSaleSubmitted()"
     [isLoading]="isSaleLoading()"
     [errorMessage]="saleErrorMessage()"

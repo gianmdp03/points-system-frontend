@@ -12,7 +12,6 @@ import { CountrySelectComponent } from '../../../../../components/country-select
 })
 export class SaleModalComponent {
   @Input({ required: true }) form!: FormGroup;
-  @Input({ required: true }) isEdit: boolean = false;
   @Input() isSubmitted: boolean = false;
   @Input() errorMessage: string | null = null;
   @Input() isLoading: boolean = false;

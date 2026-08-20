@@ -234,106 +234,95 @@
 
   <!-- MODAL DE CATÁLOGO PÚBLICO (Premios, Promociones Activas y Productos) -->
   @if (selectedCompanyCatalog(); as catalog) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md animate-fade-in" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/70 backdrop-blur-md animate-fade-in" role="dialog" aria-modal="true">
       <div 
-        class="w-full max-w-4xl bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] shadow-lg overflow-hidden flex flex-col max-h-[92vh]"
+        class="w-full max-w-4xl bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl sm:rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-lg overflow-hidden flex flex-col max-h-[92vh]"
         (click)="$event.stopPropagation()">
         
-        <!-- Header del Modal -->
-        <div class="p-5 sm:p-6 pb-4 border-b border-[#E3E3E3] dark:border-[#333333] space-y-4 flex-shrink-0 bg-[#FFFFFF] dark:bg-[#1E1E1E]">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-center gap-3.5">
-              <div class="w-14 h-14 rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] font-black text-2xl shadow-xs flex-shrink-0">
+        <!-- Header Compacto del Modal -->
+        <div class="p-3.5 sm:p-5 border-b border-[#E3E3E3] dark:border-[#333333] flex-shrink-0 bg-[#FFFFFF] dark:bg-[#1E1E1E] space-y-3">
+          
+          <!-- Fila 1: Logo + Datos Empresa/Cliente + Badge Saldo + Botón Cerrar -->
+          <div class="flex items-center justify-between gap-3">
+            
+            <!-- Izquierda: Identidad de Empresa y Cliente -->
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#E8F0FE] dark:bg-[#131314] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] font-black text-sm sm:text-base shadow-xs flex-shrink-0">
                 {{ catalog.name ? catalog.name.charAt(0).toUpperCase() : 'C' }}
               </div>
-              <div>
-                <div class="flex flex-wrap items-center gap-2 mb-1">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                    Comercio Adherido
-                  </span>
-                  <span class="text-[11px] font-semibold text-[#5F6368] dark:text-[#9AA0A6]">
-                    {{ catalog.companyDetails?.city || '' }}, {{ catalog.companyDetails?.country || '' }}
-                  </span>
+              
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h2 class="text-sm sm:text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3] truncate">
+                    {{ catalog.name }}
+                  </h2>
+                  @if (catalog.companyDetails?.city || catalog.companyDetails?.country) {
+                    <span class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] hidden sm:inline truncate">
+                      • {{ catalog.companyDetails?.city }}{{ catalog.companyDetails?.city && catalog.companyDetails?.country ? ', ' : '' }}{{ catalog.companyDetails?.country }}
+                    </span>
+                  }
                 </div>
-                <h2 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] leading-tight">
-                  {{ catalog.name }}
-                </h2>
+                <p class="text-[11px] sm:text-xs text-[#5F6368] dark:text-[#9AA0A6] truncate">
+                  Cliente: <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">{{ catalog.clientName ? catalog.clientName : 'Cliente' }}</strong> (DNI: {{ searchedDni() }})
+                </p>
               </div>
             </div>
 
-            <button 
-              type="button" 
-              (click)="closeCatalogModal()"
-              class="min-h-[44px] min-w-[44px] p-2 text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#131314] rounded-2xl transition cursor-pointer flex items-center justify-center"
-              aria-label="Cerrar catálogo">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <!-- Derecha: Chip Saldo + Botón Cerrar -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <!-- Saldo Chip -->
+              <div class="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl bg-[#1A73E8]/10 dark:bg-[#8AB4F8]/10 border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center gap-1.5 sm:gap-2">
+                <span class="text-[10px] sm:text-[11px] uppercase font-bold text-[#1A73E8] dark:text-[#8AB4F8] hidden xs:inline">Saldo:</span>
+                <span class="text-xs sm:text-sm md:text-base font-black text-[#1A73E8] dark:text-[#8AB4F8] whitespace-nowrap">
+                  {{ catalog.clientBalance }} pts
+                </span>
+              </div>
+
+              <!-- Cerrar -->
+              <button 
+                type="button" 
+                (click)="closeCatalogModal()"
+                class="w-8 h-8 sm:w-9 sm:h-9 text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#131314] rounded-xl transition cursor-pointer flex items-center justify-center flex-shrink-0"
+                aria-label="Cerrar catálogo">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
           </div>
 
-          <!-- Hero Banner: Saldo de Puntos del Cliente -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
-            <div>
-              <span class="text-[11px] uppercase font-bold tracking-wider opacity-90 block mb-0.5">
-                Tu Cuenta de Puntos
+          <!-- Fila 2: Avisos y Regla en Línea Compacta y Centrada -->
+          <div class="w-full flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1.5 text-[10px] sm:text-xs py-2 px-3 sm:px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#E3E3E3]/60 dark:border-[#333333]/60 text-center">
+            <span class="text-[#5F6368] dark:text-[#9AA0A6]">
+              Regla: <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">${{ catalog.amountStep }} = {{ catalog.pointsPerStep }} pts</strong>
+            </span>
+
+            @if (catalog.isPointsExpirationEnabled && catalog.pointsExpirationDays) {
+              <span class="text-amber-700 dark:text-amber-300 flex items-center gap-1 font-medium">
+                <span>⏳</span>
+                <span>Vencimiento: <strong>{{ catalog.pointsExpirationDays }}d</strong></span>
               </span>
-              <p class="text-sm font-bold opacity-95">
-                {{ catalog.clientName ? catalog.clientName : 'Cliente' }} (DNI: {{ searchedDni() }})
-              </p>
-            </div>
-            <div class="bg-white/15 dark:bg-black/20 backdrop-blur-xs px-4 py-2.5 rounded-xl border border-white/20 dark:border-black/20 flex items-center gap-2.5 self-start sm:self-auto">
-              <div class="w-8 h-8 rounded-lg bg-white/20 dark:bg-black/30 flex items-center justify-center">
-                <svg class="w-4 h-4 text-white dark:text-[#131314]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <span class="text-[10px] uppercase font-black tracking-wider block opacity-90">Saldo Disponible</span>
-                <span class="text-xl sm:text-2xl font-black">{{ catalog.clientBalance }} pts</span>
-              </div>
-            </div>
+            }
+
+            @if (catalog.isInactiveClientPurgeEnabled && catalog.inactiveClientPurgeDays) {
+              <span class="text-rose-700 dark:text-rose-300 flex items-center gap-1 font-medium">
+                <span>⚠️</span>
+                <span>Inactividad: <strong>{{ catalog.inactiveClientPurgeDays }}d</strong></span>
+              </span>
+            }
           </div>
 
-          <!-- Aviso de Transparencia: Inactividad de Cuenta -->
-          @if (catalog.isInactiveClientPurgeEnabled && catalog.inactiveClientPurgeDays) {
-            <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/80 flex items-center gap-3 text-amber-800 dark:text-amber-200 text-xs animate-fade-in">
-              <div class="p-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 flex-shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-              </div>
-              <p class="font-medium">
-                <strong>Atención:</strong> Esta empresa da de baja las cuentas y puntos de los clientes que no registren actividad durante <strong>{{ catalog.inactiveClientPurgeDays }} días</strong>.
-              </p>
-            </div>
-          }
-
-          <!-- Aviso de Vencimiento de Puntos -->
-          @if (catalog.isPointsExpirationEnabled && catalog.pointsExpirationDays) {
-            <div class="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center gap-3 text-blue-800 dark:text-blue-200 text-xs animate-fade-in">
-              <div class="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 flex-shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <p class="font-medium">
-                <strong>Vencimiento de puntos:</strong> Los puntos acumulados en esta sucursal vencen automáticamente a los <strong>{{ catalog.pointsExpirationDays }} días</strong> desde su fecha de emisión (los puntos más antiguos vencen primero).
-              </p>
-            </div>
-          }
-
-          <!-- Pestañas de Navegación del Catálogo -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 no-scrollbar border-b border-[#E3E3E3]/60 dark:border-[#333333]/60">
+          <!-- Fila 3: Tabs de Navegación a lo largo de todo el Card y Centradas -->
+          <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full pt-1">
             <button 
               type="button" 
               (click)="setCatalogTab('rewards')"
               [class]="activeCatalogTab() === 'rewards'
-                ? 'min-h-[44px] px-4 py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center gap-2 cursor-pointer transition'
-                : 'min-h-[44px] px-4 py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333]'">
-              <span>🎁 Premios y Recompensas</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-black" [class]="activeCatalogTab() === 'rewards' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
+                ? 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition text-center'
+                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333] text-center'">
+              <span>🎁 Premios</span>
+              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'rewards' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
                 {{ catalog.rewards.length }}
               </span>
             </button>
@@ -342,10 +331,10 @@
               type="button" 
               (click)="setCatalogTab('promotions')"
               [class]="activeCatalogTab() === 'promotions'
-                ? 'min-h-[44px] px-4 py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center gap-2 cursor-pointer transition'
-                : 'min-h-[44px] px-4 py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333]'">
-              <span>🔥 Promociones Activas</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-black" [class]="activeCatalogTab() === 'promotions' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
+                ? 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition text-center'
+                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333] text-center'">
+              <span>🔥 Promociones</span>
+              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'promotions' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
                 {{ catalog.activePromotions.length }}
               </span>
             </button>
@@ -354,71 +343,72 @@
               type="button" 
               (click)="setCatalogTab('products')"
               [class]="activeCatalogTab() === 'products'
-                ? 'min-h-[44px] px-4 py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center gap-2 cursor-pointer transition'
-                : 'min-h-[44px] px-4 py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333]'">
-              <span>🛍️ Catálogo de Productos</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-black" [class]="activeCatalogTab() === 'products' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
+                ? 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition text-center'
+                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333] text-center'">
+              <span>🛍️ Productos</span>
+              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'products' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
                 {{ catalog.products.length }}
               </span>
             </button>
           </div>
+
         </div>
 
-        <!-- Contenido de las Pestañas (Scrollable) -->
-        <div class="p-5 sm:p-6 overflow-y-auto flex-grow space-y-6">
+        <!-- Contenido de las Pestañas (Scrollable con máxima área visible) -->
+        <div class="p-3.5 sm:p-5 md:p-6 overflow-y-auto flex-grow space-y-4">
           
           <!-- TAB 1: PREMIOS Y RECOMPENSAS -->
           @if (activeCatalogTab() === 'rewards') {
-            <div class="space-y-4">
+            <div class="space-y-3 sm:space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-base sm:text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                  <h3 class="text-sm sm:text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
                     Premios Disponibles para Canje
                   </h3>
-                  <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+                  <p class="text-[11px] sm:text-xs text-[#5F6368] dark:text-[#9AA0A6]">
                     Acércate al mostrador del local con tu DNI para solicitar cualquiera de estos premios.
                   </p>
                 </div>
               </div>
 
               @if (catalog.rewards.length === 0) {
-                <div class="text-center py-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
-                  <span class="text-3xl">🎁</span>
-                  <p class="text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Sin premios registrados en este momento</p>
-                  <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">El comercio está actualizando su catálogo de beneficios.</p>
+                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
+                  <span class="text-2xl sm:text-3xl">🎁</span>
+                  <p class="text-xs sm:text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Sin premios registrados en este momento</p>
+                  <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">El comercio está actualizando su catálogo de beneficios.</p>
                 </div>
               } @else {
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   @for (reward of catalog.rewards; track reward.id) {
-                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-4 sm:p-5 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-4 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition">
+                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-3.5 sm:p-4 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-3 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition shadow-xs">
                       <div class="space-y-2">
                         <div class="flex items-center justify-between gap-2">
-                          <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-300 flex items-center justify-center text-xl shadow-xs">
+                          <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-300 flex items-center justify-center text-base shadow-xs">
                             🎁
                           </div>
-                          <span class="font-black text-sm text-[#1A73E8] dark:text-[#8AB4F8] bg-[#FFFFFF] dark:bg-[#1E1E1E] px-3 py-1 rounded-xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
+                          <span class="font-black text-xs sm:text-sm text-[#1A73E8] dark:text-[#8AB4F8] bg-[#FFFFFF] dark:bg-[#1E1E1E] px-2.5 py-1 rounded-xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
                             {{ reward.costInPoints }} pts
                           </span>
                         </div>
 
-                        <h4 class="text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                        <h4 class="text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug">
                           {{ reward.name }}
                         </h4>
 
                         @if (reward.description) {
-                          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] line-clamp-3 leading-relaxed">
+                          <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] line-clamp-2 leading-relaxed">
                             {{ reward.description }}
                           </p>
                         }
                       </div>
 
-                      <div class="pt-3 border-t border-[#E3E3E3]/60 dark:border-[#333333]/60">
+                      <div class="pt-2.5 border-t border-[#E3E3E3]/60 dark:border-[#333333]/60">
                         @if (catalog.clientBalance >= reward.costInPoints) {
-                          <span class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] rounded-xl border border-emerald-200 dark:border-emerald-800">
-                            <span>✓ ¡Alcanzas este premio!</span>
+                          <span class="w-full inline-flex items-center justify-center gap-1 py-1.5 px-2.5 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] sm:text-[11px] rounded-xl border border-emerald-200 dark:border-emerald-800">
+                            <span>✓ ¡Te alcanza este premio!</span>
                           </span>
                         } @else {
-                          <span class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-[#E3E3E3]/50 dark:bg-[#333333]/50 text-[#5F6368] dark:text-[#9AA0A6] font-semibold text-[11px] rounded-xl">
+                          <span class="w-full inline-flex items-center justify-center gap-1 py-1.5 px-2.5 bg-[#E3E3E3]/50 dark:bg-[#333333]/50 text-[#5F6368] dark:text-[#9AA0A6] font-semibold text-[10px] sm:text-[11px] rounded-xl">
                             <span>Faltan {{ reward.costInPoints - catalog.clientBalance }} pts</span>
                           </span>
                         }
@@ -430,54 +420,54 @@
             </div>
           }
 
-          <!-- TAB 2: PROMOCIONES ACTIVAS (Solo vigentes) -->
+          <!-- TAB 2: PROMOCIONES ACTIVAS -->
           @if (activeCatalogTab() === 'promotions') {
-            <div class="space-y-4">
+            <div class="space-y-3 sm:space-y-4">
               <div>
-                <h3 class="text-base sm:text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                <h3 class="text-sm sm:text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
                   Promociones Especiales Vigentes
                 </h3>
-                <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+                <p class="text-[11px] sm:text-xs text-[#5F6368] dark:text-[#9AA0A6]">
                   Aprovecha los multiplicadores activos para sumar más puntos con cada compra.
                 </p>
               </div>
 
               @if (catalog.activePromotions.length === 0) {
-                <div class="text-center py-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
-                  <span class="text-3xl">🔥</span>
-                  <p class="text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">No hay promociones especiales activas hoy</p>
-                  <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">Tus compras acumulan puntos normalmente con la regla estándar (${{ catalog.amountStep }} = {{ catalog.pointsPerStep }} pts).</p>
+                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
+                  <span class="text-2xl sm:text-3xl">🔥</span>
+                  <p class="text-xs sm:text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">No hay promociones especiales activas hoy</p>
+                  <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">Tus compras acumulan puntos normalmente con la regla estándar (${{ catalog.amountStep }} = {{ catalog.pointsPerStep }} pts).</p>
                 </div>
               } @else {
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   @for (promo of catalog.activePromotions; track promo.id) {
-                    <div class="bg-amber-50/80 dark:bg-[#1E1B18] rounded-2xl p-5 border border-amber-200 dark:border-amber-900/60 shadow-xs flex flex-col justify-between space-y-4">
+                    <div class="bg-amber-50/70 dark:bg-[#1E1B18] rounded-2xl p-4 border border-amber-200 dark:border-amber-900/60 shadow-xs flex flex-col justify-between space-y-3">
                       <div class="space-y-2">
                         <div class="flex items-center justify-between gap-2">
-                          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-white shadow-xs">
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500 text-white shadow-xs">
                             🔥 {{ promo.multiplier }}x Puntos
                           </span>
-                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
                             Activa Hoy
                           </span>
                         </div>
 
-                        <h4 class="text-base sm:text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                        <h4 class="text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
                           {{ promo.name }}
                         </h4>
 
                         @if (promo.description) {
-                          <p class="text-xs text-[#5F6368] dark:text-[#C4C7C5] leading-relaxed">
+                          <p class="text-[11px] text-[#5F6368] dark:text-[#C4C7C5] leading-relaxed line-clamp-2">
                             {{ promo.description }}
                           </p>
                         }
                       </div>
 
-                      <div class="pt-3 border-t border-amber-200/60 dark:border-amber-900/40 text-[11px] text-[#5F6368] dark:text-[#9AA0A6] flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div class="pt-2.5 border-t border-amber-200/60 dark:border-amber-900/40 text-[11px] text-[#5F6368] dark:text-[#9AA0A6] flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span>Válida hasta el <strong>{{ formatDate(promo.endDate) }}</strong></span>
+                        <span>Hasta el <strong>{{ formatDate(promo.endDate) }}</strong></span>
                       </div>
                     </div>
                   }
@@ -488,51 +478,51 @@
 
           <!-- TAB 3: CATÁLOGO DE PRODUCTOS -->
           @if (activeCatalogTab() === 'products') {
-            <div class="space-y-4">
+            <div class="space-y-3 sm:space-y-4">
               <div>
-                <h3 class="text-base sm:text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                <h3 class="text-sm sm:text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
                   Catálogo de Productos y Precios
                 </h3>
-                <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+                <p class="text-[11px] sm:text-xs text-[#5F6368] dark:text-[#9AA0A6]">
                   Productos disponibles para compra directa en {{ catalog.name }}.
                 </p>
               </div>
 
               @if (catalog.products.length === 0) {
-                <div class="text-center py-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
-                  <span class="text-3xl">🛍️</span>
-                  <p class="text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Sin productos cargados</p>
-                  <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">El comercio no ha publicado su catálogo de productos.</p>
+                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
+                  <span class="text-2xl sm:text-3xl">🛍️</span>
+                  <p class="text-xs sm:text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Sin productos cargados</p>
+                  <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">El comercio no ha publicado su catálogo de productos.</p>
                 </div>
               } @else {
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   @for (prod of catalog.products; track prod.id) {
-                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-4 sm:p-5 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-4 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition">
-                      <div class="space-y-3">
+                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-3.5 sm:p-4 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-3 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition shadow-xs">
+                      <div class="space-y-2.5">
                         @if (prod.image) {
-                          <div class="w-full h-36 rounded-xl overflow-hidden bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333]">
+                          <div class="w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333]">
                             <img [src]="prod.image" [alt]="prod.name" class="w-full h-full object-cover" />
                           </div>
                         } @else {
-                          <div class="w-full h-24 rounded-xl bg-[#E8F0FE]/60 dark:bg-[#1E293B]/60 flex items-center justify-center text-3xl text-[#1A73E8] dark:text-[#8AB4F8]">
+                          <div class="w-full h-20 rounded-xl bg-[#E8F0FE]/60 dark:bg-[#1E293B]/60 flex items-center justify-center text-2xl text-[#1A73E8] dark:text-[#8AB4F8]">
                             🛍️
                           </div>
                         }
 
-                        <h4 class="text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                        <h4 class="text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug">
                           {{ prod.name }}
                         </h4>
 
                         @if (prod.description) {
-                          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] line-clamp-2 leading-relaxed">
+                          <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] line-clamp-2 leading-relaxed">
                             {{ prod.description }}
                           </p>
                         }
                       </div>
 
-                      <div class="pt-3 border-t border-[#E3E3E3]/60 dark:border-[#333333]/60 flex items-center justify-between">
+                      <div class="pt-2.5 border-t border-[#E3E3E3]/60 dark:border-[#333333]/60 flex items-center justify-between">
                         <span class="text-[10px] uppercase font-bold text-[#5F6368] dark:text-[#9AA0A6]">Precio</span>
-                        <span class="text-base font-black text-[#1A73E8] dark:text-[#8AB4F8]">
+                        <span class="text-xs sm:text-sm font-black text-[#1A73E8] dark:text-[#8AB4F8]">
                           ${{ prod.price }}
                         </span>
                       </div>
@@ -545,31 +535,24 @@
 
         </div>
 
-        <!-- Footer del Modal -->
-        <div class="p-4 sm:p-5 border-t border-[#E3E3E3] dark:border-[#333333] flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#F8F9FA] dark:bg-[#131314] flex-shrink-0">
-          <div class="text-xs text-[#5F6368] dark:text-[#9AA0A6] flex items-center gap-2">
-            <span class="font-bold">Regla de Puntos:</span>
-            <span class="font-black text-[#1F1F1F] dark:text-[#E3E3E3]">${{ catalog.amountStep }} = {{ catalog.pointsPerStep }} pts</span>
-          </div>
+        <!-- Footer del Modal Compacto -->
+        <div class="p-3 sm:p-4 border-t border-[#E3E3E3] dark:border-[#333333] flex items-center justify-between gap-3 bg-[#F8F9FA] dark:bg-[#131314] flex-shrink-0">
+          <button 
+            type="button" 
+            (click)="askAiAboutCompany(catalog.name)"
+            class="min-h-[38px] sm:min-h-[40px] py-1.5 px-3.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <span>Preguntar a IA</span>
+          </button>
 
-          <div class="flex items-center gap-3 w-full sm:w-auto">
-            <button 
-              type="button" 
-              (click)="askAiAboutCompany(catalog.name)"
-              class="flex-1 sm:flex-initial min-h-[44px] py-2 px-4 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-              </svg>
-              <span>Preguntar a IA</span>
-            </button>
-
-            <button 
-              type="button" 
-              (click)="closeCatalogModal()"
-              class="min-h-[44px] py-2 px-5 bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#F8F9FA] dark:hover:bg-[#333333] transition cursor-pointer">
-              Cerrar
-            </button>
-          </div>
+          <button 
+            type="button" 
+            (click)="closeCatalogModal()"
+            class="min-h-[38px] sm:min-h-[40px] py-1.5 px-4 bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#F8F9FA] dark:hover:bg-[#333333] transition cursor-pointer">
+            Cerrar
+          </button>
         </div>
 
       </div>

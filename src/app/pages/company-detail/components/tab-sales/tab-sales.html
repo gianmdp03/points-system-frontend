@@ -74,7 +74,6 @@
               <th class="p-4">Monto ($)</th>
               <th class="p-4">Puntos Otorgados</th>
               <th class="p-4">Fecha</th>
-              <th class="p-4 text-right">Acciones</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#E3E3E3]/60 dark:divide-[#333333]/60 font-medium">
@@ -107,16 +106,6 @@
                 </td>
                 <td class="p-4 text-[#5F6368] dark:text-[#9AA0A6] whitespace-nowrap">
                   {{ sale.createdAt ? (sale.createdAt | date:'short') : '-' }}
-                </td>
-                <td class="p-4 text-right">
-                  <button 
-                    (click)="editSale.emit(sale)"
-                    class="p-2 hover:bg-[#E8F0FE] dark:hover:bg-[#1E293B] rounded-xl text-[#1A73E8] dark:text-[#8AB4F8] transition cursor-pointer"
-                    title="Editar Venta">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
                 </td>
               </tr>
             }
