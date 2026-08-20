@@ -6,7 +6,6 @@ export interface CarouselSlide {
   title: string;
   subtitle: string;
   badge: string;
-  icon: string;
 }
 
 @Component({
@@ -22,22 +21,19 @@ export class CarouselComponent implements OnInit, OnDestroy {
       id: 1,
       title: 'Acumula Puntos en tus Comercios Favoritos',
       subtitle: 'Suma recompensas por cada compra registrada con tu DNI y canjéalos por premios exclusivos.',
-      badge: 'Fidelización Inteligente',
-      icon: '🎁'
+      badge: 'Fidelización Inteligente'
     },
     {
       id: 2,
       title: 'Promociones Especiales y Multiplicadores',
       subtitle: 'Aprovecha las campañas activas para duplicar o triplicar tus puntos acumulados.',
-      badge: 'Ofertas Exclusivas',
-      icon: '⚡'
+      badge: 'Ofertas Exclusivas'
     },
     {
       id: 3,
       title: 'Canjea Premios y Vouchers al Instante',
       subtitle: 'Descubre el catálogo de productos y beneficios que tus tiendas favoritas tienen preparados.',
-      badge: 'Recompensas Instantáneas',
-      icon: '🏆'
+      badge: 'Recompensas Instantáneas'
     }
   ]);
 

@@ -42,7 +42,7 @@
       <div 
         [class]="p.isPopular 
           ? 'bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl p-7 sm:p-9 border-2 border-[#1A73E8] dark:border-[#8AB4F8] relative flex flex-col justify-between space-y-8 shadow-sm hover:shadow transition-all duration-300 transform md:-translate-y-2' 
-          : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl p-7 sm:p-9 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-8 shadow-xs hover:border-[#C4C7C5] dark:hover:border-[#5E6266] transition-all duration-300'">
+          : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl p-7 sm:p-9 border border-[#C4C7C5] dark:border-[#333333] flex flex-col justify-between space-y-8 shadow-xs hover:border-[#C4C7C5] dark:hover:border-[#5E6266] transition-all duration-300'">
         
         <!-- Popular Badge -->
         @if (p.isPopular) {
@@ -72,7 +72,7 @@
           </div>
 
           <!-- Feature Highlights / Limits -->
-          <div class="grid grid-cols-2 gap-2 pt-3 border-t border-[#E3E3E3] dark:border-[#333333] text-[11px]">
+          <div class="grid grid-cols-2 gap-2 pt-3 border-t border-[#C4C7C5] dark:border-[#333333] text-[11px]">
             <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
               <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Clientes</span>
               <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
@@ -134,7 +134,7 @@
                   <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   <span>Mejorando Plan...</span>
                 } @else {
-                  <span>⚡ Subir a este Plan</span>
+                  <span>Subir a este Plan</span>
                 }
               </button>
             } @else if (isDowngrade(p.plan)) {
@@ -143,7 +143,7 @@
                 type="button"
                 (click)="onSelectPlan(p.plan)"
                 [disabled]="loadingPlan() !== null"
-                class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]">
+                class="w-full text-center border border-[#C4C7C5] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]">
                 @if (loadingPlan() === p.plan) {
                   <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   <span>Cambiando Plan...</span>
@@ -157,7 +157,7 @@
                 type="button"
                 (click)="onSelectPlan(p.plan)"
                 [disabled]="loadingPlan() !== null"
-                class="w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]">
+                class="w-full text-center border border-[#C4C7C5] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]">
                 @if (loadingPlan() === p.plan) {
                   <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   <span>Procesando...</span>
@@ -172,7 +172,7 @@
               [queryParams]="{ role: 'COMPANY_ADMIN', plan: p.plan }" 
               [class]="p.isPopular 
                 ? 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold py-4 px-6 rounded-full transition shadow-md cursor-pointer flex items-center justify-center min-h-[44px]'
-                : 'w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center min-h-[44px]'">
+                : 'w-full text-center border border-[#C4C7C5] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center min-h-[44px]'">
               Empezar Prueba
             </a>
           }

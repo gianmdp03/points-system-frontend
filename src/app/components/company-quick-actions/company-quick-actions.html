@@ -1,6 +1,6 @@
 @if (isCompanyAdmin()) {
   <section class="w-full animate-fade-in">
-    <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl p-5 sm:p-7 border border-[#E3E3E3] dark:border-[#333333] shadow-xs space-y-5">
+    <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl p-5 sm:p-7 border border-[#C4C7C5]/30 dark:border-[#333333] shadow-xs space-y-5">
       
       <!-- Success Toast Notification -->
       @if (successMessage()) {
@@ -31,7 +31,7 @@
       }
 
       <!-- Header: Empresa Selector + Multiplicador de Promoción al mismo nivel -->
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E3E3E3] dark:border-[#333333]">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#C4C7C5]/30 dark:border-[#333333]">
         <div class="space-y-1">
           <h2 class="text-base sm:text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight flex items-center gap-2 flex-wrap">
             <span>Operaciones Rápidas</span>
@@ -57,11 +57,13 @@
           @if (selectedCompany()) {
             @if (activePromotion(); as promo) {
               <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-950/50 border border-amber-500/30 dark:border-amber-700/40 text-amber-800 dark:text-amber-200 text-xs font-bold shadow-xs">
-                <span>🔥</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
                 <span>Multiplicador <strong>{{ promo.multiplier }}x</strong> Activo</span>
               </div>
             } @else {
-              <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] text-[#5F6368] dark:text-[#9AA0A6] text-xs font-medium opacity-65">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] text-[#5F6368] dark:text-[#9AA0A6] text-xs font-medium opacity-65">
                 <span class="text-[11px] font-bold">x1</span>
                 <span>Sin promo activa</span>
               </div>
@@ -81,7 +83,7 @@
                     (click)="onSelectCompany(comp)"
                     [class]="selectedCompany()?.id === comp.id 
                       ? 'min-h-[40px] px-3.5 py-1.5 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer whitespace-nowrap'
-                      : 'min-h-[40px] px-3.5 py-1.5 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] font-semibold text-xs rounded-xl border border-[#E3E3E3] dark:border-[#333333] transition cursor-pointer whitespace-nowrap'">
+                      : 'min-h-[40px] px-3.5 py-1.5 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] font-semibold text-xs rounded-xl border border-[#C4C7C5] dark:border-[#333333] transition cursor-pointer whitespace-nowrap'">
                     {{ comp.name }}
                   </button>
                 }
@@ -99,7 +101,7 @@
         </div>
       } @else if (companies().length === 0) {
         <!-- Estado: Sin Empresas Registradas -->
-        <div class="text-center py-6 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-3">
+        <div class="text-center py-6 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] space-y-3">
           <h3 class="text-sm sm:text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
             Aún no tienes sucursales registradas
           </h3>
@@ -121,7 +123,7 @@
           <button 
             type="button"
             (click)="openAddClientModal()"
-            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
+            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
             <div class="w-10 h-10 rounded-xl bg-[#1A73E8]/10 dark:bg-[#8AB4F8]/10 text-[#1A73E8] dark:text-[#8AB4F8] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -141,7 +143,7 @@
           <button 
             type="button"
             (click)="openAddSaleModal()"
-            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
+            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -161,7 +163,7 @@
           <button 
             type="button"
             (click)="openCheckPointsModal()"
-            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
+            class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center gap-3.5 text-left group shadow-xs">
             <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -182,10 +184,12 @@
             <a 
               [routerLink]="['/companies', comp.id]"
               [queryParams]="{ tab: 'rewards' }"
-              class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#E3E3E3] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center justify-between gap-3 group shadow-xs">
+              class="min-h-[52px] p-4 bg-[#F8F9FA] dark:bg-[#131314] hover:bg-[#E8F0FE] dark:hover:bg-[#1A2733] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]/30 dark:hover:border-[#8AB4F8]/30 rounded-2xl transition-all cursor-pointer flex items-center justify-between gap-3 group shadow-xs">
               <div class="flex items-center gap-3.5 min-w-0">
-                <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform text-lg">
-                  🎁
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 13C10.832 21 4 17.5 4 11V7h16v4c0 6.5-6.832 10-8 10z" />
+                  </svg>
                 </div>
                 <div class="min-w-0">
                   <span class="block text-xs sm:text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3]">

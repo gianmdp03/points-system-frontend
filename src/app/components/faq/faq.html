@@ -1,4 +1,4 @@
-<section id="faq" class="space-y-12 border-t border-[#E3E3E3] dark:border-[#333333] pt-20 pb-10">
+<section id="faq" class="space-y-12 border-t border-[#C4C7C5]/40 dark:border-[#333333] pt-20 pb-10">
     <div class="text-center space-y-3 max-w-2xl mx-auto">
         <span class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold uppercase tracking-wider text-xs">Resolvamos tus dudas</span>
         <h2 class="text-3xl md:text-4xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
@@ -9,7 +9,7 @@
 
     <div class="max-w-4xl mx-auto space-y-4">
         @for (faq of faqs; track $index) {
-            <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] overflow-hidden transition-all duration-200">
+            <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] overflow-hidden transition-all duration-200">
                 <button 
                     type="button"
                     (click)="toggleFaq($index)"
@@ -23,7 +23,7 @@
                 </button>
                 
                 @if (openIndex() === $index) {
-                    <div class="px-5 pb-6 sm:px-6 sm:pb-6 text-sm sm:text-base text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed border-t border-[#E3E3E3]/60 dark:border-[#333333]/60 pt-4">
+                    <div class="px-5 pb-6 sm:px-6 sm:pb-6 text-sm sm:text-base text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed border-t border-[#C4C7C5]/60 dark:border-[#333333]/60 pt-4">
                         {{ faq.answer }}
                     </div>
                 }

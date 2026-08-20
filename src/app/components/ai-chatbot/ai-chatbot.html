@@ -26,10 +26,10 @@
   <!-- 2. VENTANA DE CHAT MATERIAL 3 -->
   <!-- ========================================================================= -->
   @if (chatService.isOpen()) {
-    <div class="fixed inset-x-0 bottom-0 sm:static sm:inset-auto w-full sm:w-[380px] h-[82vh] sm:h-[520px] bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-t-2xl sm:rounded-2xl shadow-lg flex flex-col overflow-hidden animate-fade-in transition-all z-50">
+    <div class="fixed inset-x-0 bottom-0 sm:static sm:inset-auto w-full sm:w-[380px] h-[82vh] sm:h-[520px] bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#C4C7C5] dark:border-[#333333] rounded-t-2xl sm:rounded-2xl shadow-lg flex flex-col overflow-hidden animate-fade-in transition-all z-50">
       
       <!-- HEADER MATERIAL 3 -->
-      <div class="px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border-b border-[#E3E3E3] dark:border-[#333333] flex items-center justify-between gap-3 flex-shrink-0">
+      <div class="px-5 py-3.5 bg-[#F8F9FA] dark:bg-[#131314] border-b border-[#C4C7C5] dark:border-[#333333] flex items-center justify-between gap-3 flex-shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-xl bg-[#E8F0FE] dark:bg-[#1E293B] text-[#1A73E8] dark:text-[#8AB4F8] flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@
             type="button" 
             (click)="chatService.clearHistory()"
             title="Reiniciar conversación"
-            class="p-2 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3] hover:bg-[#E3E3E3]/50 dark:hover:bg-[#333333] rounded-xl transition cursor-pointer">
+            class="p-2 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3] hover:bg-[#C4C7C5]/50 dark:hover:bg-[#333333] rounded-xl transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -62,7 +62,7 @@
             type="button" 
             (click)="chatService.closeChat()"
             title="Cerrar ventana"
-            class="p-2 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3] hover:bg-[#E3E3E3]/50 dark:hover:bg-[#333333] rounded-xl transition cursor-pointer">
+            class="p-2 text-[#5F6368] hover:text-[#1F1F1F] dark:text-[#9AA0A6] dark:hover:text-[#E3E3E3] hover:bg-[#C4C7C5]/50 dark:hover:bg-[#333333] rounded-xl transition cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -115,20 +115,20 @@
       </div>
 
       <!-- SUGERENCIAS RÁPIDAS (PROMPT CHIPS) -->
-      <div class="px-3 py-2 bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#E3E3E3] dark:border-[#333333] overflow-x-auto flex items-center gap-2 flex-shrink-0 no-scrollbar">
+      <div class="px-3 py-2 bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#C4C7C5] dark:border-[#333333] overflow-x-auto flex items-center gap-2 flex-shrink-0 no-scrollbar">
         @for (prompt of chatService.suggestedPrompts; track prompt) {
           <button
             type="button"
             (click)="onPromptClick(prompt)"
             [disabled]="chatService.isTyping()"
-            class="px-3 py-1 bg-[#FFFFFF] dark:bg-[#1E1E1E] hover:bg-[#E8F0FE] dark:hover:bg-[#1E293B] hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-[11px] font-medium text-[#5F6368] dark:text-[#9AA0A6] whitespace-nowrap transition cursor-pointer disabled:opacity-50">
+            class="px-3 py-1 bg-[#FFFFFF] dark:bg-[#1E1E1E] hover:bg-[#E8F0FE] dark:hover:bg-[#1E293B] hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-[11px] font-medium text-[#5F6368] dark:text-[#9AA0A6] whitespace-nowrap transition cursor-pointer disabled:opacity-50">
             {{ prompt }}
           </button>
         }
       </div>
 
       <!-- CAJA DE TEXTO MATERIAL 3 -->
-      <div class="p-3 bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#E3E3E3] dark:border-[#333333] flex-shrink-0">
+      <div class="p-3 bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#C4C7C5] dark:border-[#333333] flex-shrink-0">
         <form (ngSubmit)="onSendMessage()" class="flex items-center gap-2">
           <input
             type="text"
@@ -138,7 +138,7 @@
             (keydown)="onKeyDown($event)"
             [disabled]="chatService.isTyping()"
             placeholder="Pregunta sobre puntos o premios..."
-            class="flex-1 px-4 py-2.5 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition disabled:opacity-50" />
+            class="flex-1 px-4 py-2.5 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition disabled:opacity-50" />
 
           <button
             type="submit"

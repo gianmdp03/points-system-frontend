@@ -1,5 +1,5 @@
 <div class="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-  <div class="w-full max-w-xl bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-10 border border-[#E3E3E3] dark:border-[#333333] shadow-sm transition-all">
+  <div class="w-full max-w-xl bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-10 border border-[#C4C7C5] dark:border-[#333333] shadow-sm transition-all">
     
     <!-- Link Volver -->
     <a routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-[#5F6368] hover:text-[#1A73E8] dark:text-[#9AA0A6] dark:hover:text-[#8AB4F8] mb-6 transition">
@@ -24,9 +24,11 @@
 
     <!-- Callout informativo para Clientes Finales -->
     <div class="mb-6 p-4 bg-[#E8F0FE]/70 dark:bg-[#1E293B]/70 border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 rounded-2xl flex items-center justify-between gap-3 text-xs">
-      <div class="flex items-center gap-2.5 text-[#1A73E8] dark:text-[#8AB4F8] font-bold">
-        <span class="text-base">🛍️</span>
-        <span>¿Sos cliente de un comercio?</span>
+      <div class="flex items-center gap-2 text-[#1A73E8] dark:text-[#8AB4F8] font-bold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+        <span>¿Eres cliente?</span>
       </div>
       <a routerLink="/points" class="px-3.5 py-1.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold rounded-xl text-[11px] shadow-xs transition">
         Consultar con DNI &rarr;
@@ -53,7 +55,7 @@
     }
 
     <!-- Pestañas: Email / Magic Link -->
-    <div class="flex items-center justify-center gap-6 mb-6 border-b border-[#E3E3E3] dark:border-[#333333] pb-3">
+    <div class="flex items-center justify-center gap-6 mb-6 border-b border-[#C4C7C5] dark:border-[#333333] pb-3">
       <button 
         type="button" 
         (click)="activeTab.set('email')"
@@ -75,7 +77,7 @@
         type="button"
         (click)="onGoogleLogin()"
         [disabled]="isLoading()"
-        class="w-full py-3 px-4 bg-[#FFFFFF] dark:bg-[#131314] hover:bg-[#F8F9FA] dark:hover:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center justify-center gap-2.5 transition cursor-pointer disabled:opacity-50 shadow-xs">
+        class="w-full py-3 px-4 bg-[#FFFFFF] dark:bg-[#131314] hover:bg-[#F8F9FA] dark:hover:bg-[#1E1E1E] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center justify-center gap-2.5 transition cursor-pointer disabled:opacity-50 shadow-xs">
         <svg class="w-4 h-4" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -87,7 +89,7 @@
 
       <!-- Divider -->
       <div class="relative flex items-center justify-center my-6">
-        <div class="border-t border-[#E3E3E3] dark:border-[#333333] w-full"></div>
+        <div class="border-t border-[#C4C7C5] dark:border-[#333333] w-full"></div>
         <span class="bg-[#FFFFFF] dark:bg-[#1E1E1E] px-3 text-[11px] font-bold text-[#5F6368] dark:text-[#9AA0A6] uppercase tracking-wider absolute">O con tus datos de empresa</span>
       </div>
     </div>
@@ -106,7 +108,7 @@
               formControlName="name"
               placeholder="Ej. Juan Pérez / Mi Tienda"
               [class.border-rose-500]="isFieldInvalid(registerForm, 'name', isRegisterFormSubmitted())"
-              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
             @if (isFieldInvalid(registerForm, 'name', isRegisterFormSubmitted())) {
               <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -124,7 +126,7 @@
               formControlName="dni"
               placeholder="Ej. 38123456"
               [class.border-rose-500]="isFieldInvalid(registerForm, 'dni', isRegisterFormSubmitted())"
-              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
             @if (isFieldInvalid(registerForm, 'dni', isRegisterFormSubmitted())) {
               <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -144,7 +146,7 @@
             formControlName="email"
             placeholder="admin@empresa.com"
             [class.border-rose-500]="isFieldInvalid(registerForm, 'email', isRegisterFormSubmitted())"
-            class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(registerForm, 'email', isRegisterFormSubmitted())) {
             <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -164,7 +166,7 @@
               formControlName="password"
               placeholder="••••••••"
               [class.border-rose-500]="isFieldInvalid(registerForm, 'password', isRegisterFormSubmitted())"
-              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
             @if (isFieldInvalid(registerForm, 'password', isRegisterFormSubmitted())) {
               <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -182,7 +184,7 @@
               formControlName="confirmPassword"
               placeholder="••••••••"
               [class.border-rose-500]="isFieldInvalid(registerForm, 'confirmPassword', isRegisterFormSubmitted())"
-              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+              class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
             @if (isFieldInvalid(registerForm, 'confirmPassword', isRegisterFormSubmitted())) {
               <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -198,7 +200,7 @@
             type="checkbox"
             id="terms"
             formControlName="acceptTerms"
-            class="w-4 h-4 rounded border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] text-[#1A73E8] focus:ring-0 cursor-pointer" />
+            class="w-4 h-4 rounded border-[#C4C7C5] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] text-[#1A73E8] focus:ring-0 cursor-pointer" />
           <label for="terms" class="text-xs text-[#5F6368] dark:text-[#9AA0A6] cursor-pointer">
             Acepto los <a href="#" class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold hover:underline">Términos del Servicio</a> y la <a href="#" class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold hover:underline">Política de Privacidad</a>.
           </label>
@@ -240,7 +242,7 @@
             formControlName="email"
             placeholder="admin@empresa.com"
             [class.border-rose-500]="isFieldInvalid(magicLinkForm, 'email', isMagicFormSubmitted())"
-            class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            class="w-full h-12 px-5 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(magicLinkForm, 'email', isMagicFormSubmitted())) {
             <p class="text-rose-500 text-xs mt-1.5 flex items-center gap-1 font-medium">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -264,7 +266,7 @@
     }
 
     <!-- Link a Login -->
-    <div class="mt-8 pt-6 border-t border-[#E3E3E3] dark:border-[#333333] text-center">
+    <div class="mt-8 pt-6 border-t border-[#C4C7C5] dark:border-[#333333] text-center">
       <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
         ¿Ya tienes una cuenta registrada? 
         <a routerLink="/login" class="text-[#1A73E8] dark:text-[#8AB4F8] font-bold hover:underline ml-1">

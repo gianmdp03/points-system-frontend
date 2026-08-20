@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
 import { AppConfigService } from '../../core/services/app-config-service';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
@@ -13,10 +13,11 @@ import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class Login {
+export class Login implements OnInit {
   protected readonly configService = inject(AppConfigService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
 
   readonly isFieldInvalid = isFieldInvalid;
@@ -38,6 +39,21 @@ export class Login {
   magicLinkForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]]
   });
+
+  ngOnInit(): void {
+    const params = this.route.snapshot.queryParams;
+    if (params['registered'] === 'true' || params['confirmEmail'] === 'true') {
+      const email = params['email'] || '';
+      const emailText = email ? ` (${email})` : '';
+      this.successMessage.set(
+        `¡Registro exitoso! Te hemos enviado un correo de confirmación a tu e-mail${emailText}. Por favor revisa tu bandeja de entrada (y la carpeta de spam) y confirma tu cuenta antes de iniciar sesión.`
+      );
+      if (email) {
+        this.loginForm.patchValue({ email });
+        this.magicLinkForm.patchValue({ email });
+      }
+    }
+  }
 
   async onSubmit(): Promise<void> {
     this.isLoginFormSubmitted.set(true);

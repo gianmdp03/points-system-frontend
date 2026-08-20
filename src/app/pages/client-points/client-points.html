@@ -11,7 +11,7 @@
   </div>
 
   <!-- Formulario de Consulta / Escaneo QR -->
-  <div class="max-w-xl mx-auto bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-sm transition-all duration-300">
+  <div class="max-w-xl mx-auto bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#C4C7C5] dark:border-[#333333] shadow-sm transition-all duration-300">
     <form [formGroup]="searchForm" (ngSubmit)="onSearchSubmit()" class="space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
         <!-- Selector de País con Buscador -->
@@ -36,7 +36,7 @@
             placeholder="Ej. 40123456" 
             [class.border-rose-500]="isFieldInvalid(searchForm, 'dni', isSubmitted())"
             [class.focus:ring-rose-500]="isFieldInvalid(searchForm, 'dni', isSubmitted())"
-            class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-xs sm:text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-2xl text-xs sm:text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
           @if (isFieldInvalid(searchForm, 'dni', isSubmitted())) {
             <p class="text-rose-500 text-[11px] mt-1.5 font-semibold">{{ getFieldError(searchForm, 'dni') }}</p>
           }
@@ -89,7 +89,7 @@
   <!-- Resultados de la Consulta -->
   @if (hasSearched()) {
     <div class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E3E3E3] dark:border-[#333333]">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#C4C7C5] dark:border-[#333333]">
         <div>
           <h2 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
             Tus Comercios Adheridos
@@ -99,16 +99,18 @@
           </p>
         </div>
 
-        <span class="px-3.5 py-1.5 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3] self-start sm:self-auto shadow-xs">
+        <span class="px-3.5 py-1.5 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#C4C7C5] dark:border-[#333333] rounded-full text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3] self-start sm:self-auto shadow-xs">
           {{ companies().length }} {{ companies().length === 1 ? 'comercio encontrado' : 'comercios encontrados' }}
         </span>
       </div>
 
       <!-- Estado Vacío: Sin Comercios -->
       @if (!isLoading() && companies().length === 0) {
-        <div class="text-center py-16 px-6 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] shadow-sm max-w-lg mx-auto space-y-4">
-          <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/80 flex items-center justify-center mx-auto text-2xl">
-            🔍
+        <div class="text-center py-16 px-6 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] shadow-sm max-w-lg mx-auto space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/80 flex items-center justify-center mx-auto">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
           <div class="space-y-1">
             <h3 class="text-lg sm:text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Sin Puntos en esta Identificación</h3>
@@ -121,10 +123,10 @@
         <!-- Grid de Comercios Vinculados -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           @for (company of companies(); track company.id) {
-            <div class="group bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 border border-[#E3E3E3] dark:border-[#333333] shadow-sm hover:border-[#C4C7C5] dark:hover:border-[#5E6266] hover:scale-[1.01] hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6">
+            <div class="group bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 border border-[#C4C7C5] dark:border-[#333333] shadow-sm hover:border-[#C4C7C5] dark:hover:border-[#5E6266] hover:scale-[1.01] hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6">
               <div>
                 <div class="flex items-start justify-between gap-4 mb-4">
-                  <div class="w-14 h-14 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] flex items-center justify-center text-[#5F6368] dark:text-[#9AA0A6] font-black text-2xl shadow-sm group-hover:scale-105 transition-transform">
+                  <div class="w-14 h-14 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] flex items-center justify-center text-[#5F6368] dark:text-[#9AA0A6] font-black text-2xl shadow-sm group-hover:scale-105 transition-transform">
                     {{ company.name ? company.name.charAt(0).toUpperCase() : 'C' }}
                   </div>
                   <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
@@ -149,17 +151,17 @@
 
                 <!-- Equivalencia de Puntos y Vencimiento -->
                 <div class="mt-5 space-y-2">
-                  <div class="p-3.5 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3]/60 dark:border-[#333333]/60 flex items-center justify-between text-xs">
+                  <div class="p-3.5 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 flex items-center justify-between text-xs">
                     <div>
                       <span class="text-[10px] uppercase font-extrabold tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block mb-0.5">Regla de Puntos</span>
                       <span class="font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Por compras en el local</span>
                     </div>
-                    <span class="font-black text-[#1A73E8] dark:text-[#8AB4F8] bg-[#FFFFFF] dark:bg-[#1E1E1E] px-3 py-1.5 rounded-xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
+                    <span class="font-black text-[#1A73E8] dark:text-[#8AB4F8] bg-[#FFFFFF] dark:bg-[#1E1E1E] px-3 py-1.5 rounded-xl border border-[#C4C7C5] dark:border-[#333333] shadow-xs">
                       ${{ company.amountStep }} = {{ company.pointsPerStep }} pts
                     </span>
                   </div>
 
-                  <div class="p-3 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3]/60 dark:border-[#333333]/60 flex items-center justify-between text-xs">
+                  <div class="p-3 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 flex items-center justify-between text-xs">
                     <span class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] font-medium">Vencimiento:</span>
                     @if (company.isPointsExpirationEnabled && company.pointsExpirationDays) {
                       <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
@@ -176,7 +178,7 @@
                 </div>
               </div>
 
-              <div class="pt-4 border-t border-[#E3E3E3] dark:border-[#333333]">
+              <div class="pt-4 border-t border-[#C4C7C5] dark:border-[#333333]">
                 <button 
                   type="button"
                   (click)="viewCompanyCatalog(company)"
@@ -197,7 +199,7 @@
   <!-- Loading State del Catálogo -->
   @if (isLoadingCatalog()) {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div class="p-8 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] shadow-lg flex flex-col items-center gap-4 max-w-sm w-full text-center">
+      <div class="p-8 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] shadow-lg flex flex-col items-center gap-4 max-w-sm w-full text-center">
         <div class="w-12 h-12 border-4 border-[#1A73E8] dark:border-[#8AB4F8] border-t-transparent rounded-full animate-spin"></div>
         <div>
           <p class="text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Cargando Catálogo y Premios...</p>
@@ -225,7 +227,7 @@
         <button 
           type="button" 
           (click)="closeCatalogModal()"
-          class="w-full min-h-[44px] py-2.5 px-4 bg-[#F8F9FA] hover:bg-[#E8F0FE] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#E3E3E3] dark:border-[#333333] transition cursor-pointer">
+          class="w-full min-h-[44px] py-2.5 px-4 bg-[#F8F9FA] hover:bg-[#E8F0FE] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#C4C7C5] dark:border-[#333333] transition cursor-pointer">
           Cerrar
         </button>
       </div>
@@ -236,11 +238,11 @@
   @if (selectedCompanyCatalog(); as catalog) {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/70 backdrop-blur-md animate-fade-in" role="dialog" aria-modal="true">
       <div 
-        class="w-full max-w-4xl bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl sm:rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-lg overflow-hidden flex flex-col max-h-[92vh]"
+        class="w-full max-w-4xl bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl sm:rounded-3xl border border-[#C4C7C5] dark:border-[#333333] shadow-lg overflow-hidden flex flex-col max-h-[92vh]"
         (click)="$event.stopPropagation()">
         
         <!-- Header Compacto del Modal -->
-        <div class="p-3.5 sm:p-5 border-b border-[#E3E3E3] dark:border-[#333333] flex-shrink-0 bg-[#FFFFFF] dark:bg-[#1E1E1E] space-y-3">
+        <div class="p-3.5 sm:p-5 border-b border-[#C4C7C5] dark:border-[#333333] flex-shrink-0 bg-[#FFFFFF] dark:bg-[#1E1E1E] space-y-3">
           
           <!-- Fila 1: Logo + Datos Empresa/Cliente + Badge Saldo + Botón Cerrar -->
           <div class="flex items-center justify-between gap-3">
@@ -293,21 +295,21 @@
           </div>
 
           <!-- Fila 2: Avisos y Regla en Línea Compacta y Centrada -->
-          <div class="w-full flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1.5 text-[10px] sm:text-xs py-2 px-3 sm:px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#E3E3E3]/60 dark:border-[#333333]/60 text-center">
+          <div class="w-full flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1.5 text-[10px] sm:text-xs py-2 px-3 sm:px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 text-center">
             <span class="text-[#5F6368] dark:text-[#9AA0A6]">
               Regla: <strong class="text-[#1F1F1F] dark:text-[#E3E3E3]">${{ catalog.amountStep }} = {{ catalog.pointsPerStep }} pts</strong>
             </span>
 
             @if (catalog.isPointsExpirationEnabled && catalog.pointsExpirationDays) {
               <span class="text-amber-700 dark:text-amber-300 flex items-center gap-1 font-medium">
-                <span>⏳</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 <span>Vencimiento: <strong>{{ catalog.pointsExpirationDays }}d</strong></span>
               </span>
             }
 
             @if (catalog.isInactiveClientPurgeEnabled && catalog.inactiveClientPurgeDays) {
               <span class="text-rose-700 dark:text-rose-300 flex items-center gap-1 font-medium">
-                <span>⚠️</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 <span>Inactividad: <strong>{{ catalog.inactiveClientPurgeDays }}d</strong></span>
               </span>
             }
@@ -320,9 +322,9 @@
               (click)="setCatalogTab('rewards')"
               [class]="activeCatalogTab() === 'rewards'
                 ? 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition text-center'
-                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333] text-center'">
-              <span>🎁 Premios</span>
-              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'rewards' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
+                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#C4C7C5] dark:hover:border-[#333333] text-center'">
+              <span>Premios</span>
+              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'rewards' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#C4C7C5] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
                 {{ catalog.rewards.length }}
               </span>
             </button>
@@ -332,9 +334,9 @@
               (click)="setCatalogTab('promotions')"
               [class]="activeCatalogTab() === 'promotions'
                 ? 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition text-center'
-                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333] text-center'">
-              <span>🔥 Promociones</span>
-              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'promotions' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
+                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#C4C7C5] dark:hover:border-[#333333] text-center'">
+              <span>Promociones</span>
+              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'promotions' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#C4C7C5] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
                 {{ catalog.activePromotions.length }}
               </span>
             </button>
@@ -344,9 +346,9 @@
               (click)="setCatalogTab('products')"
               [class]="activeCatalogTab() === 'products'
                 ? 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition text-center'
-                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#E3E3E3] dark:hover:border-[#333333] text-center'">
-              <span>🛍️ Productos</span>
-              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'products' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#E3E3E3] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
+                : 'min-h-[38px] sm:min-h-[42px] px-2 sm:px-4 py-1.5 sm:py-2 bg-[#F8F9FA] dark:bg-[#131314] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition border border-transparent hover:border-[#C4C7C5] dark:hover:border-[#333333] text-center'">
+              <span>Productos</span>
+              <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black" [class]="activeCatalogTab() === 'products' ? 'bg-white/20 text-white dark:text-[#131314]' : 'bg-[#C4C7C5] dark:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6]'">
                 {{ catalog.products.length }}
               </span>
             </button>
@@ -372,21 +374,23 @@
               </div>
 
               @if (catalog.rewards.length === 0) {
-                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
-                  <span class="text-2xl sm:text-3xl">🎁</span>
+                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] space-y-2">
+                  <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/80 flex items-center justify-center mx-auto">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 13C10.832 21 4 17.5 4 11V7h16v4c0 6.5-6.832 10-8 10z" /></svg>
+                  </div>
                   <p class="text-xs sm:text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Sin premios registrados en este momento</p>
                   <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">El comercio está actualizando su catálogo de beneficios.</p>
                 </div>
               } @else {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   @for (reward of catalog.rewards; track reward.id) {
-                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-3.5 sm:p-4 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-3 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition shadow-xs">
+                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-3.5 sm:p-4 border border-[#C4C7C5] dark:border-[#333333] flex flex-col justify-between space-y-3 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition shadow-xs">
                       <div class="space-y-2">
                         <div class="flex items-center justify-between gap-2">
-                          <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-300 flex items-center justify-center text-base shadow-xs">
-                            🎁
+                          <div class="w-8 h-8 rounded-xl bg-[#E8F0FE] dark:bg-[#1E293B] text-[#1A73E8] dark:text-[#8AB4F8] flex items-center justify-center text-base shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 13C10.832 21 4 17.5 4 11V7h16v4c0 6.5-6.832 10-8 10z" /></svg>
                           </div>
-                          <span class="font-black text-xs sm:text-sm text-[#1A73E8] dark:text-[#8AB4F8] bg-[#FFFFFF] dark:bg-[#1E1E1E] px-2.5 py-1 rounded-xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
+                          <span class="font-black text-xs sm:text-sm text-[#1A73E8] dark:text-[#8AB4F8] bg-[#FFFFFF] dark:bg-[#1E1E1E] px-2.5 py-1 rounded-xl border border-[#C4C7C5] dark:border-[#333333] shadow-xs">
                             {{ reward.costInPoints }} pts
                           </span>
                         </div>
@@ -402,13 +406,13 @@
                         }
                       </div>
 
-                      <div class="pt-2.5 border-t border-[#E3E3E3]/60 dark:border-[#333333]/60">
+                      <div class="pt-2.5 border-t border-[#C4C7C5]/60 dark:border-[#333333]/60">
                         @if (catalog.clientBalance >= reward.costInPoints) {
                           <span class="w-full inline-flex items-center justify-center gap-1 py-1.5 px-2.5 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] sm:text-[11px] rounded-xl border border-emerald-200 dark:border-emerald-800">
-                            <span>✓ ¡Te alcanza este premio!</span>
+                            <span>¡Te alcanza este premio!</span>
                           </span>
                         } @else {
-                          <span class="w-full inline-flex items-center justify-center gap-1 py-1.5 px-2.5 bg-[#E3E3E3]/50 dark:bg-[#333333]/50 text-[#5F6368] dark:text-[#9AA0A6] font-semibold text-[10px] sm:text-[11px] rounded-xl">
+                          <span class="w-full inline-flex items-center justify-center gap-1 py-1.5 px-2.5 bg-[#C4C7C5]/50 dark:bg-[#333333]/50 text-[#5F6368] dark:text-[#9AA0A6] font-semibold text-[10px] sm:text-[11px] rounded-xl">
                             <span>Faltan {{ reward.costInPoints - catalog.clientBalance }} pts</span>
                           </span>
                         }
@@ -433,8 +437,10 @@
               </div>
 
               @if (catalog.activePromotions.length === 0) {
-                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
-                  <span class="text-2xl sm:text-3xl">🔥</span>
+                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] space-y-2">
+                  <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/80 flex items-center justify-center mx-auto">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                  </div>
                   <p class="text-xs sm:text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">No hay promociones especiales activas hoy</p>
                   <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">Tus compras acumulan puntos normalmente con la regla estándar (${{ catalog.amountStep }} = {{ catalog.pointsPerStep }} pts).</p>
                 </div>
@@ -445,7 +451,7 @@
                       <div class="space-y-2">
                         <div class="flex items-center justify-between gap-2">
                           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500 text-white shadow-xs">
-                            🔥 {{ promo.multiplier }}x Puntos
+                            {{ promo.multiplier }}x Puntos
                           </span>
                           <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
                             Activa Hoy
@@ -457,7 +463,7 @@
                         </h4>
 
                         @if (promo.description) {
-                          <p class="text-[11px] text-[#5F6368] dark:text-[#C4C7C5] leading-relaxed line-clamp-2">
+                          <p class="text-[11px] text-[#5F6368] dark:text-[#E3E3E3] leading-relaxed line-clamp-2">
                             {{ promo.description }}
                           </p>
                         }
@@ -489,23 +495,25 @@
               </div>
 
               @if (catalog.products.length === 0) {
-                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-2">
-                  <span class="text-2xl sm:text-3xl">🛍️</span>
+                <div class="text-center py-10 px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] space-y-2">
+                  <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/80 flex items-center justify-center mx-auto">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                  </div>
                   <p class="text-xs sm:text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Sin productos cargados</p>
                   <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">El comercio no ha publicado su catálogo de productos.</p>
                 </div>
               } @else {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   @for (prod of catalog.products; track prod.id) {
-                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-3.5 sm:p-4 border border-[#E3E3E3] dark:border-[#333333] flex flex-col justify-between space-y-3 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition shadow-xs">
+                    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-3.5 sm:p-4 border border-[#C4C7C5] dark:border-[#333333] flex flex-col justify-between space-y-3 hover:border-[#1A73E8]/40 dark:hover:border-[#8AB4F8]/40 transition shadow-xs">
                       <div class="space-y-2.5">
                         @if (prod.image) {
-                          <div class="w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333]">
+                          <div class="w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-white dark:bg-[#1E1E1E] border border-[#C4C7C5] dark:border-[#333333]">
                             <img [src]="prod.image" [alt]="prod.name" class="w-full h-full object-cover" />
                           </div>
                         } @else {
-                          <div class="w-full h-20 rounded-xl bg-[#E8F0FE]/60 dark:bg-[#1E293B]/60 flex items-center justify-center text-2xl text-[#1A73E8] dark:text-[#8AB4F8]">
-                            🛍️
+                          <div class="w-full h-20 rounded-xl bg-[#E8F0FE]/60 dark:bg-[#1E293B]/60 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8]">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
                           </div>
                         }
 
@@ -520,7 +528,7 @@
                         }
                       </div>
 
-                      <div class="pt-2.5 border-t border-[#E3E3E3]/60 dark:border-[#333333]/60 flex items-center justify-between">
+                      <div class="pt-2.5 border-t border-[#C4C7C5]/60 dark:border-[#333333]/60 flex items-center justify-between">
                         <span class="text-[10px] uppercase font-bold text-[#5F6368] dark:text-[#9AA0A6]">Precio</span>
                         <span class="text-xs sm:text-sm font-black text-[#1A73E8] dark:text-[#8AB4F8]">
                           ${{ prod.price }}
@@ -536,7 +544,7 @@
         </div>
 
         <!-- Footer del Modal Compacto -->
-        <div class="p-3 sm:p-4 border-t border-[#E3E3E3] dark:border-[#333333] flex items-center justify-between gap-3 bg-[#F8F9FA] dark:bg-[#131314] flex-shrink-0">
+        <div class="p-3 sm:p-4 border-t border-[#C4C7C5] dark:border-[#333333] flex items-center justify-between gap-3 bg-[#F8F9FA] dark:bg-[#131314] flex-shrink-0">
           <button 
             type="button" 
             (click)="askAiAboutCompany(catalog.name)"
@@ -550,7 +558,7 @@
           <button 
             type="button" 
             (click)="closeCatalogModal()"
-            class="min-h-[38px] sm:min-h-[40px] py-1.5 px-4 bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#F8F9FA] dark:hover:bg-[#333333] transition cursor-pointer">
+            class="min-h-[38px] sm:min-h-[40px] py-1.5 px-4 bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#C4C7C5] dark:border-[#333333] hover:bg-[#F8F9FA] dark:hover:bg-[#333333] transition cursor-pointer">
             Cerrar
           </button>
         </div>

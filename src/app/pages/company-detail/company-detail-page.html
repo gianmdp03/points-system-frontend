@@ -3,7 +3,7 @@
     
     <!-- Indicador de Carga -->
     @if (isLoading()) {
-      <div class="flex flex-col items-center justify-center py-24 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl border border-[#E3E3E3] dark:border-[#333333] shadow-xs">
+      <div class="flex flex-col items-center justify-center py-24 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl border border-[#C4C7C5] dark:border-[#333333] shadow-xs">
         <div class="w-12 h-12 border-4 border-[#1A73E8] dark:border-[#8AB4F8] border-t-transparent rounded-full animate-spin"></div>
         <p class="mt-4 text-base font-semibold text-[#5F6368] dark:text-[#9AA0A6]">Cargando información de la empresa...</p>
       </div>
@@ -238,13 +238,13 @@
 
 @if (showQrModal() && company(); as comp) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs transition-all duration-300">
-    <div class="relative w-full max-w-md bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#E3E3E3] dark:border-[#333333] shadow-lg space-y-5 animate-in fade-in zoom-in-95 duration-200">
+    <div class="relative w-full max-w-md bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#C4C7C5] dark:border-[#333333] shadow-lg space-y-5 animate-in fade-in zoom-in-95 duration-200">
       
       <!-- Close Button -->
       <button 
         (click)="closeQrModal()"
         type="button"
-        class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F8F9FA] hover:bg-[#E3E3E3] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] flex items-center justify-center transition cursor-pointer"
+        class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F8F9FA] hover:bg-[#C4C7C5] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] flex items-center justify-center transition cursor-pointer"
         aria-label="Cerrar modal">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

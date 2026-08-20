@@ -14,7 +14,7 @@ export interface ChatMessage {
 const INITIAL_MESSAGE: ChatMessage = {
   id: 'msg-init',
   sender: 'assistant',
-  text: '¡Hola! 👋 Soy tu asistente inteligente de **Pointly** impulsado por IA. ¿En qué te puedo ayudar hoy con respecto a tus puntos, canjes, comercios, promociones o planes de suscripción?',
+  text: '¡Hola! Soy tu asistente inteligente de **Pointly** impulsado por IA. ¿En qué te puedo ayudar hoy con respecto a tus puntos, canjes, comercios, promociones o planes de suscripción?',
   timestamp: new Date()
 };
 

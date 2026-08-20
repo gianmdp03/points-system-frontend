@@ -84,10 +84,10 @@ export class Register implements OnInit {
     this.isLoading.set(false);
 
     if (result.success) {
-      this.successMessage.set('¡Cuenta de comercio creada exitosamente! Redirigiendo a tu panel...');
+      this.successMessage.set('¡Cuenta creada con éxito! Redirigiendo al inicio de sesión...');
       setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 1500);
+        this.router.navigate(['/login'], { queryParams: { registered: 'true', email: email } });
+      }, 1000);
     } else {
       this.errorMessage.set(result.error || 'Error al registrar la cuenta.');
     }

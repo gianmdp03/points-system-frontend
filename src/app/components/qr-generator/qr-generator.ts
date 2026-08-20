@@ -152,7 +152,7 @@ export class QrGeneratorComponent implements AfterViewInit {
               max-width: 420px;
               margin: 0 auto;
               padding: 32px 24px;
-              border: 2px solid #E3E3E3;
+              border: 2px solid #C4C7C5;
               border-radius: 28px;
               box-shadow: 0 4px 20px rgba(0,0,0,0.06);
             }
@@ -172,7 +172,7 @@ export class QrGeneratorComponent implements AfterViewInit {
               display: inline-block;
               padding: 12px;
               background: #FFFFFF;
-              border: 1px solid #E3E3E3;
+              border: 1px solid #C4C7C5;
               border-radius: 20px;
               margin-bottom: 20px;
             }

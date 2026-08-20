@@ -12,13 +12,15 @@
     [disabled]="disabled"
     [class.border-rose-500]="hasError"
     [class.focus:ring-rose-500]="hasError"
-    class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition flex items-center justify-between gap-2 text-left cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+    class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-2xl text-sm text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition flex items-center justify-between gap-2 text-left cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
     <div class="flex items-center gap-2.5 truncate">
       @if (currentSelectedCountry(); as selected) {
         <span class="text-lg leading-none flex-shrink-0">{{ selected.flag }}</span>
         <span class="font-semibold text-sm truncate">{{ selected.name }}</span>
       } @else {
-        <span class="text-lg leading-none flex-shrink-0">🌎</span>
+        <svg class="w-4 h-4 text-[#5F6368] dark:text-[#9AA0A6] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V7a2 2 0 00-2-2h-2c-.5 0-1-.2-1.4-.6L12.5 2.5M12 22a10 10 0 100-20 10 10 0 000 20z" />
+        </svg>
         <span class="font-medium text-sm text-[#5F6368] dark:text-[#9AA0A6] truncate">{{ selectedCountryName() || placeholder }}</span>
       }
     </div>
@@ -44,10 +46,10 @@
 
   <!-- Dropdown Flotante con Buscador -->
   @if (isOpen()) {
-    <div class="absolute z-50 left-0 right-0 mt-2 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl shadow-md overflow-hidden animate-fade-in max-h-80 flex flex-col">
+    <div class="absolute z-50 left-0 right-0 mt-2 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#C4C7C5] dark:border-[#333333] rounded-2xl shadow-md overflow-hidden animate-fade-in max-h-80 flex flex-col">
       
       <!-- Input de Búsqueda -->
-      <div class="p-2.5 border-b border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] sticky top-0 z-10">
+      <div class="p-2.5 border-b border-[#C4C7C5] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] sticky top-0 z-10">
         <div class="relative flex items-center">
           <svg class="w-4 h-4 text-[#5F6368] dark:text-[#9AA0A6] absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -58,7 +60,7 @@
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
             placeholder="Buscar país (ej: Argentina, España, México)..."
-            class="w-full pl-9 pr-8 py-2 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8]" />
+            class="w-full pl-9 pr-8 py-2 bg-[#FFFFFF] dark:bg-[#1E1E1E] border border-[#C4C7C5] dark:border-[#333333] rounded-xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8]" />
           
           @if (searchTerm()) {
             <button
@@ -74,7 +76,7 @@
       </div>
 
       <!-- Lista Scrollable de Países -->
-      <div class="overflow-y-auto max-h-60 divide-y divide-[#E3E3E3]/40 dark:divide-[#333333]/40 p-1">
+      <div class="overflow-y-auto max-h-60 divide-y divide-[#C4C7C5]/40 dark:divide-[#333333]/40 p-1">
         @for (country of filteredCountries(); track country.code + country.name) {
           <button
             type="button"
@@ -102,7 +104,7 @@
       </div>
 
       <!-- Footer informativo -->
-      <div class="p-2 text-[10px] text-[#5F6368] dark:text-[#9AA0A6] bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#E3E3E3] dark:border-[#333333] text-center">
+      <div class="p-2 text-[10px] text-[#5F6368] dark:text-[#9AA0A6] bg-[#F8F9FA] dark:bg-[#131314] border-t border-[#C4C7C5] dark:border-[#333333] text-center">
         {{ filteredCountries().length }} {{ filteredCountries().length === 1 ? 'país disponible' : 'países disponibles' }}
       </div>
     </div>

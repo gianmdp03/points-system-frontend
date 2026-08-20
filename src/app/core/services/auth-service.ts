@@ -119,7 +119,13 @@ export class AuthService {
     try {
       const { data, error } = await this.supabase.signIn(email, pass);
       if (error) {
-        return { success: false, error: error.message };
+        let msg = error.message;
+        if (msg.includes('Email not confirmed') || msg.includes('email_not_confirmed')) {
+          msg = 'Tu correo electrónico aún no ha sido confirmado. Por favor revisa tu bandeja de entrada y confirma tu cuenta antes de ingresar.';
+        } else if (msg.includes('Invalid login credentials')) {
+          msg = 'Credenciales inválidas. Por favor verifica tu correo y contraseña.';
+        }
+        return { success: false, error: msg };
       }
       if (data.session && data.user) {
         this.setSessionData(data.user);
@@ -136,12 +142,15 @@ export class AuthService {
     try {
       const { data, error } = await this.supabase.signUp(email, pass, { name, dni, role });
       if (error) {
-        return { success: false, error: error.message };
+        let msg = error.message;
+        if (msg.includes('User already registered') || msg.includes('user_already_exists')) {
+          msg = 'Ya existe un comercio o usuario registrado con este correo electrónico.';
+        }
+        return { success: false, error: msg };
       }
       if (data.user) {
-        if (data.session) {
-          this.setSessionData(data.user);
-        }
+        await this.supabase.signOut();
+        this.clearSessionData();
         return { success: true };
       }
       return { success: false, error: 'Error inesperado al crear la cuenta.' };
