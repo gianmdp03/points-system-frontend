@@ -1,6 +1,8 @@
-<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 md:py-12 space-y-16 md:space-y-24">
+<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 md:py-10 space-y-12 md:space-y-16">
   <!-- Dynamic Quick Actions Component (Visible only when logged in as COMPANY_ADMIN) -->
-  <app-company-quick-actions />
+  @if (isCompanyAdmin()) {
+    <app-company-quick-actions />
+  }
 
   <!-- Main Hero Component -->
   <app-hero />
