@@ -35,5 +35,5 @@
 - **CAPA 4: Caché Inteligente**:
   - Identificar catálogos estáticos y datos de lectura pública (premios, empresas públicas, promociones).
   - **ADVERTENCIA ESTRICTA**: Bajo ningún punto de vista cachear saldos de clientes, cuentas de puntos, ventas ni transacciones. La consistencia financiera de puntos debe ser siempre 100% en tiempo real.
-  - Toda anotación `@Cacheable` DEBE venir acompañada obligatoriamente de su estrategia de invalidación precisa con `@CacheEvict` (o `@Caching(evict = ...)`) en los métodos de mutación (POST, PUT, DELETE, activación/desactivación).
+  - Toda anotación `@Cacheable` DEBE venir acompañada obligatoriamente de su estrategia de invalidación precisa con `@CacheEvict` (o `@Caching(evict = ...)`) en los métodos de mutación (POST, PUT, PATCH, DELETE, activación/desactivación).
 
