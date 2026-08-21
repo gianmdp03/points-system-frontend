@@ -11,6 +11,7 @@ import {
   SubscriptionStatus
 } from '../models';
 import { SubscriptionService } from './subscription-service';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,8 @@ export class SubscriptionStateService {
   readonly isLoading = signal<boolean>(false);
   readonly isSubscribing = signal<boolean>(false);
   readonly isUpgrading = signal<boolean>(false);
+  readonly isCancelling = signal<boolean>(false);
+  readonly isVerifying = signal<boolean>(false);
   readonly error = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
 
@@ -34,12 +37,36 @@ export class SubscriptionStateService {
     return sub?.plan || SubscriptionPlan.NONE;
   });
 
+  readonly status = computed<SubscriptionStatus | null>(() => {
+    return this.currentSubscription()?.status || null;
+  });
+
   readonly isSubscribed = computed<boolean>(() => {
     const sub = this.currentSubscription();
     return (
       sub?.status === SubscriptionStatus.ACTIVE &&
       this.currentPlan() !== SubscriptionPlan.NONE
     );
+  });
+
+  readonly isActive = computed<boolean>(() => {
+    return this.currentSubscription()?.status === SubscriptionStatus.ACTIVE;
+  });
+
+  readonly isPending = computed<boolean>(() => {
+    return this.currentSubscription()?.status === SubscriptionStatus.PENDING;
+  });
+
+  readonly isPaymentFailed = computed<boolean>(() => {
+    return this.currentSubscription()?.status === SubscriptionStatus.PAYMENT_FAILED;
+  });
+
+  readonly isCancelled = computed<boolean>(() => {
+    return this.currentSubscription()?.status === SubscriptionStatus.CANCELLED;
+  });
+
+  readonly isExpired = computed<boolean>(() => {
+    return this.currentSubscription()?.status === SubscriptionStatus.EXPIRED;
   });
 
   readonly isFreeTrial = computed<boolean>(() => {
@@ -71,6 +98,36 @@ export class SubscriptionStateService {
     return this.currentPlanConfig().maxCompanies;
   });
 
+  readonly nextBillingDateFormatted = computed<string | null>(() => {
+    const dateStr = this.currentSubscription()?.nextBillingDate;
+    if (!dateStr) return null;
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
+  });
+
+  readonly startDateFormatted = computed<string | null>(() => {
+    const dateStr = this.currentSubscription()?.startDate;
+    if (!dateStr) return null;
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
+  });
+
   loadSubscription(): void {
     this.isLoading.set(true);
     this.error.set(null);
@@ -96,6 +153,35 @@ export class SubscriptionStateService {
     this.currentSubscription.set(null);
     this.error.set(null);
     this.successMessage.set(null);
+  }
+
+  async verifySubscriptionUntilActive(maxAttempts = 6, delayMs = 1500): Promise<{ active: boolean; subscription: SubscriptionDetailDTO | null }> {
+    this.isVerifying.set(true);
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        const sub = await firstValueFrom(this.subscriptionService.getCurrentSubscription());
+        if (sub) {
+          this.currentSubscription.set(sub);
+          if (sub.status === SubscriptionStatus.ACTIVE) {
+            this.isVerifying.set(false);
+            return { active: true, subscription: sub };
+          }
+        }
+      } catch (e) {
+        console.warn(`Attempt ${attempts} to verify subscription returned error or not found`, e);
+      }
+
+      if (attempts < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+
+    this.isVerifying.set(false);
+    const finalSub = this.currentSubscription();
+    return { active: finalSub?.status === SubscriptionStatus.ACTIVE, subscription: finalSub };
   }
 
   changePlan(plan: SubscriptionPlan): Promise<{ success: boolean; data?: SubscriptionDetailDTO; error?: string }> {
@@ -132,35 +218,44 @@ export class SubscriptionStateService {
 
   subscribe(
     plan: SubscriptionPlan,
-    provider: PaymentProvider = PaymentProvider.MOCK,
-    billingPeriod: BillingPeriod = BillingPeriod.MONTHLY
+    provider: PaymentProvider = PaymentProvider.MERCADO_PAGO,
+    billingPeriod: BillingPeriod = BillingPeriod.MONTHLY,
+    companyId?: number
+  ): Promise<{ success: boolean; data?: SubscriptionResponseDTO; error?: string }> {
+    return this.subscribeWithMercadoPago(plan, billingPeriod, companyId);
+  }
+
+  subscribeWithMercadoPago(
+    plan: SubscriptionPlan,
+    billingPeriod: BillingPeriod = BillingPeriod.MONTHLY,
+    companyId?: number
   ): Promise<{ success: boolean; data?: SubscriptionResponseDTO; error?: string }> {
     this.isSubscribing.set(true);
     this.error.set(null);
 
-    const returnUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : '';
+    const returnUrl = typeof window !== 'undefined' ? `${window.location.origin}/subscription/callback` : '';
 
     const dto: SubscriptionRequestDTO = {
       plan,
-      provider,
+      provider: PaymentProvider.MERCADO_PAGO,
       billingPeriod,
-      returnUrl
+      returnUrl,
+      companyId
     };
 
     return new Promise((resolve) => {
       this.subscriptionService.createSubscription(dto).subscribe({
         next: (res: SubscriptionResponseDTO) => {
           this.isSubscribing.set(false);
-          this.loadSubscription();
-          // If checkoutUrl is provided, redirect
-          if (res.checkoutUrl && typeof window !== 'undefined' && !res.checkoutUrl.includes('mock.local')) {
+          // Redirigir inmediatamente al checkout de Mercado Pago
+          if (res.checkoutUrl && typeof window !== 'undefined') {
             window.location.href = res.checkoutUrl;
           }
           resolve({ success: true, data: res });
         },
         error: (err) => {
           this.isSubscribing.set(false);
-          const errorMsg = err.error?.message || err.message || 'Error al procesar la suscripción.';
+          const errorMsg = err.error?.message || err.message || 'Error al iniciar la suscripción con Mercado Pago.';
           this.error.set(errorMsg);
           resolve({ success: false, error: errorMsg });
         }
@@ -169,17 +264,28 @@ export class SubscriptionStateService {
   }
 
   cancelSubscription(): Promise<{ success: boolean; error?: string }> {
-    this.isLoading.set(true);
+    this.isCancelling.set(true);
+    this.error.set(null);
+
     return new Promise((resolve) => {
       this.subscriptionService.cancelSubscription().subscribe({
         next: () => {
-          this.currentSubscription.set(null);
-          this.isLoading.set(false);
+          const current = this.currentSubscription();
+          if (current) {
+            this.currentSubscription.set({
+              ...current,
+              status: SubscriptionStatus.CANCELLED,
+              cancelledAt: new Date().toISOString()
+            });
+          }
+          this.isCancelling.set(false);
+          this.successMessage.set('Tu suscripción ha sido cancelada. Continuará activa hasta la fecha del próximo vencimiento.');
           resolve({ success: true });
         },
         error: (err) => {
-          this.isLoading.set(false);
+          this.isCancelling.set(false);
           const errorMsg = err.error?.message || err.message || 'Error al cancelar la suscripción.';
+          this.error.set(errorMsg);
           resolve({ success: false, error: errorMsg });
         }
       });

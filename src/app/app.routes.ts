@@ -7,6 +7,8 @@ import { CompanyDetailPage } from './pages/company-detail/company-detail-page';
 import { ClientPointsPage } from './pages/client-points/client-points';
 import { PricingPage } from './pages/pricing/pricing-page';
 import { ClientJoinComponent } from './pages/client-join/client-join';
+import { SubscriptionCallbackPage } from './pages/subscription-callback/subscription-callback';
+import { SubscriptionManagementPage } from './pages/subscription-management/subscription-management';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -14,7 +16,11 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'dashboard', component: DashboardPage },
   { path: 'pricing', component: PricingPage },
+  { path: 'subscription/plans', redirectTo: 'pricing', pathMatch: 'full' },
   { path: 'dashboard/pricing', component: PricingPage },
+  { path: 'subscription/callback', component: SubscriptionCallbackPage },
+  { path: 'dashboard/subscription', component: SubscriptionManagementPage },
+  { path: 'settings/billing', redirectTo: 'dashboard/subscription', pathMatch: 'full' },
   { path: 'companies/:id', component: CompanyDetailPage },
   { path: 'join/:companyId', component: ClientJoinComponent },
   { path: 'points', component: ClientPointsPage },
@@ -22,3 +28,4 @@ export const routes: Routes = [
   { path: 'check-points', redirectTo: 'points', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];
+

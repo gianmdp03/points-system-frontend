@@ -1,0 +1,144 @@
+<div class="min-h-[80vh] bg-white dark:bg-[#131314] transition-colors duration-300 py-10 sm:py-16 px-4 flex items-center justify-center">
+  <div class="max-w-xl w-full mx-auto">
+    
+    <!-- ESTADO 1: VERIFICANDO SUSCRIPCIÓN -->
+    @if (isVerifying()) {
+      <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl p-8 sm:p-12 text-center space-y-6 shadow-xs">
+        <div class="w-16 h-16 mx-auto rounded-full bg-[#E8F0FE] dark:bg-[#1A2E44] flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8]">
+          <div class="w-8 h-8 border-3 border-[#1A73E8] dark:border-[#8AB4F8] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-xl sm:text-2xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
+            Verificando suscripción con Mercado Pago
+          </h2>
+          <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto leading-relaxed">
+            Estamos sincronizando la confirmación de pago y activando los beneficios en tu cuenta...
+          </p>
+        </div>
+
+        <div class="pt-2">
+          <span class="inline-block px-3 py-1 bg-white dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-full text-[11px] font-medium text-[#5F6368] dark:text-[#9AA0A6]">
+            Sincronización en tiempo real
+          </span>
+        </div>
+      </div>
+    }
+
+    <!-- ESTADO 2: ÉXITO CONFIRMADO -->
+    @else if (isSuccess()) {
+      <div class="bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl p-8 sm:p-10 space-y-8 shadow-xs">
+        
+        <!-- Header con Icono de Éxito -->
+        <div class="text-center space-y-3">
+          <div class="w-16 h-16 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+            ¡Suscripción Activada con Éxito!
+          </h2>
+          <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto leading-relaxed">
+            Tu suscripción recurrente con Mercado Pago está lista. Ya dispones de todos los límites y beneficios de tu plan.
+          </p>
+        </div>
+
+        <!-- Tarjeta de Resumen del Plan Activado -->
+        <div class="p-5 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333] space-y-4">
+          <div class="flex items-center justify-between gap-4 pb-3 border-b border-[#E3E3E3] dark:border-[#333333]">
+            <div>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">Plan Contratado</span>
+              <h3 class="text-lg font-black text-[#1A73E8] dark:text-[#8AB4F8]">{{ planConfig().name }}</h3>
+            </div>
+            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 rounded-full text-xs font-bold">
+              Activo
+            </span>
+          </div>
+
+          <!-- Detalles Clave -->
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="space-y-1">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6]">Proveedor:</span>
+              <strong class="block text-[#1F1F1F] dark:text-[#E3E3E3]">Mercado Pago</strong>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6]">Monto:</span>
+              <strong class="block text-[#1F1F1F] dark:text-[#E3E3E3]">
+                ${{ currentSub()?.price || planConfig().priceMonthly | number }} {{ currentSub()?.currency || 'ARS' }}
+              </strong>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6]">Límite Clientes:</span>
+              <strong class="block text-[#1F1F1F] dark:text-[#E3E3E3]">
+                {{ planConfig().maxClients === -1 ? 'Ilimitados' : (planConfig().maxClients | number) }}
+              </strong>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[#5F6368] dark:text-[#9AA0A6]">Sucursales:</span>
+              <strong class="block text-[#1F1F1F] dark:text-[#E3E3E3]">
+                {{ planConfig().maxCompanies === -1 ? 'Ilimitadas' : planConfig().maxCompanies }}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <button 
+            type="button"
+            (click)="goToDashboard()"
+            class="w-full sm:flex-1 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-3.5 px-6 rounded-full transition cursor-pointer text-center text-xs sm:text-sm min-h-[44px] shadow-xs">
+            Ir a mi Panel de Control
+          </button>
+          <button 
+            type="button"
+            (click)="goToSubscription()"
+            class="w-full sm:flex-1 border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#F8F9FA] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-semibold py-3.5 px-6 rounded-full transition cursor-pointer text-center text-xs sm:text-sm min-h-[44px]">
+            Ver Mi Suscripción
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ESTADO 3: EN PROCESO / PENDIENTE O ERROR -->
+    @else {
+      <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl p-8 sm:p-10 space-y-6 text-center shadow-xs">
+        <div class="w-16 h-16 mx-auto rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 flex items-center justify-center text-amber-600 dark:text-amber-400">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-xl sm:text-2xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
+            Suscripción en proceso de confirmación
+          </h2>
+          <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto leading-relaxed">
+            @if (verificationError()) {
+              {{ verificationError() }}
+            } @else {
+              Mercado Pago se encuentra confirmando la operación. Tu cuenta se actualizará automáticamente en los próximos momentos.
+            }
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <button 
+            type="button"
+            (click)="verifyPayment()"
+            class="w-full sm:w-auto bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] shadow-xs">
+            Reintentar Comprobación
+          </button>
+          <a 
+            routerLink="/dashboard"
+            class="w-full sm:w-auto border border-[#E3E3E3] dark:border-[#333333] hover:bg-white dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-semibold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] inline-flex items-center justify-center">
+            Continuar al Panel
+          </a>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

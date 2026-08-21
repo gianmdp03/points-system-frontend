@@ -9,6 +9,7 @@ export enum SubscriptionPlan {
 export enum SubscriptionStatus {
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',
+  PAYMENT_FAILED = 'PAYMENT_FAILED',
   CANCELLED = 'CANCELLED',
   EXPIRED = 'EXPIRED'
 }
@@ -20,13 +21,14 @@ export enum BillingPeriod {
 
 export enum PaymentProvider {
   MOCK = 'MOCK',
-  MERCADOPAGO = 'MERCADOPAGO',
+  MERCADOPAGO = 'MERCADO_PAGO',
+  MERCADO_PAGO = 'MERCADO_PAGO',
   STRIPE = 'STRIPE'
 }
 
 export interface SubscriptionRequestDTO {
   plan: SubscriptionPlan;
-  provider: PaymentProvider;
+  provider: PaymentProvider | 'MERCADO_PAGO';
   billingPeriod: BillingPeriod;
   returnUrl?: string;
   companyId?: number;
@@ -36,7 +38,7 @@ export interface SubscriptionResponseDTO {
   subscriptionId: number;
   plan: SubscriptionPlan;
   status: SubscriptionStatus;
-  provider: PaymentProvider;
+  provider: PaymentProvider | 'MERCADO_PAGO';
   price: number;
   currency: string;
   checkoutUrl: string;
@@ -49,7 +51,7 @@ export interface SubscriptionDetailDTO {
   plan: SubscriptionPlan;
   billingPeriod: BillingPeriod;
   status: SubscriptionStatus;
-  provider: PaymentProvider;
+  provider: PaymentProvider | 'MERCADO_PAGO';
   price: number;
   currency: string;
   externalSubscriptionId?: string | null;
@@ -63,6 +65,7 @@ export interface PlanConfig {
   name: string;
   tagline: string;
   priceMonthly: number;
+  priceYearly: number;
   currency: string;
   maxClients: number; // -1 means unlimited
   maxRewards: number; // -1 means unlimited
@@ -79,7 +82,8 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     name: 'Sin Plan Activo',
     tagline: 'No posees un plan de suscripción activo ni periodo de prueba.',
     priceMonthly: 0,
-    currency: 'USD',
+    priceYearly: 0,
+    currency: 'ARS',
     maxClients: 0,
     maxRewards: 0,
     maxCompanies: 0,
@@ -97,7 +101,8 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     name: 'Prueba Gratuita',
     tagline: 'Periodo de prueba activo de 30 días sin costo.',
     priceMonthly: 0,
-    currency: 'USD',
+    priceYearly: 0,
+    currency: 'ARS',
     maxClients: 100,
     maxRewards: 5,
     maxCompanies: 1,
@@ -116,8 +121,9 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     plan: SubscriptionPlan.BASIC,
     name: 'Plan Emprendedor',
     tagline: 'Ideal para pequeños locales o comercios en etapa inicial.',
-    priceMonthly: 19,
-    currency: 'USD',
+    priceMonthly: 9900,
+    priceYearly: 99000,
+    currency: 'ARS',
     maxClients: 100,
     maxRewards: 5,
     maxCompanies: 1,
@@ -137,8 +143,9 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     plan: SubscriptionPlan.PRO,
     name: 'Plan Crecimiento',
     tagline: 'Para marcas en expansión que buscan automatizar su fidelización.',
-    priceMonthly: 49,
-    currency: 'USD',
+    priceMonthly: 19900,
+    priceYearly: 199000,
+    currency: 'ARS',
     maxClients: 1000,
     maxRewards: -1,
     maxCompanies: 3,
@@ -158,8 +165,9 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     plan: SubscriptionPlan.ENTERPRISE,
     name: 'Plan Corporativo',
     tagline: 'Franquicias o cadenas con múltiples sucursales y alto volumen.',
-    priceMonthly: 99,
-    currency: 'USD',
+    priceMonthly: 39900,
+    priceYearly: 399000,
+    currency: 'ARS',
     maxClients: -1,
     maxRewards: -1,
     maxCompanies: -1,
@@ -177,3 +185,37 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     ]
   }
 };
+
+export function getSubscriptionStatusLabel(status: SubscriptionStatus | string | undefined | null): string {
+  switch (status) {
+    case SubscriptionStatus.ACTIVE:
+      return 'Activa';
+    case SubscriptionStatus.PENDING:
+      return 'En Proceso';
+    case SubscriptionStatus.PAYMENT_FAILED:
+      return 'Pago Rechazado';
+    case SubscriptionStatus.CANCELLED:
+      return 'Cancelada';
+    case SubscriptionStatus.EXPIRED:
+      return 'Vencida';
+    default:
+      return 'Inactiva';
+  }
+}
+
+export function getSubscriptionStatusBadgeClass(status: SubscriptionStatus | string | undefined | null): string {
+  switch (status) {
+    case SubscriptionStatus.ACTIVE:
+      return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+    case SubscriptionStatus.PENDING:
+      return 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+    case SubscriptionStatus.PAYMENT_FAILED:
+      return 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+    case SubscriptionStatus.CANCELLED:
+      return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-700';
+    case SubscriptionStatus.EXPIRED:
+      return 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+    default:
+      return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-700';
+  }
+}
