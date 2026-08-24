@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { SubscriptionStateService } from '../../core/services/subscription-state-service';
@@ -48,15 +48,21 @@ export class SubscriptionCallbackPage implements OnInit {
       return;
     }
 
+    // Extraer preapproval_id que Mercado Pago envía en los parámetros de la URL
+    const preapprovalId =
+      this.route.snapshot.queryParamMap.get('preapproval_id') ||
+      this.route.snapshot.queryParamMap.get('preapprovalId') ||
+      this.route.snapshot.queryParamMap.get('id');
+
     try {
-      const result = await this.subscriptionState.verifySubscriptionUntilActive(6, 1500);
+      const result = await this.subscriptionState.verifySubscriptionUntilActive(6, 1500, preapprovalId);
 
       this.isVerifying.set(false);
       if (result.active) {
         this.isSuccess.set(true);
       } else {
-        // Even if not active immediately, the webhook might arrive shortly
-        this.isSuccess.set(result.subscription?.status === SubscriptionStatus.PENDING || result.subscription?.status === SubscriptionStatus.ACTIVE);
+        this.isSuccess.set(false);
+        this.verificationError.set('Mercado Pago se encuentra confirmando la operación. Reintentá en unos segundos.');
       }
     } catch (e: any) {
       this.isVerifying.set(false);

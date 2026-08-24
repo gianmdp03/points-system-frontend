@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+﻿import { computed, inject, Injectable, signal } from '@angular/core';
 import {
   BillingPeriod,
   PaymentProvider,
@@ -207,17 +207,21 @@ export class SubscriptionStateService {
     this.successMessage.set(null);
   }
 
-  async verifySubscriptionUntilActive(maxAttempts = 6, delayMs = 1500): Promise<{ active: boolean; subscription: SubscriptionDetailDTO | null }> {
+  async verifySubscriptionUntilActive(
+    maxAttempts = 6,
+    delayMs = 1500,
+    preapprovalId?: string | null
+  ): Promise<{ active: boolean; subscription: SubscriptionDetailDTO | null }> {
     this.isVerifying.set(true);
     let attempts = 0;
 
     while (attempts < maxAttempts) {
       attempts++;
       try {
-        const sub = await firstValueFrom(this.subscriptionService.getCurrentSubscription());
+        const sub = await firstValueFrom(this.subscriptionService.getCurrentSubscription(preapprovalId));
         if (sub) {
           this.currentSubscription.set(sub);
-          if (sub.status === SubscriptionStatus.ACTIVE) {
+          if (sub.status === SubscriptionStatus.ACTIVE && sub.plan !== SubscriptionPlan.FREE_TRIAL) {
             this.isVerifying.set(false);
             return { active: true, subscription: sub };
           }
@@ -233,7 +237,23 @@ export class SubscriptionStateService {
 
     this.isVerifying.set(false);
     const finalSub = this.currentSubscription();
-    return { active: finalSub?.status === SubscriptionStatus.ACTIVE, subscription: finalSub };
+    return {
+      active: finalSub?.status === SubscriptionStatus.ACTIVE && finalSub?.plan !== SubscriptionPlan.FREE_TRIAL,
+      subscription: finalSub
+    };
+  }
+
+  async confirmSubscription(preapprovalId: string): Promise<{ success: boolean; data?: SubscriptionDetailDTO; error?: string }> {
+    this.isVerifying.set(true);
+    try {
+      const updatedSub = await firstValueFrom(this.subscriptionService.confirmSubscription(preapprovalId));
+      this.currentSubscription.set(updatedSub);
+      this.isVerifying.set(false);
+      return { success: true, data: updatedSub };
+    } catch (e: any) {
+      this.isVerifying.set(false);
+      return { success: false, error: e?.message || 'Error al confirmar la suscripción' };
+    }
   }
 
   changePlan(plan: SubscriptionPlan): Promise<{ success: boolean; data?: SubscriptionDetailDTO; error?: string }> {

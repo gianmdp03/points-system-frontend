@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+﻿import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -21,12 +21,17 @@ export class SubscriptionService {
     return this.http.get<PlanConfig[]>(`${this.apiUrl}/plans`);
   }
 
-  getCurrentSubscription(): Observable<SubscriptionDetailDTO> {
-    return this.http.get<SubscriptionDetailDTO>(`${this.apiUrl}/me`);
+  getCurrentSubscription(preapprovalId?: string | null): Observable<SubscriptionDetailDTO> {
+    const query = preapprovalId ? `?preapproval_id=${encodeURIComponent(preapprovalId)}` : '';
+    return this.http.get<SubscriptionDetailDTO>(`${this.apiUrl}/me${query}`);
   }
 
-  getMySubscription(): Observable<SubscriptionDetailDTO> {
-    return this.getCurrentSubscription();
+  getMySubscription(preapprovalId?: string | null): Observable<SubscriptionDetailDTO> {
+    return this.getCurrentSubscription(preapprovalId);
+  }
+
+  confirmSubscription(preapprovalId: string): Observable<SubscriptionDetailDTO> {
+    return this.http.post<SubscriptionDetailDTO>(`${this.apiUrl}/confirm?preapprovalId=${encodeURIComponent(preapprovalId)}`, {});
   }
 
   createSubscription(dto: SubscriptionRequestDTO): Observable<SubscriptionResponseDTO> {
