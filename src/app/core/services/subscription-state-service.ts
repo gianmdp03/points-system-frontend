@@ -12,6 +12,7 @@ import {
 } from '../models';
 import { SubscriptionService } from './subscription-service';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,19 @@ export class SubscriptionStateService {
   readonly isVerifying = signal<boolean>(false);
   readonly error = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
+
+  // Dynamic plans from backend with safe initial fallback
+  readonly plansList = signal<PlanConfig[]>([
+    PLAN_CONFIGS[SubscriptionPlan.BASIC],
+    PLAN_CONFIGS[SubscriptionPlan.PRO],
+    PLAN_CONFIGS[SubscriptionPlan.ENTERPRISE]
+  ]);
+
+  readonly selectedCurrency = signal<'ARS' | 'USD'>('ARS');
+
+  constructor() {
+    this.loadPlans();
+  }
 
   // Computed signals
   readonly currentPlan = computed<SubscriptionPlan>(() => {
@@ -127,6 +141,44 @@ export class SubscriptionStateService {
       return dateStr;
     }
   });
+
+  loadPlans(): void {
+    this.subscriptionService.getPlans().subscribe({
+      next: (apiPlans) => {
+        if (apiPlans && apiPlans.length > 0) {
+          const mapped: PlanConfig[] = apiPlans.map((p) => {
+            const fallback = PLAN_CONFIGS[p.plan] || ({} as Partial<PlanConfig>);
+            return {
+              plan: p.plan,
+              name: p.name || fallback.name || p.plan,
+              tagline: p.tagline || fallback.tagline || '',
+              priceMonthly: p.priceMonthlyArs || p.priceMonthly || fallback.priceMonthly || 0,
+              priceYearly: p.priceYearlyArs || p.priceYearly || fallback.priceYearly || 0,
+              priceMonthlyArs: p.priceMonthlyArs || p.priceMonthly || fallback.priceMonthly || 0,
+              priceYearlyArs: p.priceYearlyArs || p.priceYearly || fallback.priceYearly || 0,
+              priceMonthlyUsd: p.priceMonthlyUsd || 0,
+              priceYearlyUsd: p.priceYearlyUsd || 0,
+              currency: p.currency || 'ARS',
+              maxClients: p.maxClients !== undefined ? p.maxClients : (fallback.maxClients ?? -1),
+              maxRewards: p.maxRewards !== undefined ? p.maxRewards : (fallback.maxRewards ?? -1),
+              maxCompanies: p.maxCompanies !== undefined ? p.maxCompanies : (fallback.maxCompanies ?? 1),
+              canCreatePromotions: p.canCreatePromotions !== undefined ? p.canCreatePromotions : (fallback.canCreatePromotions ?? false),
+              isPopular: p.isPopular !== undefined ? p.isPopular : (fallback.isPopular ?? false),
+              features: p.features && p.features.length > 0 ? p.features : (fallback.features || [])
+            };
+          });
+          this.plansList.set(mapped);
+        }
+      },
+      error: (err) => {
+        console.warn('[SubscriptionStateService] Fallback to static plan configs:', err?.message || err);
+      }
+    });
+  }
+
+  setSelectedCurrency(currency: 'ARS' | 'USD'): void {
+    this.selectedCurrency.set(currency);
+  }
 
   loadSubscription(): void {
     this.isLoading.set(true);
@@ -233,7 +285,7 @@ export class SubscriptionStateService {
     this.isSubscribing.set(true);
     this.error.set(null);
 
-    const returnUrl = typeof window !== 'undefined' ? `${window.location.origin}/subscription/callback` : '';
+    const returnUrl = this.resolveReturnUrl();
 
     const dto: SubscriptionRequestDTO = {
       plan,
@@ -261,6 +313,36 @@ export class SubscriptionStateService {
         }
       });
     });
+  }
+
+  private resolveReturnUrl(): string {
+    if (typeof window === 'undefined') return '';
+
+    const isHttps = window.location.protocol === 'https:';
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    // Si la app corre sobre HTTPS en un dominio real, usamos su origin
+    if (isHttps && !isLocal) {
+      return `${window.location.origin}/subscription/callback`;
+    }
+
+    // Mercado Pago Preapproval requiere estrictamente una URL HTTPS pública válida.
+    // En desarrollo local (http://localhost), usamos el túnel público configurado (ngrok)
+    const appUrl = (environment as any).appUrl;
+    if (appUrl && typeof appUrl === 'string' && appUrl.startsWith('https://')) {
+      return `${appUrl.replace(/\/$/, '')}/subscription/callback`;
+    }
+
+    if (environment.apiUrl && environment.apiUrl.startsWith('https://')) {
+      try {
+        const parsed = new URL(environment.apiUrl);
+        return `${parsed.origin}/subscription/callback`;
+      } catch {
+        // fallback
+      }
+    }
+
+    return `${window.location.origin}/subscription/callback`;
   }
 
   cancelSubscription(): Promise<{ success: boolean; error?: string }> {

@@ -38,11 +38,7 @@ export class SubscriptionManagementPage implements OnInit {
   readonly modalError = signal<string | null>(null);
   readonly isSubmitting = signal<boolean>(false);
 
-  readonly availablePlans: PlanConfig[] = [
-    PLAN_CONFIGS[SubscriptionPlan.BASIC],
-    PLAN_CONFIGS[SubscriptionPlan.PRO],
-    PLAN_CONFIGS[SubscriptionPlan.ENTERPRISE]
-  ];
+  readonly availablePlans = computed(() => this.subscriptionState.plansList());
 
   readonly currentPlan = computed(() => this.subscriptionState.currentPlan());
   readonly currentPlanConfig = computed(() => this.subscriptionState.currentPlanConfig());

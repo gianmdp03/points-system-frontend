@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  PlanConfig,
   SubscriptionDetailDTO,
   SubscriptionPlan,
   SubscriptionRequestDTO,
@@ -15,6 +16,10 @@ import {
 export class SubscriptionService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/subscriptions`;
+
+  getPlans(): Observable<PlanConfig[]> {
+    return this.http.get<PlanConfig[]>(`${this.apiUrl}/plans`);
+  }
 
   getCurrentSubscription(): Observable<SubscriptionDetailDTO> {
     return this.http.get<SubscriptionDetailDTO>(`${this.apiUrl}/me`);
