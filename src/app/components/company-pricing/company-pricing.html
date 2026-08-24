@@ -7,8 +7,9 @@
       Elige el plan ideal según tu volumen de clientes, sucursales y campañas. Suscríbete de forma segura con Mercado Pago y cancela o cambia cuando quieras.
     </p>
 
-    <!-- Switcher Ciclo de Facturación (Mensual / Anual) -->
-    <div class="pt-2 flex items-center justify-center">
+    <!-- Switchers: Ciclo de Facturación (Mensual / Anual) & Selector de Moneda (ARS / USD) -->
+    <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
+      <!-- Ciclo de Facturación -->
       <div class="inline-flex items-center p-1.5 bg-[#F1F3F4] dark:bg-[#282A2C] rounded-full border border-[#E3E3E3] dark:border-[#333333]">
         <button
           type="button"
@@ -28,6 +29,26 @@
           <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
             Ahorra 2 meses
           </span>
+        </button>
+      </div>
+
+      <!-- Selector de Moneda (ARS / USD) -->
+      <div class="inline-flex items-center p-1 bg-[#F1F3F4] dark:bg-[#282A2C] rounded-full border border-[#E3E3E3] dark:border-[#333333]">
+        <button
+          type="button"
+          (click)="setCurrency('ARS')"
+          [class]="selectedCurrency() === 'ARS'
+            ? 'px-3.5 py-1.5 rounded-full font-bold text-xs bg-white dark:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] shadow-xs transition-all cursor-pointer'
+            : 'px-3.5 py-1.5 rounded-full font-medium text-xs text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] transition-all cursor-pointer'">
+          ARS ($)
+        </button>
+        <button
+          type="button"
+          (click)="setCurrency('USD')"
+          [class]="selectedCurrency() === 'USD'
+            ? 'px-3.5 py-1.5 rounded-full font-bold text-xs bg-white dark:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] shadow-xs transition-all cursor-pointer'
+            : 'px-3.5 py-1.5 rounded-full font-medium text-xs text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] transition-all cursor-pointer'">
+          USD (US$)
         </button>
       </div>
     </div>
@@ -63,7 +84,7 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch max-w-7xl mx-auto px-4 sm:px-6">
-    @for (p of plansList; track p.plan) {
+    @for (p of plansList(); track p.plan) {
       <div 
         [class]="p.isPopular 
           ? 'bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl p-7 sm:p-9 border-2 border-[#1A73E8] dark:border-[#8AB4F8] relative flex flex-col justify-between space-y-8 shadow-sm hover:shadow transition-all duration-300 transform md:-translate-y-2' 
@@ -91,13 +112,13 @@
             <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] min-h-[36px] leading-relaxed">{{ p.tagline }}</p>
           </div>
 
-          <!-- Precio Formateado según período -->
+          <!-- Precio Formateado según período y moneda -->
           <div class="flex items-baseline gap-1.5">
             <span class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
-              ${{ getPlanPrice(p) | number }}
+              {{ selectedCurrency() === 'USD' ? 'US$' : '$' }}{{ getPlanPrice(p) | number }}
             </span>
             <span class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] font-semibold">
-              ARS / {{ billingPeriod() === BillingPeriodEnum.YEARLY ? 'año' : 'mes' }}
+              {{ selectedCurrency() }} / {{ billingPeriod() === BillingPeriodEnum.YEARLY ? 'año' : 'mes' }}
             </span>
           </div>
 
@@ -187,13 +208,9 @@
                 type="button"
                 (click)="onSelectPlan(p.plan)"
                 [disabled]="loadingPlan() !== null"
-<<<<<<< Updated upstream
-                class="w-full text-center border border-[#C4C7C5] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]">
-=======
                 [class]="p.isPopular
                   ? 'w-full text-center bg-[#009EE3] hover:bg-[#0081B9] text-white font-extrabold py-4 px-6 rounded-full transition shadow-xs hover:shadow cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]'
                   : 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]'">
->>>>>>> Stashed changes
                 @if (loadingPlan() === p.plan) {
                   <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   <span>Conectando Mercado Pago...</span>
@@ -210,15 +227,9 @@
               routerLink="/register" 
               [queryParams]="{ role: 'COMPANY_ADMIN', plan: p.plan }" 
               [class]="p.isPopular 
-<<<<<<< Updated upstream
-                ? 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold py-4 px-6 rounded-full transition shadow-md cursor-pointer flex items-center justify-center min-h-[44px]'
-                : 'w-full text-center border border-[#C4C7C5] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center min-h-[44px]'">
-              Empezar Prueba
-=======
                 ? 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold py-4 px-6 rounded-full transition shadow-xs cursor-pointer flex items-center justify-center min-h-[44px]'
                 : 'w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center min-h-[44px]'">
               Empezar con {{ p.name }}
->>>>>>> Stashed changes
             </a>
           }
         </div>

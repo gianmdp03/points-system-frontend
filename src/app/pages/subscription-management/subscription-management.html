@@ -244,7 +244,7 @@
       }
 
       <div class="space-y-3">
-        @for (plan of availablePlans; track plan.plan) {
+        @for (plan of availablePlans(); track plan.plan) {
           <div 
             (click)="selectPlanToChange(plan.plan)"
             [class]="selectedPlanForChange() === plan.plan

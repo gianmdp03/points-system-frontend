@@ -30,11 +30,8 @@ export class CompanyPricing {
   readonly loadingPlan = signal<SubscriptionPlan | null>(null);
   readonly errorMessage = signal<string | null>(null);
 
-  readonly plansList: PlanConfig[] = [
-    PLAN_CONFIGS[SubscriptionPlan.BASIC],
-    PLAN_CONFIGS[SubscriptionPlan.PRO],
-    PLAN_CONFIGS[SubscriptionPlan.ENTERPRISE]
-  ];
+  readonly plansList = computed(() => this.subscriptionState.plansList());
+  readonly selectedCurrency = this.subscriptionState.selectedCurrency;
 
   readonly currentPlan = computed(() => this.subscriptionState.currentPlan());
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
@@ -44,8 +41,25 @@ export class CompanyPricing {
     this.billingPeriod.set(period);
   }
 
+  setCurrency(currency: 'ARS' | 'USD'): void {
+    this.subscriptionState.setSelectedCurrency(currency);
+  }
+
   getPlanPrice(config: PlanConfig): number {
-    return this.billingPeriod() === BillingPeriod.YEARLY ? config.priceYearly : config.priceMonthly;
+    const isYearly = this.billingPeriod() === BillingPeriod.YEARLY;
+    const isUsd = this.selectedCurrency() === 'USD';
+
+    if (isUsd) {
+      if (isYearly) {
+        return config.priceYearlyUsd || (config.priceMonthlyUsd ? config.priceMonthlyUsd * 10 : 0);
+      }
+      return config.priceMonthlyUsd || 0;
+    }
+
+    if (isYearly) {
+      return config.priceYearlyArs || config.priceYearly || 0;
+    }
+    return config.priceMonthlyArs || config.priceMonthly || 0;
   }
 
   getPlanTier(plan: SubscriptionPlan): number {

@@ -66,6 +66,10 @@ export interface PlanConfig {
   tagline: string;
   priceMonthly: number;
   priceYearly: number;
+  priceMonthlyArs?: number;
+  priceYearlyArs?: number;
+  priceMonthlyUsd?: number;
+  priceYearlyUsd?: number;
   currency: string;
   maxClients: number; // -1 means unlimited
   maxRewards: number; // -1 means unlimited
@@ -123,6 +127,10 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     tagline: 'Ideal para pequeños locales o comercios en etapa inicial.',
     priceMonthly: 9900,
     priceYearly: 99000,
+    priceMonthlyArs: 9900,
+    priceYearlyArs: 99000,
+    priceMonthlyUsd: 15,
+    priceYearlyUsd: 150,
     currency: 'ARS',
     maxClients: 100,
     maxRewards: 5,
@@ -145,6 +153,10 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     tagline: 'Para marcas en expansión que buscan automatizar su fidelización.',
     priceMonthly: 19900,
     priceYearly: 199000,
+    priceMonthlyArs: 19900,
+    priceYearlyArs: 199000,
+    priceMonthlyUsd: 29,
+    priceYearlyUsd: 290,
     currency: 'ARS',
     maxClients: 1000,
     maxRewards: -1,
@@ -167,6 +179,10 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     tagline: 'Franquicias o cadenas con múltiples sucursales y alto volumen.',
     priceMonthly: 39900,
     priceYearly: 399000,
+    priceMonthlyArs: 39900,
+    priceYearlyArs: 399000,
+    priceMonthlyUsd: 59,
+    priceYearlyUsd: 590,
     currency: 'ARS',
     maxClients: -1,
     maxRewards: -1,
