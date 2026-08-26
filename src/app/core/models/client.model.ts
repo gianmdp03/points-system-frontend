@@ -5,6 +5,7 @@
   name: string;
   email?: string;
   phone?: string;
+  isNotificationEnabled?: boolean;
 }
 
 export interface ClientJoinRequestDTO {
@@ -14,4 +15,5 @@ export interface ClientJoinRequestDTO {
   name: string;
   email?: string;
   phone?: string;
+  isNotificationEnabled?: boolean;
 }

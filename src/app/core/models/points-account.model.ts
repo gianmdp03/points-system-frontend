@@ -1,4 +1,4 @@
-import { CompanyListDTO } from './company.model';
+﻿import { CompanyListDTO } from './company.model';
 import { ClientDetailDTO } from './client.model';
 
 export enum TransactionType {
@@ -27,4 +27,5 @@ export interface PointsAccountRequestDTO {
   name: string;
   email?: string;
   phone?: string;
+  isNotificationEnabled?: boolean;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -88,7 +88,8 @@ export class CompanyQuickActionsComponent implements OnInit {
     country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
     dni: ['', [Validators.required, Validators.maxLength(20)]],
     email: ['', [Validators.email]],
-    phone: ['']
+    phone: [''],
+    isNotificationEnabled: [true]
   });
 
   addSaleForm = this.fb.group({
@@ -222,7 +223,8 @@ export class CompanyQuickActionsComponent implements OnInit {
       name: '',
       dni: '',
       email: '',
-      phone: ''
+      phone: '',
+      isNotificationEnabled: true
     });
     this.showAddClientModal.set(true);
   }
@@ -246,7 +248,8 @@ export class CompanyQuickActionsComponent implements OnInit {
       country: val.country!,
       name: val.name!,
       email: val.email || undefined,
-      phone: val.phone || undefined
+      phone: val.phone || undefined,
+      isNotificationEnabled: val.isNotificationEnabled !== undefined ? Boolean(val.isNotificationEnabled) : true
     };
 
     this.isClientLoading.set(true);

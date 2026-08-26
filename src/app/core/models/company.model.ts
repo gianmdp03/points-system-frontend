@@ -73,6 +73,7 @@ export interface CompanyPublicDetailDTO {
   isEnabled: boolean;
   clientBalance: number;
   clientName: string;
+  isNotificationEnabled?: boolean;
   isPointsExpirationEnabled?: boolean;
   pointsExpirationDays?: number | null;
   isInactiveClientPurgeEnabled?: boolean;
@@ -81,3 +82,4 @@ export interface CompanyPublicDetailDTO {
   activePromotions: PromotionListDTO[];
   rewards: RewardListDTO[];
 }
+

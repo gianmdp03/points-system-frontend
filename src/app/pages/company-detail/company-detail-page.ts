@@ -134,7 +134,8 @@ export class CompanyDetailPage implements OnInit {
     country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
     dni: ['', [Validators.required, Validators.maxLength(20)]],
     email: ['', [Validators.email]],
-    phone: ['']
+    phone: [''],
+    isNotificationEnabled: [true]
   });
 
   editCompanyForm = this.fb.group({
@@ -435,7 +436,7 @@ export class CompanyDetailPage implements OnInit {
   closeAddSaleModal(): void { this.showAddSaleModal.set(false); }
 
   openAddClientModal(): void {
-    this.addClientForm.reset({ name: '', country: 'Argentina', dni: '', email: '', phone: '' });
+    this.addClientForm.reset({ name: '', country: 'Argentina', dni: '', email: '', phone: '', isNotificationEnabled: true });
     this.modalErrorMessage.set(null);
     this.isAddClientSubmitted.set(false);
     this.showAddClientModal.set(true);
@@ -477,7 +478,8 @@ export class CompanyDetailPage implements OnInit {
       country: val.country!,
       dni: val.dni!,
       email: val.email || undefined,
-      phone: val.phone || undefined
+      phone: val.phone || undefined,
+      isNotificationEnabled: val.isNotificationEnabled !== undefined ? Boolean(val.isNotificationEnabled) : true
     };
     this.modalErrorMessage.set(null);
     this.pointsAccountService.registerClientAndCreateAccount(dto).subscribe({

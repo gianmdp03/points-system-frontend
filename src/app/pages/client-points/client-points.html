@@ -1,4 +1,4 @@
-<main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+﻿<main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
   
   <!-- Encabezado de la Sección Pública -->
   <div class="text-center max-w-2xl mx-auto space-y-3">
@@ -293,6 +293,14 @@
             </div>
 
           </div>
+
+          <!-- Toast / Badge de confirmación de notificación -->
+          @if (notificationUpdateMessage()) {
+            <div class="text-center py-1 px-3 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-xs font-semibold rounded-lg border border-emerald-200 dark:border-emerald-800 animate-fade-in flex items-center justify-center gap-1.5 mx-auto w-fit">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              <span>{{ notificationUpdateMessage() }}</span>
+            </div>
+          }
 
           <!-- Fila 2: Avisos y Regla en Línea Compacta y Centrada -->
           <div class="w-full flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1.5 text-[10px] sm:text-xs py-2 px-3 sm:px-4 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 text-center">

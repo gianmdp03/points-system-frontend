@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -35,7 +35,8 @@ export class ClientJoinComponent implements OnInit {
     country: ['Argentina', [Validators.required, Validators.maxLength(50)]],
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
     email: ['', [Validators.email]],
-    phone: ['']
+    phone: [''],
+    isNotificationEnabled: [true]
   });
 
   ngOnInit(): void {
@@ -89,7 +90,8 @@ export class ClientJoinComponent implements OnInit {
       country: val.country.trim(),
       name: val.name.trim(),
       email: val.email ? val.email.trim() : undefined,
-      phone: val.phone ? val.phone.trim() : undefined
+      phone: val.phone ? val.phone.trim() : undefined,
+      isNotificationEnabled: val.isNotificationEnabled !== undefined ? Boolean(val.isNotificationEnabled) : true
     };
 
     this.clientPublicService.joinCompany(payload).subscribe({

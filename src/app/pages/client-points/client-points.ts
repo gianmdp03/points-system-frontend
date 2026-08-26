@@ -54,6 +54,8 @@ export class ClientPointsPage implements OnInit {
   readonly isLoadingCatalog = signal<boolean>(false);
   readonly catalogErrorMessage = signal<string | null>(null);
   readonly activeCatalogTab = signal<CatalogTab>('rewards');
+  readonly isUpdatingNotifications = signal<boolean>(false);
+  readonly notificationUpdateMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     // 1. Check Query Params for QR code flow (?dni=...&country=...)
@@ -174,6 +176,43 @@ export class ClientPointsPage implements OnInit {
   closeCatalogModal(): void {
     this.selectedCompanyCatalog.set(null);
     this.catalogErrorMessage.set(null);
+    this.notificationUpdateMessage.set(null);
+  }
+
+  toggleNotifications(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    const country = this.searchedCountry();
+    const dni = this.searchedDni();
+    const currentCatalog = this.selectedCompanyCatalog();
+
+    if (!country || !dni || !currentCatalog) return;
+
+    this.isUpdatingNotifications.set(true);
+
+    // Actualización optimista
+    this.selectedCompanyCatalog.set({
+      ...currentCatalog,
+      isNotificationEnabled: isChecked
+    });
+
+    this.clientPublicService.updateNotificationPreference(country, dni, isChecked).subscribe({
+      next: () => {
+        this.isUpdatingNotifications.set(false);
+        this.notificationUpdateMessage.set(isChecked ? 'Notificaciones activadas' : 'Notificaciones desactivadas');
+        setTimeout(() => this.notificationUpdateMessage.set(null), 3000);
+      },
+      error: () => {
+        this.isUpdatingNotifications.set(false);
+        // Rollback en caso de error
+        this.selectedCompanyCatalog.set({
+          ...currentCatalog,
+          isNotificationEnabled: !isChecked
+        });
+        this.notificationUpdateMessage.set('Error al actualizar preferencia');
+        setTimeout(() => this.notificationUpdateMessage.set(null), 3000);
+      }
+    });
   }
 
   setCatalogTab(tab: CatalogTab): void {
@@ -196,5 +235,3 @@ export class ClientPointsPage implements OnInit {
     }
   }
 }
-
-

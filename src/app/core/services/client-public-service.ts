@@ -46,7 +46,14 @@ export class ClientPublicService {
     return this.http.post<PointsAccountDetailDTO>(`${this.apiUrl}/clients/join`, dto);
   }
 
+  updateNotificationPreference(country: string, dni: string, isNotificationEnabled: boolean): Observable<void> {
+    const encodedCountry = encodeURIComponent(country.trim());
+    const encodedDni = encodeURIComponent(dni.trim());
+    return this.http.patch<void>(`${this.apiUrl}/clients/${encodedCountry}/${encodedDni}/notifications`, { isNotificationEnabled });
+  }
+
   getCompanyName(companyId: number): Observable<CompanyNameDTO> {
     return this.http.get<CompanyNameDTO>(`${this.apiUrl}/companies/${companyId}/name`);
   }
 }
+
