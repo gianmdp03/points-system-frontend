@@ -1,4 +1,5 @@
-﻿import { Routes } from '@angular/router';
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -15,10 +16,12 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/dashboard/dashboard-page').then(m => m.DashboardPage)
   },
   {
     path: 'pricing',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/pricing/pricing-page').then(m => m.PricingPage)
   },
   {
@@ -28,14 +31,17 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard/pricing',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/pricing/pricing-page').then(m => m.PricingPage)
   },
   {
     path: 'subscription/callback',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/subscription-callback/subscription-callback').then(m => m.SubscriptionCallbackPage)
   },
   {
     path: 'dashboard/subscription',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/subscription-management/subscription-management').then(m => m.SubscriptionManagementPage)
   },
   {
@@ -45,6 +51,7 @@ export const routes: Routes = [
   },
   {
     path: 'companies/:id',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/company-detail/company-detail-page').then(m => m.CompanyDetailPage)
   },
   {

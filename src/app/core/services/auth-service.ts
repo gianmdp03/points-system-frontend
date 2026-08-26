@@ -28,16 +28,18 @@ export class AuthService {
     return this.userName() || (this.userEmail() ? this.userEmail()!.split('@')[0] : 'Administrador');
   }
 
+  private readonly initPromise: Promise<boolean>;
+
   userInitial(): string {
     const name = this.displayName();
     return name ? name.charAt(0).toUpperCase() : 'A';
   }
 
   constructor() {
-    this.initSession();
+    this.initPromise = this.initSession();
   }
 
-  private async initSession() {
+  private async initSession(): Promise<boolean> {
     try {
       const session = await this.supabase.getSession();
       if (session) {
@@ -54,6 +56,13 @@ export class AuthService {
         this.clearSessionData();
       }
     });
+
+    return this.isLoggedIn();
+  }
+
+  async ensureInitialized(): Promise<boolean> {
+    await this.initPromise;
+    return this.isLoggedIn();
   }
 
   private setSessionData(user: any) {

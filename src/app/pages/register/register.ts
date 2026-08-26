@@ -34,13 +34,11 @@ export class Register implements OnInit {
   readonly getFieldError = getFieldError;
   readonly RoleEnum = Role;
 
-  activeTab = signal<'email' | 'magic'>('email');
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
 
   isRegisterFormSubmitted = signal<boolean>(false);
-  isMagicFormSubmitted = signal<boolean>(false);
 
   registerForm = this.fb.nonNullable.group({
     selectedRole: [Role.COMPANY_ADMIN, [Validators.required]],
@@ -51,10 +49,6 @@ export class Register implements OnInit {
     confirmPassword: ['', [Validators.required]],
     acceptTerms: [false, [Validators.requiredTrue]]
   }, { validators: passwordMatchValidator });
-
-  magicLinkForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]]
-  });
 
   ngOnInit(): void {
     // Default role is COMPANY_ADMIN
@@ -102,28 +96,6 @@ export class Register implements OnInit {
 
     if (!result.success) {
       this.errorMessage.set(result.error || 'No se pudo conectar con Google.');
-    }
-  }
-
-  async onMagicLink(): Promise<void> {
-    this.isMagicFormSubmitted.set(true);
-    if (this.magicLinkForm.invalid) {
-      this.magicLinkForm.markAllAsTouched();
-      return;
-    }
-
-    const { email } = this.magicLinkForm.getRawValue();
-
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-
-    const result = await this.authService.loginWithMagicLink(email);
-    this.isLoading.set(false);
-
-    if (result.success) {
-      this.successMessage.set('¡Enlace mágico enviado! Revisa tu bandeja de entrada.');
-    } else {
-      this.errorMessage.set(result.error || 'No se pudo enviar el enlace mágico.');
     }
   }
 }
