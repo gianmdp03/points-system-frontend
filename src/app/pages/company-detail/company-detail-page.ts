@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -68,12 +69,14 @@ import { QrGeneratorComponent } from '../../components/qr-generator/qr-generator
     QrGeneratorComponent
   ],
   templateUrl: './company-detail-page.html',
-  styleUrl: './company-detail-page.css'
+  styleUrl: './company-detail-page.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CompanyDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly companyService = inject(CompanyService);
   protected readonly authService = inject(AuthService);
@@ -208,7 +211,7 @@ export class CompanyDetailPage implements OnInit {
   readonly currentRole = this.authService.currentRole;
 
   private setupExpirationValidators(): void {
-    this.editCompanyForm.get('isPointsExpirationEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+    this.editCompanyForm.get('isPointsExpirationEnabled')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((enabled: boolean | null) => {
       const daysControl = this.editCompanyForm.get('pointsExpirationDays');
       if (enabled) {
         daysControl?.setValidators([Validators.required, Validators.min(1)]);
@@ -222,7 +225,7 @@ export class CompanyDetailPage implements OnInit {
       daysControl?.updateValueAndValidity();
     });
 
-    this.editCompanyForm.get('isInactiveClientPurgeEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+    this.editCompanyForm.get('isInactiveClientPurgeEnabled')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((enabled: boolean | null) => {
       const daysControl = this.editCompanyForm.get('inactiveClientPurgeDays');
       if (enabled) {
         daysControl?.setValidators([Validators.required, Validators.min(1)]);
@@ -244,7 +247,7 @@ export class CompanyDetailPage implements OnInit {
     if (tabParam && ['overview', 'products', 'promotions', 'rewards', 'sales'].includes(tabParam)) {
       this.activeTab.set(tabParam as CompanyDetailTab);
     }
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['tab'] && ['overview', 'products', 'promotions', 'rewards', 'sales'].includes(params['tab'])) {
         this.activeTab.set(params['tab'] as CompanyDetailTab);
       }
@@ -727,3 +730,4 @@ export class CompanyDetailPage implements OnInit {
     });
   }
 }
+

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, effect, computed } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, effect, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { CompanyService } from '../../core/services/company-service';
@@ -26,12 +27,14 @@ import { DashboardEditCompanyModalComponent } from './components/modals/edit-com
     DashboardEditCompanyModalComponent
   ],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  styleUrl: './dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Dashboard implements OnInit {
   protected readonly companyService = inject(CompanyService);
   protected readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly isFieldInvalid = isFieldInvalid;
   readonly getFieldError = getFieldError;
@@ -93,7 +96,7 @@ export class Dashboard implements OnInit {
   });
 
   private setupExpirationValidators(form: FormGroup): void {
-    form.get('isPointsExpirationEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+    form.get('isPointsExpirationEnabled')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((enabled: boolean | null) => {
       const daysControl = form.get('pointsExpirationDays');
       if (enabled) {
         daysControl?.setValidators([Validators.required, Validators.min(1)]);
@@ -107,7 +110,7 @@ export class Dashboard implements OnInit {
       daysControl?.updateValueAndValidity();
     });
 
-    form.get('isInactiveClientPurgeEnabled')?.valueChanges.subscribe((enabled: boolean | null) => {
+    form.get('isInactiveClientPurgeEnabled')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((enabled: boolean | null) => {
       const daysControl = form.get('inactiveClientPurgeDays');
       if (enabled) {
         daysControl?.setValidators([Validators.required, Validators.min(1)]);
@@ -350,3 +353,4 @@ export class Dashboard implements OnInit {
     });
   }
 }
+

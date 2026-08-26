@@ -1,240 +1,570 @@
-<section id="precios" class="space-y-10 py-6">
-  <div class="text-center max-w-3xl mx-auto space-y-4 px-4">
-    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
-      Escala tu programa de fidelización
-    </h2>
-    <p class="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-sm sm:text-base leading-relaxed">
-      Elige el plan ideal según tu volumen de clientes, sucursales y campañas. Suscríbete de forma segura con Mercado Pago y cancela o cambia cuando quieras.
-    </p>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
-    <!-- Switchers: Ciclo de Facturación (Mensual / Anual) & Selector de Moneda (ARS / USD) -->
-    <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
-      <!-- Ciclo de Facturación -->
-      <div class="inline-flex items-center p-1.5 bg-[#F1F3F4] dark:bg-[#282A2C] rounded-full border border-[#E3E3E3] dark:border-[#333333]">
-        <button
-          type="button"
-          (click)="setBillingPeriod(BillingPeriodEnum.MONTHLY)"
-          [class]="billingPeriod() === BillingPeriodEnum.MONTHLY
-            ? 'px-5 py-2 rounded-full font-bold text-xs sm:text-sm bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs transition-all cursor-pointer'
-            : 'px-5 py-2 rounded-full font-medium text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] transition-all cursor-pointer'">
-          Facturación Mensual
-        </button>
-        <button
-          type="button"
-          (click)="setBillingPeriod(BillingPeriodEnum.YEARLY)"
-          [class]="billingPeriod() === BillingPeriodEnum.YEARLY
-            ? 'px-5 py-2 rounded-full font-bold text-xs sm:text-sm bg-white dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs transition-all cursor-pointer flex items-center gap-1.5'
-            : 'px-5 py-2 rounded-full font-medium text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] transition-all cursor-pointer flex items-center gap-1.5'">
-          <span>Facturación Anual</span>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
-            Ahorra 2 meses
-          </span>
-        </button>
-      </div>
+  <!-- Error Global Banner -->
+  @if (errorMessage()) {
+    <div class="p-4 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 rounded-2xl text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-semibold flex items-center gap-3 shadow-xs">
+      <svg class="w-5 h-5 flex-shrink-0 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
 
-      <!-- Selector de Moneda (ARS / USD) -->
-      <div class="inline-flex items-center p-1 bg-[#F1F3F4] dark:bg-[#282A2C] rounded-full border border-[#E3E3E3] dark:border-[#333333]">
-        <button
-          type="button"
-          (click)="setCurrency('ARS')"
-          [class]="selectedCurrency() === 'ARS'
-            ? 'px-3.5 py-1.5 rounded-full font-bold text-xs bg-white dark:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] shadow-xs transition-all cursor-pointer'
-            : 'px-3.5 py-1.5 rounded-full font-medium text-xs text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] transition-all cursor-pointer'">
-          ARS ($)
-        </button>
-        <button
-          type="button"
-          (click)="setCurrency('USD')"
-          [class]="selectedCurrency() === 'USD'
-            ? 'px-3.5 py-1.5 rounded-full font-bold text-xs bg-white dark:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] shadow-xs transition-all cursor-pointer'
-            : 'px-3.5 py-1.5 rounded-full font-medium text-xs text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] transition-all cursor-pointer'">
-          USD (US$)
-        </button>
+  <!-- ========================================================================= -->
+  <!-- VISTA PARA USUARIOS CON SUSCRIPCIÓN ACTIVA                              -->
+  <!-- ========================================================================= -->
+  @if (isSubscribed()) {
+
+    <!-- 1. Estado Actual y Resumen de Vigencia -->
+    <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl p-6 sm:p-8 shadow-xs">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        
+        <!-- Info Plan Actual -->
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">
+              Tu Suscripción Activa
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              Activo
+            </span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+            {{ currentPlanConfig().name }}
+          </h2>
+          <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-xl">
+            {{ currentPlanConfig().tagline }}
+          </p>
+        </div>
+
+        <!-- Indicador de Días Restantes y Vencimiento -->
+        <div class="bg-white dark:bg-[#131314] p-5 rounded-xl border border-[#009EE3]/30 dark:border-[#009EE3]/40 flex flex-col sm:flex-row items-start sm:items-center gap-5 shadow-xs">
+          <div class="space-y-0.5">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[#009EE3] dark:text-[#8AB4F8]">
+              Vigencia Disponible
+            </span>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-3xl font-black text-[#009EE3]">{{ daysRemaining() }}</span>
+              <span class="text-xs font-bold text-[#5F6368] dark:text-[#9AA0A6]">días restantes</span>
+            </div>
+            <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
+              Vence el {{ planExpirationDateFormatted() || 'fin de periodo' }}
+            </p>
+          </div>
+
+          <!-- Currency Switcher Integrado -->
+          <div class="border-t sm:border-t-0 sm:border-l border-[#E3E3E3] dark:border-[#333333] pt-3 sm:pt-0 sm:pl-4">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block mb-1">
+              Moneda
+            </span>
+            <div class="inline-flex p-1 bg-[#F1F3F4] dark:bg-[#252628] rounded-full border border-[#E3E3E3] dark:border-[#333333]">
+              <button
+                type="button"
+                (click)="setCurrency('ARS')"
+                [class]="selectedCurrency() === 'ARS' 
+                  ? 'px-3 py-1 rounded-full text-[11px] font-bold bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer' 
+                  : 'px-3 py-1 rounded-full text-[11px] font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer'">
+                ARS ($)
+              </button>
+              <button
+                type="button"
+                (click)="setCurrency('USD')"
+                [class]="selectedCurrency() === 'USD' 
+                  ? 'px-3 py-1 rounded-full text-[11px] font-bold bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer' 
+                  : 'px-3 py-1 rounded-full text-[11px] font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer'">
+                USD ($)
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Success Feedback Banner -->
-    @if (subscriptionState.successMessage()) {
-      <div class="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 rounded-2xl text-xs sm:text-sm font-semibold text-emerald-800 dark:text-emerald-200 text-center max-w-xl mx-auto animate-fade-in flex items-center justify-center gap-2">
-        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <span>{{ subscriptionState.successMessage() }}</span>
-      </div>
-    }
-
-    <!-- User Current Status Info Banner if logged in -->
-    @if (isLoggedIn() && !subscriptionState.successMessage()) {
-      @if (currentPlan() === SubscriptionPlanEnum.FREE_TRIAL) {
-        <div class="p-3.5 bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/50 rounded-2xl text-xs sm:text-sm font-medium text-purple-900 dark:text-purple-200 text-center max-w-xl mx-auto">
-          Dispones de una <strong>Prueba Gratuita (30 días)</strong>. Puedes activar tu suscripción con Mercado Pago en cualquier momento.
+    <!-- 2. SECCIÓN: RECARGAR DÍAS DE COBERTURA (SOLO PARA EL PLAN ACTUAL) -->
+    <div class="bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+      
+      <!-- Título de Sección -->
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#009EE3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <h3 class="text-xl sm:text-2xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+            Recargar Días para {{ currentPlanConfig().name }}
+          </h3>
         </div>
-      } @else if (currentPlan() === SubscriptionPlanEnum.NONE || !isSubscribed()) {
-        <div class="p-3.5 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 rounded-2xl text-xs sm:text-sm font-medium text-amber-900 dark:text-amber-200 text-center max-w-xl mx-auto">
-          Actualmente <strong>no posees una suscripción activa</strong>. Elige un plan para activar tu cuenta con cobro recurrente automático.
+        <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6]">
+          Suma tiempo de cobertura sin cambiar de plan. Los nuevos días se sumarán automáticamente a tus <strong>{{ daysRemaining() }} días restantes</strong>.
+        </p>
+      </div>
+
+      <!-- Selector de Duración de Recarga (1m, 3m, 6m, 12m) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        
+        <!-- 1 Mes -->
+        <button
+          type="button"
+          (click)="setRechargePeriod(BillingPeriodEnum.MONTHLY)"
+          [class]="rechargePeriod() === BillingPeriodEnum.MONTHLY
+            ? 'p-4 rounded-2xl border-2 border-[#009EE3] bg-[#E8F0FE]/40 dark:bg-[#009EE3]/10 text-left transition cursor-pointer shadow-xs'
+            : 'p-4 rounded-2xl border border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] text-left hover:border-[#C4C7C5] dark:hover:border-[#555555] transition cursor-pointer'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">1 Mes</span>
+            <span class="text-[10px] font-bold text-[#5F6368] dark:text-[#9AA0A6]">+30 días</span>
+          </div>
+          <div class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mt-2">
+            ${{ getPlanPrice(currentPlanConfig(), BillingPeriodEnum.MONTHLY) | number }}
+          </div>
+          <span class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">Tarifa estándar</span>
+        </button>
+
+        <!-- 3 Meses -->
+        <button
+          type="button"
+          (click)="setRechargePeriod(BillingPeriodEnum.QUARTERLY)"
+          [class]="rechargePeriod() === BillingPeriodEnum.QUARTERLY
+            ? 'p-4 rounded-2xl border-2 border-[#009EE3] bg-[#E8F0FE]/40 dark:bg-[#009EE3]/10 text-left transition cursor-pointer shadow-xs relative overflow-hidden'
+            : 'p-4 rounded-2xl border border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] text-left hover:border-[#C4C7C5] dark:hover:border-[#555555] transition cursor-pointer relative overflow-hidden'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">3 Meses</span>
+            @if (getDiscountPercentage(BillingPeriodEnum.QUARTERLY, currentPlanConfig()) > 0) {
+              <span class="px-1.5 py-0.5 text-[9px] font-extrabold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8] rounded-md">
+                -{{ getDiscountPercentage(BillingPeriodEnum.QUARTERLY, currentPlanConfig()) }}% Ahorro
+              </span>
+            }
+          </div>
+          <div class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mt-2">
+            ${{ getPlanPrice(currentPlanConfig(), BillingPeriodEnum.QUARTERLY) | number }}
+          </div>
+          <span class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">+90 días acumulables</span>
+        </button>
+
+        <!-- 6 Meses -->
+        <button
+          type="button"
+          (click)="setRechargePeriod(BillingPeriodEnum.SEMIANNUAL)"
+          [class]="rechargePeriod() === BillingPeriodEnum.SEMIANNUAL
+            ? 'p-4 rounded-2xl border-2 border-[#009EE3] bg-[#E8F0FE]/40 dark:bg-[#009EE3]/10 text-left transition cursor-pointer shadow-xs relative overflow-hidden'
+            : 'p-4 rounded-2xl border border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] text-left hover:border-[#C4C7C5] dark:hover:border-[#555555] transition cursor-pointer relative overflow-hidden'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">6 Meses</span>
+            @if (getDiscountPercentage(BillingPeriodEnum.SEMIANNUAL, currentPlanConfig()) > 0) {
+              <span class="px-1.5 py-0.5 text-[9px] font-extrabold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8] rounded-md">
+                -{{ getDiscountPercentage(BillingPeriodEnum.SEMIANNUAL, currentPlanConfig()) }}% Ahorro
+              </span>
+            }
+          </div>
+          <div class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mt-2">
+            ${{ getPlanPrice(currentPlanConfig(), BillingPeriodEnum.SEMIANNUAL) | number }}
+          </div>
+          <span class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">+180 días acumulables</span>
+        </button>
+
+        <!-- 12 Meses -->
+        <button
+          type="button"
+          (click)="setRechargePeriod(BillingPeriodEnum.YEARLY)"
+          [class]="rechargePeriod() === BillingPeriodEnum.YEARLY
+            ? 'p-4 rounded-2xl border-2 border-[#009EE3] bg-[#E8F0FE]/40 dark:bg-[#009EE3]/10 text-left transition cursor-pointer shadow-xs relative overflow-hidden'
+            : 'p-4 rounded-2xl border border-[#E3E3E3] dark:border-[#333333] bg-[#F8F9FA] dark:bg-[#131314] text-left hover:border-[#C4C7C5] dark:hover:border-[#555555] transition cursor-pointer relative overflow-hidden'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">12 Meses (Anual)</span>
+            @if (getDiscountPercentage(BillingPeriodEnum.YEARLY, currentPlanConfig()) > 0) {
+              <span class="px-1.5 py-0.5 text-[9px] font-extrabold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8] rounded-md">
+                -{{ getDiscountPercentage(BillingPeriodEnum.YEARLY, currentPlanConfig()) }}% Ahorro
+              </span>
+            }
+          </div>
+          <div class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3] mt-2">
+            ${{ getPlanPrice(currentPlanConfig(), BillingPeriodEnum.YEARLY) | number }}
+          </div>
+          <span class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">+365 días acumulables</span>
+        </button>
+
+      </div>
+
+      <!-- Resumen y Acción de Pago -->
+      <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] p-5 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="space-y-1 text-center md:text-left">
+          <div class="text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6]">
+            Estás sumando <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">+{{ getRechargeDays() }} días</strong> a tu cobertura.
+          </div>
+          <div class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+            Nueva fecha de vencimiento proyectada: 
+            <strong class="text-[#009EE3] dark:text-[#8AB4F8] font-bold">{{ newExpirationDateFormatted() }}</strong>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+          <div class="text-center sm:text-right">
+            <div class="text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+              ${{ getRechargePrice() | number }} <span class="text-xs font-bold text-[#5F6368] dark:text-[#9AA0A6]">{{ selectedCurrency() }}</span>
+            </div>
+            <span class="text-[10px] text-[#5F6368] dark:text-[#9AA0A6]">Pago único prepago</span>
+          </div>
+
+          <button
+            type="button"
+            (click)="onRechargeCurrentPlan()"
+            [disabled]="loadingPlan() !== null"
+            class="w-full sm:w-auto bg-[#009EE3] hover:bg-[#0081B9] text-white font-extrabold py-3.5 px-7 rounded-full transition shadow-xs hover:shadow cursor-pointer flex items-center justify-center gap-2 min-h-[44px] disabled:opacity-50">
+            @if (loadingPlan() === currentPlan()) {
+              <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>Conectando Mercado Pago...</span>
+            } @else {
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Recargar +{{ getRechargeDays() }} Días</span>
+            }
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. SECCIÓN: MEJORAR TU PLAN (UPGRADE CON PRORRATEO PARA DÍAS RESTANTES) -->
+    <div class="bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+      
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#1A73E8] dark:text-[#8AB4F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+          <h3 class="text-xl sm:text-2xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+            Mejorar de Plan (Upgrade Prorrateado)
+          </h3>
+        </div>
+        <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6]">
+          Actualiza de categoría tus <strong>{{ daysRemaining() }} días restantes</strong> abonando únicamente la diferencia prorrateada entre planes, sin perder la vigencia de tu cuenta.
+        </p>
+      </div>
+
+      <!-- Caso: Ya tiene el plan máximo (Plan Corporativo) -->
+      @if (!hasHigherPlans()) {
+        <div class="p-6 bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] text-center space-y-2">
+          <div class="w-10 h-10 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold">
+            ✓
+          </div>
+          <h4 class="text-base font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
+            ¡Posees el nivel máximo de suscripción!
+          </h4>
+          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] max-w-md mx-auto">
+            Tu comercio ya disfruta de todas las capacidades ilimitadas del <strong>Plan Corporativo</strong> (clientes, sucursales y recompensas ilimitadas con soporte prioritario).
+          </p>
+        </div>
+      } @else {
+        <!-- Grid de Planes Superiores Disponibles -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+          @for (p of higherPlans(); track p.plan) {
+            <div class="relative bg-[#F8F9FA] dark:bg-[#131314] border-2 border-[#009EE3]/40 dark:border-[#009EE3]/30 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:border-[#009EE3] transition">
+              
+              <div class="space-y-5">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8] uppercase tracking-wider">
+                    Upgrade Disponible
+                  </span>
+                  <span class="text-[11px] font-semibold text-[#5F6368] dark:text-[#9AA0A6]">
+                    Nivel {{ getPlanTier(p.plan) }}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 class="text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">{{ p.name }}</h4>
+                  <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1">{{ p.tagline }}</p>
+                </div>
+
+                <!-- Caja de Precio de Prorrateo -->
+                <div class="p-4 bg-white dark:bg-[#1E1E1E] rounded-2xl border border-[#E3E3E3] dark:border-[#333333] space-y-1">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block">
+                    Precio Prorrateado (Por tus {{ daysRemaining() }} días restantes)
+                  </span>
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-3xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+                      ${{ getProrationPrice(p.plan) | number }}
+                    </span>
+                    <span class="text-xs font-bold text-[#5F6368] dark:text-[#9AA0A6]">
+                      {{ selectedCurrency() }}
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
+                    Diferencial de categoría hasta el {{ planExpirationDateFormatted() }}. No pagas el precio de mes completo (${{ getPlanPrice(p, BillingPeriodEnum.MONTHLY) | number }}).
+                  </p>
+                </div>
+
+                <!-- Lista de Beneficios que Desbloqueas -->
+                <div class="space-y-2 pt-2">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block">
+                    Beneficios que desbloqueas:
+                  </span>
+                  <ul class="space-y-2 text-xs text-[#1F1F1F] dark:text-[#E3E3E3]">
+                    @for (feature of p.features; track feature) {
+                      <li class="flex items-start gap-2">
+                        <svg class="w-4 h-4 text-[#009EE3] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>{{ feature }}</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Botón de Upgrade con Prorrateo -->
+              <div class="pt-6">
+                <button
+                  type="button"
+                  (click)="onUpgradePlan(p.plan)"
+                  [disabled]="loadingPlan() !== null"
+                  class="w-full text-center bg-[#009EE3] hover:bg-[#0081B9] text-white font-extrabold py-3.5 px-6 rounded-full transition shadow-xs hover:shadow cursor-pointer flex items-center justify-center gap-2 min-h-[44px] disabled:opacity-50">
+                  @if (loadingPlan() === p.plan) {
+                    <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Redirigiendo a Mercado Pago...</span>
+                  } @else {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                    <span>Mejorar a {{ p.name }} (${{ getProrationPrice(p.plan) | number }} {{ selectedCurrency() }})</span>
+                  }
+                </button>
+              </div>
+
+            </div>
+          }
         </div>
       }
-    }
 
-    @if (errorMessage()) {
-      <div class="mt-3 p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl text-xs sm:text-sm font-medium text-rose-700 dark:text-rose-300 text-center max-w-xl mx-auto">
-        {{ errorMessage() }}
+    </div>
+
+    <!-- 4. SECCIÓN: TABLA / COMPARATIVA INFORMATIVA (SIN BOTONES DE COMPRA DIRECTA) -->
+    <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+      <div class="space-y-1">
+        <h3 class="text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
+          Comparativa de Características por Plan
+        </h3>
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+          Revisa las capacidades técnicas y límites de cada nivel de servicio.
+        </p>
       </div>
-    }
-  </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch max-w-7xl mx-auto px-4 sm:px-6">
-    @for (p of plansList(); track p.plan) {
-      <div 
-        [class]="p.isPopular 
-          ? 'bg-[#FFFFFF] dark:bg-[#131314] rounded-2xl p-7 sm:p-9 border-2 border-[#1A73E8] dark:border-[#8AB4F8] relative flex flex-col justify-between space-y-8 shadow-sm hover:shadow transition-all duration-300 transform md:-translate-y-2' 
-          : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl p-7 sm:p-9 border border-[#C4C7C5] dark:border-[#333333] flex flex-col justify-between space-y-8 shadow-xs hover:border-[#C4C7C5] dark:hover:border-[#5E6266] transition-all duration-300'">
-        
-        <!-- Popular Badge -->
-        @if (p.isPopular) {
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] text-[11px] font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-xs">
-            Más Popular
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        @for (p of plansList(); track p.plan) {
+          <div 
+            [class]="isCurrentPlan(p.plan)
+              ? 'bg-white dark:bg-[#131314] border-2 border-[#009EE3] rounded-2xl p-5 space-y-4 shadow-xs'
+              : 'bg-white dark:bg-[#131314] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl p-5 space-y-4 shadow-xs'">
+            
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-sm text-[#1F1F1F] dark:text-[#E3E3E3]">{{ p.name }}</h4>
+              @if (isCurrentPlan(p.plan)) {
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#009EE3] text-white">
+                  Tu Plan
+                </span>
+              } @else if (isUpgrade(p.plan)) {
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8]">
+                  Superior
+                </span>
+              } @else {
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold text-[#5F6368] dark:text-[#9AA0A6] bg-black/5 dark:bg-white/5">
+                  Inferior
+                </span>
+              }
+            </div>
+
+            <div class="text-lg font-extrabold text-[#1F1F1F] dark:text-[#E3E3E3]">
+              ${{ getPlanPrice(p, BillingPeriodEnum.MONTHLY) | number }}
+              <span class="text-xs font-normal text-[#5F6368] dark:text-[#9AA0A6]">/ mes</span>
+            </div>
+
+            <ul class="space-y-2 text-xs text-[#5F6368] dark:text-[#9AA0A6] border-t border-[#E3E3E3] dark:border-[#333333] pt-3">
+              @for (feature of p.features; track feature) {
+                <li class="flex items-start gap-2">
+                  <span class="text-[#009EE3] font-bold">•</span>
+                  <span>{{ feature }}</span>
+                </li>
+              }
+            </ul>
           </div>
         }
+      </div>
+    </div>
 
-        <!-- Active Plan Badge -->
-        @if (isLoggedIn() && isCurrentPlan(p.plan)) {
-          <div class="absolute top-4 right-4 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-            Plan Actual
-          </div>
-        }
+  } @else {
 
-        <div class="space-y-6">
-          <div class="space-y-2 pt-2">
-            <div class="flex items-center gap-2">
-              <h3 class="font-extrabold text-2xl text-[#1F1F1F] dark:text-[#E3E3E3]">{{ p.name }}</h3>
-            </div>
-            <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] min-h-[36px] leading-relaxed">{{ p.tagline }}</p>
-          </div>
+    <!-- ========================================================================= -->
+    <!-- VISTA PARA USUARIOS SIN SUSCRIPCIÓN / VISITANTES PÚBLICOS                -->
+    <!-- ========================================================================= -->
 
-          <!-- Precio Formateado según período y moneda -->
-          <div class="flex items-baseline gap-1.5">
-            <span class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
-              {{ selectedCurrency() === 'USD' ? 'US$' : '$' }}{{ getPlanPrice(p) | number }}
-            </span>
-            <span class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] font-semibold">
-              {{ selectedCurrency() }} / {{ billingPeriod() === BillingPeriodEnum.YEARLY ? 'año' : 'mes' }}
-            </span>
-          </div>
+    <!-- Header / Title -->
+    <div class="text-center space-y-4">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+        Planes prepagos flexibles para hacer crecer tu negocio
+      </h2>
+      <p class="text-base sm:text-lg text-[#5F6368] dark:text-[#9AA0A6] max-w-2xl mx-auto">
+        Sin contratos forzosos ni débitos automáticos sorpresa. Compra y recarga días de cobertura a demanda en cualquier momento.
+      </p>
 
-          <!-- Feature Highlights / Limits -->
-          <div class="grid grid-cols-2 gap-2 pt-3 border-t border-[#C4C7C5] dark:border-[#333333] text-[11px]">
-            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Clientes</span>
-              <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
-                {{ p.maxClients === -1 ? 'Ilimitados' : (p.maxClients | number) }}
-              </strong>
-            </div>
-            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Sucursales</span>
-              <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
-                {{ p.maxCompanies === -1 ? 'Ilimitadas' : p.maxCompanies }}
-              </strong>
-            </div>
-            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Premios</span>
-              <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
-                {{ p.maxRewards === -1 ? 'Ilimitados' : p.maxRewards }}
-              </strong>
-            </div>
-            <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-0.5">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block font-medium">Promociones</span>
-              <strong [class]="p.canCreatePromotions ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-[#5F6368] dark:text-[#9AA0A6] font-bold'">
-                {{ p.canCreatePromotions ? 'Habilitadas' : 'No incluidas' }}
-              </strong>
-            </div>
-          </div>
-
-          <!-- Feature List -->
-          <ul class="space-y-3 text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] pt-3">
-            @for (feature of p.features; track feature) {
-              <li class="flex items-start gap-2.5">
-                <span class="text-emerald-500 font-bold flex-shrink-0 mt-0.5">✓</span>
-                <span class="leading-relaxed">{{ feature }}</span>
-              </li>
-            }
-          </ul>
+      <!-- Currency & Billing Toggle Container -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <!-- Currency Switcher -->
+        <div class="inline-flex p-1 bg-[#F1F3F4] dark:bg-[#1E1E1E] rounded-full border border-[#E3E3E3] dark:border-[#333333]">
+          <button
+            type="button"
+            (click)="setCurrency('ARS')"
+            [class]="selectedCurrency() === 'ARS' 
+              ? 'px-4 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-[#2D2E30] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer' 
+              : 'px-4 py-1.5 rounded-full text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer'">
+            ARS ($)
+          </button>
+          <button
+            type="button"
+            (click)="setCurrency('USD')"
+            [class]="selectedCurrency() === 'USD' 
+              ? 'px-4 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-[#2D2E30] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer' 
+              : 'px-4 py-1.5 rounded-full text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer'">
+            USD ($)
+          </button>
         </div>
 
-        <!-- Action Button -->
-        <div class="pt-4">
-          @if (isLoggedIn()) {
-            @if (isCurrentPlan(p.plan)) {
+        <!-- Billing Period Toggle (1m, 3m, 6m, 12m) -->
+        <div class="inline-flex flex-wrap items-center justify-center p-1 bg-[#F1F3F4] dark:bg-[#1E1E1E] rounded-full border border-[#E3E3E3] dark:border-[#333333] gap-0.5">
+          <button
+            type="button"
+            (click)="setBillingPeriod(BillingPeriodEnum.MONTHLY)"
+            [class]="billingPeriod() === BillingPeriodEnum.MONTHLY 
+              ? 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-[#2D2E30] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer transition' 
+              : 'px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer transition'">
+            1 Mes (30d)
+          </button>
+          <button
+            type="button"
+            (click)="setBillingPeriod(BillingPeriodEnum.QUARTERLY)"
+            [class]="billingPeriod() === BillingPeriodEnum.QUARTERLY 
+              ? 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-[#2D2E30] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer transition flex items-center gap-1' 
+              : 'px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer transition flex items-center gap-1'">
+            <span>3 Meses (90d)</span>
+            @if (getDiscountPercentage(BillingPeriodEnum.QUARTERLY) > 0) {
+              <span class="px-1.5 py-0.2 text-[9px] font-extrabold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8] rounded-full">
+                -{{ getDiscountPercentage(BillingPeriodEnum.QUARTERLY) }}%
+              </span>
+            }
+          </button>
+          <button
+            type="button"
+            (click)="setBillingPeriod(BillingPeriodEnum.SEMIANNUAL)"
+            [class]="billingPeriod() === BillingPeriodEnum.SEMIANNUAL 
+              ? 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-[#2D2E30] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer transition flex items-center gap-1' 
+              : 'px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer transition flex items-center gap-1'">
+            <span>6 Meses (180d)</span>
+            @if (getDiscountPercentage(BillingPeriodEnum.SEMIANNUAL) > 0) {
+              <span class="px-1.5 py-0.2 text-[9px] font-extrabold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8] rounded-full">
+                -{{ getDiscountPercentage(BillingPeriodEnum.SEMIANNUAL) }}%
+              </span>
+            }
+          </button>
+          <button
+            type="button"
+            (click)="setBillingPeriod(BillingPeriodEnum.YEARLY)"
+            [class]="billingPeriod() === BillingPeriodEnum.YEARLY 
+              ? 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-[#2D2E30] text-[#1F1F1F] dark:text-[#E3E3E3] shadow-xs cursor-pointer transition flex items-center gap-1' 
+              : 'px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer transition flex items-center gap-1'">
+            <span>12 Meses (365d)</span>
+            @if (getDiscountPercentage(BillingPeriodEnum.YEARLY) > 0) {
+              <span class="px-1.5 py-0.2 text-[9px] font-extrabold bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A2E44] dark:text-[#8AB4F8] rounded-full">
+                -{{ getDiscountPercentage(BillingPeriodEnum.YEARLY) }}%
+              </span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plans Grid for New Subscriptions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-7xl mx-auto">
+      @for (p of plansList(); track p.plan) {
+        <div 
+          [class]="p.isPopular 
+            ? 'relative bg-white dark:bg-[#1E1E1E] border-2 border-[#009EE3] rounded-3xl p-8 flex flex-col justify-between shadow-sm' 
+            : 'relative bg-[#F8F9FA] dark:bg-[#1A1A1A] border border-[#E3E3E3] dark:border-[#333333] rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:border-[#C4C7C5] dark:hover:border-[#555555] transition'">
+          
+          <!-- Popular Badge -->
+          @if (p.isPopular) {
+            <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#009EE3] text-white px-4 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider shadow-xs">
+              Más Elegido
+            </div>
+          }
+
+          <!-- Top Content -->
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-xl font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">{{ p.name }}</h3>
+              <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1 min-h-[32px]">{{ p.tagline }}</p>
+            </div>
+
+            <!-- Price Display -->
+            <div class="flex items-baseline gap-1">
+              <span class="text-4xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+                ${{ getPlanPrice(p) | number }}
+              </span>
+              <span class="text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6]">
+                {{ selectedCurrency() }} / {{ getBillingPeriodLabel() }}
+              </span>
+            </div>
+
+            <!-- Divider -->
+            <div class="border-t border-[#E3E3E3] dark:border-[#333333]"></div>
+
+            <!-- Features List -->
+            <ul class="space-y-3 text-xs text-[#1F1F1F] dark:text-[#E3E3E3]">
+              @for (feature of p.features; track feature) {
+                <li class="flex items-start gap-2.5">
+                  <svg class="w-4 h-4 text-[#009EE3] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{{ feature }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+
+          <!-- Action CTA Button -->
+          <div class="pt-8">
+            @if (isLoggedIn()) {
+              <!-- Subscribe Button -->
               <button 
-                type="button"
-                disabled
-                class="w-full text-center py-3.5 px-6 rounded-full font-bold text-xs sm:text-sm bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 cursor-default flex items-center justify-center gap-2 min-h-[44px]">
-                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                Plan Actual
-              </button>
-            } @else if (isUpgrade(p.plan)) {
-              <!-- Destacado Upgrade Button -->
-              <button 
-                type="button"
-                (click)="onSelectPlan(p.plan)"
-                [disabled]="loadingPlan() !== null"
-                class="w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold py-4 px-6 rounded-full transition shadow-xs hover:shadow cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]">
-                @if (loadingPlan() === p.plan) {
-                  <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  <span>Procesando...</span>
-                } @else {
-                  <span>Subir a este Plan</span>
-                }
-              </button>
-            } @else if (isDowngrade(p.plan)) {
-              <!-- Downgrade Button -->
-              <button 
-                type="button"
-                (click)="onSelectPlan(p.plan)"
-                [disabled]="loadingPlan() !== null"
-                class="w-full text-center border border-[#C4C7C5] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]">
-                @if (loadingPlan() === p.plan) {
-                  <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  <span>Procesando...</span>
-                } @else {
-                  <span>Cambiar a {{ p.name }}</span>
-                }
-              </button>
-            } @else {
-              <!-- Standard / Subscribe with Mercado Pago Button -->
-              <button 
-                type="button"
+                type="button" 
                 (click)="onSelectPlan(p.plan)"
                 [disabled]="loadingPlan() !== null"
                 [class]="p.isPopular
-                  ? 'w-full text-center bg-[#009EE3] hover:bg-[#0081B9] text-white font-extrabold py-4 px-6 rounded-full transition shadow-xs hover:shadow cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]'
+                  ? 'w-full text-center bg-[#009EE3] hover:bg-[#0081B9] text-white font-extrabold py-3.5 px-6 rounded-full transition shadow-xs hover:shadow cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]'
                   : 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]'">
                 @if (loadingPlan() === p.plan) {
                   <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  <span>Conectando Mercado Pago...</span>
+                  <span>Iniciando Checkout Pro...</span>
                 } @else {
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
-                  <span>Suscribirse con Mercado Pago</span>
+                  <span>Contratar con Mercado Pago</span>
                 }
               </button>
+            } @else {
+              <a 
+                routerLink="/register" 
+                [queryParams]="{ role: 'COMPANY_ADMIN', plan: p.plan }" 
+                [class]="p.isPopular 
+                  ? 'w-full text-center bg-[#009EE3] hover:bg-[#0081B9] text-white font-extrabold py-3.5 px-6 rounded-full transition shadow-xs cursor-pointer flex items-center justify-center min-h-[44px]'
+                  : 'w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center min-h-[44px]'">
+                Empezar con {{ p.name }}
+              </a>
             }
-          } @else {
-            <a 
-              routerLink="/register" 
-              [queryParams]="{ role: 'COMPANY_ADMIN', plan: p.plan }" 
-              [class]="p.isPopular 
-                ? 'w-full text-center bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-extrabold py-4 px-6 rounded-full transition shadow-xs cursor-pointer flex items-center justify-center min-h-[44px]'
-                : 'w-full text-center border border-[#E3E3E3] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3.5 px-6 rounded-full transition cursor-pointer flex items-center justify-center min-h-[44px]'">
-              Empezar con {{ p.name }}
-            </a>
-          }
-        </div>
+          </div>
 
-      </div>
-    }
-  </div>
+        </div>
+      }
+    </div>
+
+  }
+
 </section>

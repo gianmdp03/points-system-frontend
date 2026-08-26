@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -20,7 +20,8 @@ export type CatalogTab = 'rewards' | 'promotions' | 'products';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, CountrySelectComponent],
   templateUrl: './client-points.html',
-  styleUrl: './client-points.css'
+  styleUrl: './client-points.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientPointsPage implements OnInit {
   protected readonly configService = inject(AppConfigService);
@@ -195,4 +196,5 @@ export class ClientPointsPage implements OnInit {
     }
   }
 }
+
 

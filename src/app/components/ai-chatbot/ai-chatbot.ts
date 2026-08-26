@@ -1,11 +1,9 @@
-import {
-  Component,
+import { Component,
   inject,
   signal,
   effect,
   ElementRef,
-  viewChild
-} from '@angular/core';
+  viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiChatService } from '../../core/services/ai-chat-service';
@@ -15,7 +13,8 @@ import { AiChatService } from '../../core/services/ai-chat-service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './ai-chatbot.html',
-  styleUrl: './ai-chatbot.css'
+  styleUrl: './ai-chatbot.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AiChatbotComponent {
   protected readonly chatService = inject(AiChatService);

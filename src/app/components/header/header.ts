@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ElementRef, HostListener } from '@angular/core';
+import { Component, inject, OnInit, signal, ElementRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
@@ -10,6 +10,7 @@ import { AppConfigService } from '../../core/services/app-config-service';
   imports: [CommonModule, RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Header implements OnInit {
   protected readonly configService = inject(AppConfigService);

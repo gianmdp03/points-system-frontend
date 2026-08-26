@@ -1,12 +1,10 @@
-import {
-  Component,
+import { Component,
   ElementRef,
   input,
   signal,
   viewChild,
   AfterViewInit,
-  effect
-} from '@angular/core';
+  effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as QRCode from 'qrcode';
 
@@ -14,7 +12,8 @@ import * as QRCode from 'qrcode';
   selector: 'app-qr-generator',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './qr-generator.html'
+  templateUrl: './qr-generator.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class QrGeneratorComponent implements AfterViewInit {
   readonly companyId = input.required<number>();

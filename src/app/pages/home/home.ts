@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Hero } from '../../components/hero/hero';
 import { CarouselComponent } from '../../components/carousel/carousel';
 import { UserInfo } from '../../components/user-info/user-info';
@@ -22,7 +22,8 @@ import { Role } from '../../core/models';
     Faq
   ],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrl: './home.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Home {
   private readonly authService = inject(AuthService);

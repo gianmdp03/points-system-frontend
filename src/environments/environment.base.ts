@@ -1,8 +1,8 @@
-export const baseEnvironment = {
+﻿export const baseEnvironment = {
   appName: 'Pointly',
   appTitle: 'Pointly - Fidelización para Empresas y Recompensas para Clientes',
-  //apiUrl: 'http://localhost:8080/api',
-  apiUrl: 'https://clutter-guru-presume.ngrok-free.dev/api',
-  appUrl: 'https://clutter-guru-presume.ngrok-free.dev',
-  supabaseKey: 'sb_publishable_ze73ouvlA0aRFAggWg6YPw_6TfLjpA5'
+  apiUrl: "https://directors-responsibility-scotland-recent.trycloudflare.com/api",
+  appUrl: 'http://localhost:4200',     // Configurar con 'https://<hash-temporal>.trycloudflare.com' o 'http://localhost:4200'
+  supabaseKey: 'sb_publishable_ze73ouvlA0aRFAggWg6YPw_6TfLjpA5',
+  mercadoPagoPublicKey: 'TEST-df0bb3be-5572-437d-add9-af31286e812f'
 };

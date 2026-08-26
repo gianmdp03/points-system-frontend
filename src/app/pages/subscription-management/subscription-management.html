@@ -21,10 +21,10 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E3E3E3] dark:border-[#333333]">
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
-            Gestión de Suscripción y Facturación
+            Gestión de Suscripción y Vigencia
           </h1>
           <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-1">
-            Administra tu plan comercial, método de cobro recurrente con Mercado Pago y cupos asignados.
+            Administra tu plan comercial, cobertura en días acumulados y recargas integradas con Mercado Pago.
           </p>
         </div>
 
@@ -34,12 +34,12 @@
           <svg class="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
-          <span>Ver Todos los Planes</span>
+          <span>Ver Planes y Recargas</span>
         </a>
       </div>
     </div>
 
-    <!-- Alerta de Éxito Global si existe -->
+    <!-- Alerta de Éxito Global -->
     @if (subscriptionState.successMessage()) {
       <div class="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 rounded-2xl text-xs sm:text-sm font-semibold text-emerald-800 dark:text-emerald-200 flex items-center gap-2.5 shadow-xs">
         <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,17 +49,31 @@
       </div>
     }
 
-    <!-- Alerta de Cancelación si la suscripción está cancelada pero aún en vigencia -->
-    @if (isCancelled()) {
+    <!-- Alerta de Pago Pendiente -->
+    @if (isPending()) {
       <div class="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-2xl text-xs sm:text-sm font-medium text-amber-900 dark:text-amber-200 flex items-start gap-3 shadow-xs">
         <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="space-y-1">
+          <strong class="font-bold block">Pago en proceso de acreditación</strong>
+          <p class="text-xs text-amber-800 dark:text-amber-300">
+            Tu solicitud de cobertura para el plan <strong>{{ displayPlanConfig().name }}</strong> está pendiente de confirmación de pago. Los días se activarán automáticamente una vez acreditado por Mercado Pago.
+          </p>
+        </div>
+      </div>
+    }
+
+    <!-- Alerta de Pago Fallido -->
+    @if (isPaymentFailed()) {
+      <div class="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 rounded-2xl text-xs sm:text-sm font-medium text-rose-900 dark:text-rose-200 flex items-start gap-3 shadow-xs">
+        <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <div>
-          <strong class="font-bold block">Renovación automática cancelada</strong>
-          <p class="text-xs text-amber-800 dark:text-amber-300 mt-0.5">
-            Tu suscripción no se renovará al finalizar el ciclo actual. Mantienes acceso a tus beneficios hasta el
-            <strong>{{ subscriptionState.nextBillingDateFormatted() || 'vencimiento del periodo' }}</strong>.
+        <div class="space-y-1">
+          <strong class="font-bold block">El pago no pudo procesarse</strong>
+          <p class="text-xs text-rose-800 dark:text-rose-300">
+            El intento de pago para el plan <strong>{{ displayPlanConfig().name }}</strong> no pudo completarse. Por favor, selecciona el plan nuevamente o reintenta con otro medio de pago.
           </p>
         </div>
       </div>
@@ -76,17 +90,17 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E3E3E3] dark:border-[#333333]">
             <div class="space-y-1">
               <span class="text-[11px] font-bold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">
-                Plan Actual
+                {{ isPending() ? 'Plan Solicitado (Pendiente)' : 'Plan Actual' }}
               </span>
               <h2 class="text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
-                {{ currentPlanConfig().name }}
+                {{ displayPlanConfig().name }}
               </h2>
               <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
-                {{ currentPlanConfig().tagline }}
+                {{ displayPlanConfig().tagline }}
               </p>
             </div>
 
-            <!-- Badge de Estado Funcional -->
+            <!-- Badge de Estado -->
             <div class="self-start sm:self-auto">
               <span 
                 [class]="'px-3.5 py-1.5 rounded-full text-xs font-bold border ' + getSubscriptionStatusBadgeClass(status())">
@@ -95,68 +109,80 @@
             </div>
           </div>
 
-          <!-- Detalles de Facturación -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs sm:text-sm">
+          <!-- Detalles de Cobertura y Días Restantes -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+            
+            <!-- Tarjeta de Días Restantes (Destacada) -->
+            <div class="p-4 bg-white dark:bg-[#131314] rounded-xl border-2 border-[#009EE3]/30 dark:border-[#009EE3]/40 space-y-1">
+              <span class="text-[#009EE3] dark:text-[#8AB4F8] block text-xs font-bold uppercase tracking-wider">
+                Vigencia Disponible
+              </span>
+              <div class="text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] flex items-baseline gap-1.5">
+                <span class="text-[#009EE3]">{{ daysRemaining() }}</span>
+                <span class="text-sm font-bold text-[#5F6368] dark:text-[#9AA0A6]">días restantes</span>
+              </div>
+              <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
+                {{ isSubscribed() ? 'Vence el ' + (planExpirationDateFormatted() || 'fin de periodo') : 'Sin cobertura activa' }}
+              </p>
+            </div>
+
             <div class="p-4 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333] space-y-1">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block text-xs font-semibold">Monto del Plan</span>
+              <span class="text-[#5F6368] dark:text-[#9AA0A6] block text-xs font-semibold">Tarifa Contratada</span>
               <div class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
-                ${{ currentSub()?.price || currentPlanConfig().priceMonthly | number }} {{ currentSub()?.currency || 'ARS' }}
+                ${{ currentSub()?.price || displayPlanConfig().priceMonthly | number }} {{ currentSub()?.currency || 'ARS' }}
                 <span class="text-xs font-medium text-[#5F6368] dark:text-[#9AA0A6]">
-                  / {{ currentSub()?.billingPeriod === BillingPeriodEnum.YEARLY ? 'año' : 'mes' }}
+                  / {{ getBillingPeriodLabel(currentSub()?.billingPeriod) }}
                 </span>
               </div>
+              <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
+                Modelo Prepago — Sin cobros automáticos
+              </p>
             </div>
 
             <div class="p-4 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333] space-y-1">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block text-xs font-semibold">Proveedor de Cobro</span>
+              <span class="text-[#5F6368] dark:text-[#9AA0A6] block text-xs font-semibold">Pasarela de Pago</span>
               <div class="text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-[#009EE3]"></span>
-                <span>Mercado Pago (Suscripción Recurrente)</span>
+                <span>{{ currentSub()?.provider || 'Mercado Pago Checkout Pro' }}</span>
               </div>
             </div>
 
             <div class="p-4 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333] space-y-1">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block text-xs font-semibold">
-                {{ isCancelled() ? 'Vigente Hasta' : 'Próxima Facturación' }}
-              </span>
+              <span class="text-[#5F6368] dark:text-[#9AA0A6] block text-xs font-semibold">Fecha de Vencimiento</span>
               <div class="text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
-                {{ subscriptionState.nextBillingDateFormatted() || 'No registrada' }}
+                {{ planExpirationDateFormatted() || 'No registrada' }}
               </div>
             </div>
 
-            <div class="p-4 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333] space-y-1">
-              <span class="text-[#5F6368] dark:text-[#9AA0A6] block text-xs font-semibold">Fecha de Activación</span>
-              <div class="text-sm font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
-                {{ subscriptionState.startDateFormatted() || 'No registrada' }}
-              </div>
-            </div>
           </div>
 
-          <!-- Botones de Acción sobre la Suscripción -->
+          <!-- Botones de Acción -->
           <div class="pt-4 border-t border-[#E3E3E3] dark:border-[#333333] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-              <button 
-                type="button"
-                (click)="openChangePlanModal()"
-                class="w-full sm:w-auto bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] shadow-xs">
-                Cambiar Plan
-              </button>
-            </div>
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <a 
+                routerLink="/pricing"
+                class="w-full sm:w-auto bg-[#009EE3] hover:bg-[#0081B9] text-white font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] shadow-xs flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Recargar / Extender Días</span>
+              </a>
 
-            @if (isSubscribed() && !isCancelled()) {
-              <button 
-                type="button"
-                (click)="openCancelModal()"
-                class="w-full sm:w-auto text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 font-semibold py-3 px-4 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer text-xs sm:text-sm min-h-[44px]">
-                Cancelar Suscripción
-              </button>
-            }
+              <a 
+                routerLink="/pricing"
+                class="w-full sm:w-auto border border-[#E3E3E3] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-[#009EE3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+                <span>Mejorar Plan (Upgrade)</span>
+              </a>
+            </div>
           </div>
 
         </div>
       </div>
 
-      <!-- Columna 3: Tarjeta de Límites y Características -->
+      <!-- Columna 3: Tarjeta de Límites -->
       <div class="space-y-6">
         <div class="bg-[#F8F9FA] dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl p-6 space-y-5 shadow-xs">
           <div class="pb-3 border-b border-[#E3E3E3] dark:border-[#333333]">
@@ -172,28 +198,28 @@
             <div class="flex items-center justify-between p-3 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333]">
               <span class="text-[#5F6368] dark:text-[#9AA0A6] font-medium">Sucursales permitidas</span>
               <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
-                {{ currentPlanConfig().maxCompanies === -1 ? 'Ilimitadas' : currentPlanConfig().maxCompanies }}
+                {{ displayPlanConfig().maxCompanies === -1 ? 'Ilimitadas' : displayPlanConfig().maxCompanies }}
               </strong>
             </div>
 
             <div class="flex items-center justify-between p-3 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333]">
               <span class="text-[#5F6368] dark:text-[#9AA0A6] font-medium">Clientes registrados</span>
               <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
-                {{ currentPlanConfig().maxClients === -1 ? 'Ilimitados' : (currentPlanConfig().maxClients | number) }}
+                {{ displayPlanConfig().maxClients === -1 ? 'Ilimitados' : (displayPlanConfig().maxClients | number) }}
               </strong>
             </div>
 
             <div class="flex items-center justify-between p-3 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333]">
               <span class="text-[#5F6368] dark:text-[#9AA0A6] font-medium">Premios y recompensas</span>
               <strong class="text-[#1F1F1F] dark:text-[#E3E3E3] font-bold">
-                {{ currentPlanConfig().maxRewards === -1 ? 'Ilimitados' : currentPlanConfig().maxRewards }}
+                {{ displayPlanConfig().maxRewards === -1 ? 'Ilimitados' : displayPlanConfig().maxRewards }}
               </strong>
             </div>
 
             <div class="flex items-center justify-between p-3 bg-white dark:bg-[#131314] rounded-xl border border-[#E3E3E3] dark:border-[#333333]">
               <span class="text-[#5F6368] dark:text-[#9AA0A6] font-medium">Campañas y multiplicadores</span>
-              <strong [class]="currentPlanConfig().canCreatePromotions ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-gray-500 font-bold'">
-                {{ currentPlanConfig().canCreatePromotions ? 'Habilitadas' : 'No incluidas' }}
+              <strong [class]="displayPlanConfig().canCreatePromotions ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-gray-500 font-bold'">
+                {{ displayPlanConfig().canCreatePromotions ? 'Habilitadas' : 'No incluidas' }}
               </strong>
             </div>
           </div>
@@ -201,9 +227,9 @@
           <div class="pt-2">
             <a 
               routerLink="/pricing"
-              class="w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#1A73E8] dark:text-[#8AB4F8] hover:underline min-h-[44px]">
-              <span>Comparar planes superiores</span>
-              <span>→</span>
+              class="w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#009EE3] hover:underline min-h-[44px]">
+              <span>Comparar todos los planes</span>
+              <span>&rarr;</span>
             </a>
           </div>
         </div>
@@ -213,146 +239,3 @@
 
   </div>
 </div>
-
-<!-- ========================================================================= -->
-<!-- MODAL 1: CAMBIAR DE PLAN -->
-<!-- ========================================================================= -->
-@if (showChangePlanModal()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
-    <div class="bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-md max-h-[90vh] overflow-y-auto">
-      
-      <div class="flex items-center justify-between pb-4 border-b border-[#E3E3E3] dark:border-[#333333]">
-        <div>
-          <h3 class="text-xl font-extrabold text-[#1F1F1F] dark:text-[#E3E3E3]">Cambiar Plan de Suscripción</h3>
-          <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">
-            Selecciona el nuevo plan para tu comercio. Mercado Pago ajustará el cobro automáticamente.
-          </p>
-        </div>
-        <button 
-          type="button"
-          (click)="closeChangePlanModal()"
-          aria-label="Cerrar modal"
-          class="p-2 rounded-full text-[#5F6368] dark:text-[#9AA0A6] hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer">
-          ✕
-        </button>
-      </div>
-
-      @if (modalError()) {
-        <div class="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-medium text-rose-700 dark:text-rose-300">
-          {{ modalError() }}
-        </div>
-      }
-
-      <div class="space-y-3">
-        @for (plan of availablePlans(); track plan.plan) {
-          <div 
-            (click)="selectPlanToChange(plan.plan)"
-            [class]="selectedPlanForChange() === plan.plan
-              ? 'p-4 rounded-xl border-2 border-[#1A73E8] dark:border-[#8AB4F8] bg-[#E8F0FE]/30 dark:bg-[#1A2E44]/30 cursor-pointer transition'
-              : plan.plan === currentPlan()
-                ? 'p-4 rounded-xl border border-[#E3E3E3] dark:border-[#333333] bg-black/5 dark:bg-white/5 opacity-60 cursor-default'
-                : 'p-4 rounded-xl border border-[#E3E3E3] dark:border-[#333333] hover:border-[#C4C7C5] dark:hover:border-[#5E6266] cursor-pointer transition'">
-            
-            <div class="flex items-center justify-between gap-4">
-              <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <h4 class="font-extrabold text-sm text-[#1F1F1F] dark:text-[#E3E3E3]">{{ plan.name }}</h4>
-                  @if (plan.plan === currentPlan()) {
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                      Actual
-                    </span>
-                  }
-                </div>
-                <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">{{ plan.tagline }}</p>
-              </div>
-
-              <div class="text-right flex-shrink-0">
-                <span class="text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
-                  ${{ plan.priceMonthly | number }}
-                </span>
-                <span class="text-[10px] text-[#5F6368] dark:text-[#9AA0A6] block">ARS / mes</span>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-
-      <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#E3E3E3] dark:border-[#333333]">
-        <button 
-          type="button"
-          (click)="closeChangePlanModal()"
-          class="px-5 py-2.5 rounded-full border border-[#E3E3E3] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-semibold text-xs sm:text-sm min-h-[44px] cursor-pointer">
-          Cancelar
-        </button>
-
-        <button 
-          type="button"
-          (click)="confirmPlanChange()"
-          [disabled]="!selectedPlanForChange() || isSubmitting()"
-          class="px-6 py-2.5 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs sm:text-sm min-h-[44px] cursor-pointer disabled:opacity-50 flex items-center gap-2 shadow-xs">
-          @if (isSubmitting()) {
-            <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-            <span>Actualizando...</span>
-          } @else {
-            <span>Confirmar Cambio</span>
-          }
-        </button>
-      </div>
-
-    </div>
-  </div>
-}
-
-<!-- ========================================================================= -->
-<!-- MODAL 2: CANCELAR SUSCRIPCIÓN -->
-<!-- ========================================================================= -->
-@if (showCancelModal()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
-    <div class="bg-white dark:bg-[#1E1E1E] border border-[#E3E3E3] dark:border-[#333333] rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-md">
-      
-      <div class="space-y-3 text-center sm:text-left">
-        <div class="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 flex items-center justify-center text-rose-600 dark:text-rose-400 mx-auto sm:mx-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-        </div>
-
-        <h3 class="text-xl font-extrabold text-[#1F1F1F] dark:text-[#E3E3E3]">
-          ¿Cancelar la renovación automática?
-        </h3>
-        <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
-          Tu suscripción permanecerá <strong>activa</strong> y tus sucursales operativas hasta la fecha del próximo vencimiento (<strong>{{ subscriptionState.nextBillingDateFormatted() || 'fin del periodo' }}</strong>). Luego de esa fecha, no se te cobrará nuevamente.
-        </p>
-      </div>
-
-      @if (modalError()) {
-        <div class="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-medium text-rose-700 dark:text-rose-300">
-          {{ modalError() }}
-        </div>
-      }
-
-      <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-4 border-t border-[#E3E3E3] dark:border-[#333333]">
-        <button 
-          type="button"
-          (click)="closeCancelModal()"
-          class="w-full sm:w-auto px-5 py-2.5 rounded-full border border-[#E3E3E3] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-semibold text-xs sm:text-sm min-h-[44px] cursor-pointer">
-          Mantener Mi Suscripción
-        </button>
-
-        <button 
-          type="button"
-          (click)="confirmCancelSubscription()"
-          [disabled]="isSubmitting()"
-          class="w-full sm:w-auto px-6 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm min-h-[44px] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs">
-          @if (isSubmitting()) {
-            <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-            <span>Cancelando...</span>
-          } @else {
-            <span>Sí, Cancelar Renovación</span>
-          }
-        </button>
-      </div>
-
-    </div>
-  </div>
-}

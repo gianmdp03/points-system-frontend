@@ -1,6 +1,6 @@
-﻿import { Component, OnInit, inject, signal, computed } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SubscriptionStateService } from '../../core/services/subscription-state-service';
 import { AuthService } from '../../core/services/auth-service';
 import {
@@ -14,13 +14,13 @@ import {
   selector: 'app-subscription-callback',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './subscription-callback.html'
+  templateUrl: './subscription-callback.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SubscriptionCallbackPage implements OnInit {
   protected readonly subscriptionState = inject(SubscriptionStateService);
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
 
   readonly SubscriptionPlanEnum = SubscriptionPlan;
   readonly SubscriptionStatusEnum = SubscriptionStatus;
@@ -48,21 +48,16 @@ export class SubscriptionCallbackPage implements OnInit {
       return;
     }
 
-    // Extraer preapproval_id que Mercado Pago envía en los parámetros de la URL
-    const preapprovalId =
-      this.route.snapshot.queryParamMap.get('preapproval_id') ||
-      this.route.snapshot.queryParamMap.get('preapprovalId') ||
-      this.route.snapshot.queryParamMap.get('id');
-
     try {
-      const result = await this.subscriptionState.verifySubscriptionUntilActive(6, 1500, preapprovalId);
+      // 100% Solo lectura: consulta al backend si el webhook ya actualizó el estado a ACTIVE
+      const result = await this.subscriptionState.verifySubscriptionUntilActive(8, 2000);
 
       this.isVerifying.set(false);
       if (result.active) {
         this.isSuccess.set(true);
       } else {
         this.isSuccess.set(false);
-        this.verificationError.set('Mercado Pago se encuentra confirmando la operación. Reintentá en unos segundos.');
+        this.verificationError.set('Se está confirmando la operación. Tu plan se actualizará automáticamente en unos instantes.');
       }
     } catch (e: any) {
       this.isVerifying.set(false);

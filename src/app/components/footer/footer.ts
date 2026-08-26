@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { AppConfigService } from '../../core/services/app-config-service';
 
 @Component({
@@ -7,6 +7,7 @@ import { AppConfigService } from '../../core/services/app-config-service';
   imports: [],
   templateUrl: './footer.html',
   styleUrl: './footer.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Footer {
   protected readonly configService = inject(AppConfigService);

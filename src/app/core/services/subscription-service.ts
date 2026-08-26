@@ -1,13 +1,15 @@
-﻿import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   PlanConfig,
+  ProrationPreviewResponseDTO,
   SubscriptionDetailDTO,
   SubscriptionPlan,
   SubscriptionRequestDTO,
-  SubscriptionResponseDTO
+  SubscriptionResponseDTO,
+  SubscriptionUpgradeRequestDTO
 } from '../models';
 
 @Injectable({
@@ -21,32 +23,23 @@ export class SubscriptionService {
     return this.http.get<PlanConfig[]>(`${this.apiUrl}/plans`);
   }
 
-  getCurrentSubscription(preapprovalId?: string | null): Observable<SubscriptionDetailDTO> {
-    const query = preapprovalId ? `?preapproval_id=${encodeURIComponent(preapprovalId)}` : '';
-    return this.http.get<SubscriptionDetailDTO>(`${this.apiUrl}/me${query}`);
+  getCurrentSubscription(): Observable<SubscriptionDetailDTO> {
+    return this.http.get<SubscriptionDetailDTO>(`${this.apiUrl}/me`);
   }
 
-  getMySubscription(preapprovalId?: string | null): Observable<SubscriptionDetailDTO> {
-    return this.getCurrentSubscription(preapprovalId);
-  }
-
-  confirmSubscription(preapprovalId: string): Observable<SubscriptionDetailDTO> {
-    return this.http.post<SubscriptionDetailDTO>(`${this.apiUrl}/confirm?preapprovalId=${encodeURIComponent(preapprovalId)}`, {});
+  getMySubscription(): Observable<SubscriptionDetailDTO> {
+    return this.getCurrentSubscription();
   }
 
   createSubscription(dto: SubscriptionRequestDTO): Observable<SubscriptionResponseDTO> {
     return this.http.post<SubscriptionResponseDTO>(this.apiUrl, dto);
   }
 
-  changeSubscriptionPlan(newPlan: SubscriptionPlan): Observable<SubscriptionDetailDTO> {
-    return this.http.patch<SubscriptionDetailDTO>(`${this.apiUrl}/change-plan?newPlan=${newPlan}`, {});
+  getProrationPreview(newPlan: SubscriptionPlan): Observable<ProrationPreviewResponseDTO> {
+    return this.http.get<ProrationPreviewResponseDTO>(`${this.apiUrl}/proration-preview?newPlan=${newPlan}`);
   }
 
-  upgradeSubscription(newPlan: SubscriptionPlan): Observable<SubscriptionDetailDTO> {
-    return this.changeSubscriptionPlan(newPlan);
-  }
-
-  cancelSubscription(): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/cancel`);
+  upgradeSubscription(dto: SubscriptionUpgradeRequestDTO): Observable<SubscriptionResponseDTO> {
+    return this.http.patch<SubscriptionResponseDTO>(`${this.apiUrl}/upgrade`, dto);
   }
 }

@@ -8,40 +8,58 @@ export enum SubscriptionPlan {
 
 export enum SubscriptionStatus {
   PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
+  APPROVED = 'APPROVED',
   PAYMENT_FAILED = 'PAYMENT_FAILED',
-  CANCELLED = 'CANCELLED',
   EXPIRED = 'EXPIRED'
 }
 
 export enum BillingPeriod {
   MONTHLY = 'MONTHLY',
+  QUARTERLY = 'QUARTERLY',
+  SEMIANNUAL = 'SEMIANNUAL',
   YEARLY = 'YEARLY'
 }
 
 export enum PaymentProvider {
   MOCK = 'MOCK',
-  MERCADOPAGO = 'MERCADO_PAGO',
   MERCADO_PAGO = 'MERCADO_PAGO',
+  PADDLE = 'PADDLE',
   STRIPE = 'STRIPE'
 }
 
 export interface SubscriptionRequestDTO {
   plan: SubscriptionPlan;
-  provider: PaymentProvider | 'MERCADO_PAGO';
+  provider: PaymentProvider;
   billingPeriod: BillingPeriod;
   returnUrl?: string;
-  companyId?: number;
+}
+
+export interface SubscriptionUpgradeRequestDTO {
+  newPlan: SubscriptionPlan;
+}
+
+export interface ProrationPreviewResponseDTO {
+  currentPlan: SubscriptionPlan;
+  newPlan: SubscriptionPlan;
+  billingPeriod: BillingPeriod;
+  totalDaysInPeriod: number;
+  remainingDays: number;
+  currentPlanPrice: number;
+  newPlanPrice: number;
+  currentDailyRate: number;
+  newDailyRate: number;
+  proratedUpgradeAmount: number;
+  currency: string;
 }
 
 export interface SubscriptionResponseDTO {
   subscriptionId: number;
   plan: SubscriptionPlan;
   status: SubscriptionStatus;
-  provider: PaymentProvider | 'MERCADO_PAGO';
+  provider: PaymentProvider;
   price: number;
   currency: string;
-  checkoutUrl: string;
+  checkoutUrl?: string;
   externalSubscriptionId?: string;
 }
 
@@ -51,13 +69,14 @@ export interface SubscriptionDetailDTO {
   plan: SubscriptionPlan;
   billingPeriod: BillingPeriod;
   status: SubscriptionStatus;
-  provider: PaymentProvider | 'MERCADO_PAGO';
+  provider: PaymentProvider;
   price: number;
   currency: string;
   externalSubscriptionId?: string | null;
   startDate?: string | null;
+  planExpirationDate?: string | null;
   nextBillingDate?: string | null;
-  cancelledAt?: string | null;
+  daysRemaining?: number | null;
 }
 
 export interface PlanConfig {
@@ -65,10 +84,16 @@ export interface PlanConfig {
   name: string;
   tagline: string;
   priceMonthly: number;
+  priceQuarterly?: number;
+  priceSemiannual?: number;
   priceYearly: number;
   priceMonthlyArs?: number;
+  priceQuarterlyArs?: number;
+  priceSemiannualArs?: number;
   priceYearlyArs?: number;
   priceMonthlyUsd?: number;
+  priceQuarterlyUsd?: number;
+  priceSemiannualUsd?: number;
   priceYearlyUsd?: number;
   currency: string;
   maxClients: number; // -1 means unlimited
@@ -117,27 +142,32 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
       '1 sucursal comercial',
       'Hasta 100 clientes registrados',
       'Hasta 5 premios o recompensas',
-      'Campañas de promociones y multiplicadores habilitadas',
-      'Prueba de 30 días incluida'
+      'Campañas y promociones incluidas',
+      'Soporte por Email'
     ]
   },
   [SubscriptionPlan.BASIC]: {
     plan: SubscriptionPlan.BASIC,
     name: 'Plan Emprendedor',
     tagline: 'Ideal para pequeños locales o comercios en etapa inicial.',
-    priceMonthly: 9900,
-    priceYearly: 99000,
-    priceMonthlyArs: 9900,
-    priceYearlyArs: 99000,
-    priceMonthlyUsd: 15,
-    priceYearlyUsd: 150,
+    priceMonthly: 9990,
+    priceQuarterly: 26990,
+    priceSemiannual: 49990,
+    priceYearly: 99990,
+    priceMonthlyArs: 9990,
+    priceQuarterlyArs: 26990,
+    priceSemiannualArs: 49990,
+    priceYearlyArs: 99990,
+    priceMonthlyUsd: 15.0,
+    priceQuarterlyUsd: 40.0,
+    priceSemiannualUsd: 75.0,
+    priceYearlyUsd: 150.0,
     currency: 'ARS',
     maxClients: 100,
     maxRewards: 5,
     maxCompanies: 1,
     canCreatePromotions: false,
     isPopular: false,
-    isHidden: false,
     features: [
       'Hasta 100 clientes registrados',
       'Hasta 5 premios o recompensas',
@@ -151,19 +181,24 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     plan: SubscriptionPlan.PRO,
     name: 'Plan Crecimiento',
     tagline: 'Para marcas en expansión que buscan automatizar su fidelización.',
-    priceMonthly: 19900,
-    priceYearly: 199000,
-    priceMonthlyArs: 19900,
-    priceYearlyArs: 199000,
-    priceMonthlyUsd: 29,
-    priceYearlyUsd: 290,
+    priceMonthly: 19990,
+    priceQuarterly: 53990,
+    priceSemiannual: 99990,
+    priceYearly: 199990,
+    priceMonthlyArs: 19990,
+    priceQuarterlyArs: 53990,
+    priceSemiannualArs: 99990,
+    priceYearlyArs: 199990,
+    priceMonthlyUsd: 29.0,
+    priceQuarterlyUsd: 79.0,
+    priceSemiannualUsd: 149.0,
+    priceYearlyUsd: 290.0,
     currency: 'ARS',
     maxClients: 1000,
-    maxRewards: -1,
+    maxRewards: -1, // Unlimited
     maxCompanies: 3,
     canCreatePromotions: true,
     isPopular: true,
-    isHidden: false,
     features: [
       'Hasta 1,000 clientes registrados',
       'Premios y recompensas ilimitados',
@@ -177,19 +212,24 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
     plan: SubscriptionPlan.ENTERPRISE,
     name: 'Plan Corporativo',
     tagline: 'Franquicias o cadenas con múltiples sucursales y alto volumen.',
-    priceMonthly: 39900,
-    priceYearly: 399000,
-    priceMonthlyArs: 39900,
-    priceYearlyArs: 399000,
-    priceMonthlyUsd: 59,
-    priceYearlyUsd: 590,
+    priceMonthly: 39990,
+    priceQuarterly: 107990,
+    priceSemiannual: 199990,
+    priceYearly: 399990,
+    priceMonthlyArs: 39990,
+    priceQuarterlyArs: 107990,
+    priceSemiannualArs: 199990,
+    priceYearlyArs: 399990,
+    priceMonthlyUsd: 59.0,
+    priceQuarterlyUsd: 159.0,
+    priceSemiannualUsd: 299.0,
+    priceYearlyUsd: 590.0,
     currency: 'ARS',
-    maxClients: -1,
-    maxRewards: -1,
-    maxCompanies: -1,
+    maxClients: -1, // Unlimited
+    maxRewards: -1, // Unlimited
+    maxCompanies: -1, // Unlimited
     canCreatePromotions: true,
     isPopular: false,
-    isHidden: false,
     features: [
       'Clientes ilimitados',
       'Premios y recompensas ilimitados',
@@ -202,36 +242,44 @@ export const PLAN_CONFIGS: Record<SubscriptionPlan, PlanConfig> = {
   }
 };
 
-export function getSubscriptionStatusLabel(status: SubscriptionStatus | string | undefined | null): string {
+export function getSubscriptionStatusBadgeClass(status?: SubscriptionStatus | null): string {
   switch (status) {
-    case SubscriptionStatus.ACTIVE:
-      return 'Activa';
+    case SubscriptionStatus.APPROVED:
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800';
     case SubscriptionStatus.PENDING:
-      return 'En Proceso';
+      return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800';
     case SubscriptionStatus.PAYMENT_FAILED:
-      return 'Pago Rechazado';
-    case SubscriptionStatus.CANCELLED:
-      return 'Cancelada';
+      return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800';
     case SubscriptionStatus.EXPIRED:
-      return 'Vencida';
+      return 'bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700';
     default:
-      return 'Inactiva';
+      return 'bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700';
   }
 }
 
-export function getSubscriptionStatusBadgeClass(status: SubscriptionStatus | string | undefined | null): string {
+export function getSubscriptionStatusLabel(status?: SubscriptionStatus | null): string {
   switch (status) {
-    case SubscriptionStatus.ACTIVE:
-      return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+    case SubscriptionStatus.APPROVED:
+      return 'Activa / Aprobada';
     case SubscriptionStatus.PENDING:
-      return 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+      return 'Pendiente';
     case SubscriptionStatus.PAYMENT_FAILED:
-      return 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
-    case SubscriptionStatus.CANCELLED:
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-700';
+      return 'Pago Fallido';
     case SubscriptionStatus.EXPIRED:
-      return 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+      return 'Expirada';
     default:
-      return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-700';
+      return 'Sin Estado';
+  }
+}
+
+export function getPlanTier(plan?: SubscriptionPlan | null): number {
+  if (!plan) return 0;
+  switch (plan) {
+    case SubscriptionPlan.NONE: return 0;
+    case SubscriptionPlan.FREE_TRIAL: return 1;
+    case SubscriptionPlan.BASIC: return 2;
+    case SubscriptionPlan.PRO: return 3;
+    case SubscriptionPlan.ENTERPRISE: return 4;
+    default: return 0;
   }
 }

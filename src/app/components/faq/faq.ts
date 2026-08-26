@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppConfigService } from '../../core/services/app-config-service';
 
@@ -12,6 +12,7 @@ export interface FaqItem {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './faq.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Faq {
   protected readonly configService = inject(AppConfigService);

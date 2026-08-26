@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppConfigService } from '../../core/services/app-config-service';
 
@@ -8,6 +8,7 @@ import { AppConfigService } from '../../core/services/app-config-service';
   imports: [RouterLink],
   templateUrl: './cta-banner.html',
   styleUrl: './cta-banner.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CtaBanner {
   protected readonly configService = inject(AppConfigService);

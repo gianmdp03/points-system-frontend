@@ -17,7 +17,7 @@
       </div>
       <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
         @if (currentPlan() === SubscriptionPlanEnum.NONE) {
-          <span>No posees sucursales permitidas. Suscríbete con Mercado Pago para comenzar a operar.</span>
+          <span>No posees sucursales permitidas. Suscríbete a un plan para comenzar a operar.</span>
         } @else {
           <span>
             Sucursales: <strong>{{ companies.length }}/{{ maxCompanies() === -1 ? '∞' : maxCompanies() }}</strong> • 

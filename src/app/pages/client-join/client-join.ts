@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -10,7 +10,8 @@ import { AppConfigService } from '../../core/services/app-config-service';
   selector: 'app-client-join',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './client-join.html'
+  templateUrl: './client-join.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientJoinComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
