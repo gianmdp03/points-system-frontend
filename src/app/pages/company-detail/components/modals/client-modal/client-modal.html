@@ -1,4 +1,4 @@
-﻿<div class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+<div class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
   <div (click)="close.emit()" class="absolute inset-0"></div>
 
   <div class="relative w-full max-w-lg bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 sm:p-8 border border-[#C4C7C5] dark:border-[#333333] shadow-lg z-10 max-h-[90vh] overflow-y-auto">
@@ -99,6 +99,23 @@
             placeholder="+54 9 11 12345678" 
             class="w-full h-12 px-4 py-3 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-2xl text-sm font-semibold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
         </div>
+      </div>
+
+      <!-- Habilitar Notificaciones -->
+      <div class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333]">
+        <label for="clientModalNotification" class="cursor-pointer select-none">
+          <span class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-0.5">
+            Habilitar Notificaciones
+          </span>
+          <span class="block text-xs text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
+            Permite al cliente recibir avisos de puntos acumulados, canjes y beneficios.
+          </span>
+        </label>
+        <input 
+          id="clientModalNotification"
+          type="checkbox" 
+          formControlName="isNotificationEnabled"
+          class="w-5 h-5 rounded border-[#C4C7C5] text-[#1A73E8] focus:ring-[#1A73E8] cursor-pointer flex-shrink-0" />
       </div>
 
       <div class="pt-5 border-t border-[#C4C7C5] dark:border-[#333333] flex items-center justify-end gap-3">

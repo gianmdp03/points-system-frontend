@@ -1,0 +1,227 @@
+<div class="space-y-6">
+
+  <!-- Header Controls Banner -->
+  <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-6 border border-[#C4C7C5] dark:border-[#333333] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex items-center gap-3.5">
+      <div class="w-12 h-12 rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] flex-shrink-0">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg sm:text-xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+          Plantillas de Notificaciones
+        </h3>
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+          Configura y personaliza los mensajes de retención, bienvenida, promociones y alertas para tus clientes.
+        </p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
+      <button
+        type="button"
+        (click)="resetDefaults.emit()"
+        [disabled]="isLoading || isResettingDefaults"
+        class="min-h-[40px] px-4 py-2 bg-[#F8F9FA] hover:bg-[#C4C7C5] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#C4C7C5] dark:border-[#333333] transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+        title="Restaura las 6 plantillas por defecto oficiales">
+        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>{{ isResettingDefaults ? 'Restaurando...' : 'Restaurar por Defecto' }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="addTemplate.emit()"
+        [disabled]="isLoading"
+        class="min-h-[40px] px-4 py-2 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Nueva Plantilla</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <button
+      type="button"
+      (click)="selectedFilter.set('ALL')"
+      [class]="selectedFilter() === 'ALL' ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]'"
+      class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+      Todos ({{ templates.length }})
+    </button>
+    <button
+      type="button"
+      (click)="selectedFilter.set('WELCOME_NOTIFICATION')"
+      [class]="selectedFilter() === 'WELCOME_NOTIFICATION' ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]'"
+      class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+      🚀 Bienvenida
+    </button>
+    <button
+      type="button"
+      (click)="selectedFilter.set('ALMOST_THERE_NOTIFICATION')"
+      [class]="selectedFilter() === 'ALMOST_THERE_NOTIFICATION' ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]'"
+      class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+      🎯 Cerca del beneficio
+    </button>
+    <button
+      type="button"
+      (click)="selectedFilter.set('CLIENT_RETENTION_NOTIFICATION')"
+      [class]="selectedFilter() === 'CLIENT_RETENTION_NOTIFICATION' ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]'"
+      class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+      ⏰ Retención
+    </button>
+    <button
+      type="button"
+      (click)="selectedFilter.set('POINTS_EXPIRATION_NOTIFICATION')"
+      [class]="selectedFilter() === 'POINTS_EXPIRATION_NOTIFICATION' ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]'"
+      class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+      ⏳ Puntos por vencer
+    </button>
+    <button
+      type="button"
+      (click)="selectedFilter.set('PROMOTION_NOTIFICATION')"
+      [class]="selectedFilter() === 'PROMOTION_NOTIFICATION' ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8]'"
+      class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+      🔥 Promociones
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-pulse">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="h-44 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] p-5"></div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else if (filteredTemplates().length === 0) {
+    <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-12 text-center border border-[#C4C7C5] dark:border-[#333333] shadow-xs space-y-4">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-[#E8F0FE] dark:bg-[#131314] text-[#1A73E8] dark:text-[#8AB4F8] flex items-center justify-center border border-[#1A73E8]/20 dark:border-[#8AB4F8]/20">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      </div>
+      <div class="space-y-1 max-w-sm mx-auto">
+        <h4 class="text-lg font-black text-[#1F1F1F] dark:text-[#E3E3E3]">No hay plantillas registradas</h4>
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+          Restaura las plantillas por defecto solicitadas o crea una nueva.
+        </p>
+      </div>
+      <div class="pt-2">
+        <button
+          type="button"
+          (click)="resetDefaults.emit()"
+          class="px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
+          Cargar Plantillas por Defecto
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Cards Grid -->
+  @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      @for (template of filteredTemplates(); track template.id) {
+        @let badge = getTypeBadge(template.type);
+        <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-5 border border-[#C4C7C5] dark:border-[#333333] shadow-xs flex flex-col justify-between space-y-4 hover:border-[#1A73E8]/50 dark:hover:border-[#8AB4F8]/50 transition-all">
+          
+          <!-- Card Header -->
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-1.5 flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border {{ badge.bg }} {{ badge.text }}">
+                  <span>{{ badge.icon }}</span>
+                  <span>{{ badge.label }}</span>
+                </span>
+
+                @if (template.isEnabled) {
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    Activa
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    Pausada
+                  </span>
+                }
+              </div>
+
+              <h4 class="text-sm sm:text-base font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight truncate">
+                {{ template.name }}
+              </h4>
+
+              @if (template.subject) {
+                <p class="text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] truncate">
+                  Asunto: "{{ template.subject }}"
+                </p>
+              }
+            </div>
+
+            <!-- Enable / Disable Toggle Switch -->
+            <label class="relative inline-flex items-center cursor-pointer select-none flex-shrink-0 mt-1" [title]="template.isEnabled ? 'Desactivar plantilla' : 'Activar plantilla'">
+              <input 
+                type="checkbox" 
+                [checked]="template.isEnabled"
+                (change)="toggleTemplate.emit(template)"
+                class="sr-only peer" />
+              <div class="w-9 h-5 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#1A73E8] dark:peer-checked:bg-[#8AB4F8]"></div>
+            </label>
+          </div>
+
+          <!-- Template Raw Content -->
+          <div class="p-3.5 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 text-xs text-[#1F1F1F] dark:text-[#E3E3E3] leading-relaxed font-sans line-clamp-3">
+            {{ template.content }}
+          </div>
+
+          <!-- Simulated Preview Expandable -->
+          @if (previewedTemplateId() === template.id) {
+            <div class="p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs space-y-1.5 animate-fade-in">
+              <div class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8]">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span>Vista Previa con Datos Reales Simulados</span>
+              </div>
+              <p class="text-xs text-[#1F1F1F] dark:text-[#E3E3E3] leading-relaxed">
+                {{ getSimulatedContent(template.content) }}
+              </p>
+            </div>
+          }
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-between gap-2 pt-2 border-t border-[#C4C7C5]/60 dark:border-[#333333]/60">
+            <button
+              type="button"
+              (click)="togglePreview(template.id)"
+              class="text-xs font-bold text-[#1A73E8] dark:text-[#8AB4F8] hover:underline flex items-center gap-1 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span>{{ previewedTemplateId() === template.id ? 'Ocultar vista previa' : 'Ver vista previa' }}</span>
+            </button>
+
+            <button
+              type="button"
+              (click)="editTemplate.emit(template)"
+              class="min-h-[36px] px-3.5 py-1.5 bg-[#F8F9FA] hover:bg-[#E8F0FE] dark:bg-[#131314] dark:hover:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] font-bold text-xs rounded-xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 transition flex items-center gap-1.5 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span>Editar</span>
+            </button>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, signal, effect, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, effect, computed, DestroyRef, ChangeDetectionStrategy, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
@@ -188,8 +188,11 @@ export class Dashboard implements OnInit {
 
     effect(() => {
       const role = this.currentRole();
-      if (this.isLoggedIn()) {
-        this.loadRoleData(role, 0);
+      const loggedIn = this.isLoggedIn();
+      if (loggedIn) {
+        untracked(() => {
+          this.loadRoleData(role, 0);
+        });
       }
     });
   }
@@ -216,11 +219,11 @@ export class Dashboard implements OnInit {
           this.isLoading.set(false);
           this.errorMessage.set(null);
           const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
-          const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
+          const total = Array.isArray(pageData) ? pageData.length : (pageData?.page?.totalElements ?? pageData?.totalElements ?? items.length);
 
           this.adminCompanies.set(items);
           this.totalElements.set(total);
-          this.totalPages.set(pageData?.totalPages || 1);
+          this.totalPages.set(pageData?.page?.totalPages ?? pageData?.totalPages ?? 1);
         },
         error: (err) => {
           if (this.currentRole() !== activeRole) return;
@@ -240,11 +243,11 @@ export class Dashboard implements OnInit {
           this.isLoading.set(false);
           this.errorMessage.set(null);
           const items = Array.isArray(pageData) ? pageData : (pageData?.content || []);
-          const total = Array.isArray(pageData) ? pageData.length : (pageData?.totalElements ?? items.length);
+          const total = Array.isArray(pageData) ? pageData.length : (pageData?.page?.totalElements ?? pageData?.totalElements ?? items.length);
 
           this.allCompanies.set(items);
           this.totalElements.set(total);
-          this.totalPages.set(pageData?.totalPages || 1);
+          this.totalPages.set(pageData?.page?.totalPages ?? pageData?.totalPages ?? 1);
         },
         error: (err) => {
           if (this.currentRole() !== activeRole) return;

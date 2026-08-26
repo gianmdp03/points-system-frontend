@@ -51,6 +51,7 @@
           [productsCount]="comp.products?.length || 0"
           [promotionsCount]="comp.promotions?.length || 0"
           [rewardsCount]="comp.rewards?.length || 0"
+          [templatesCount]="messageTemplates().length"
           (selectTab)="setTab($event)">
         </app-company-detail-tabs-nav>
 
@@ -110,6 +111,35 @@
             (addClient)="openAddClientModal()"
             (checkPoints)="openCheckPointsModal()">
           </app-tab-sales>
+        }
+
+        <!-- TAB 6: CLIENTES INACTIVOS -->
+        @if (activeTab() === 'inactive-clients') {
+          <app-tab-inactive-clients
+            [inactiveAccounts]="inactiveClients()"
+            [totalElements]="inactiveClientsTotal()"
+            [totalPages]="inactiveClientsTotalPages()"
+            [currentPage]="inactiveClientsPage()"
+            [selectedDays]="inactiveClientsDays()"
+            [isLoading]="isLoadingInactiveClients()"
+            (daysChange)="onInactiveDaysChange($event)"
+            (pageChange)="onInactivePageChange($event)"
+            (registerSale)="onInactiveClientSale($event)">
+          </app-tab-inactive-clients>
+        }
+
+        <!-- TAB 7: PLANTILLAS DE MENSAJES -->
+        @if (activeTab() === 'templates') {
+          <app-tab-message-templates
+            [templates]="messageTemplates()"
+            [isLoading]="isLoadingTemplates()"
+            [isResettingDefaults]="isResettingTemplates()"
+            [currentRole]="currentRole()"
+            (addTemplate)="openAddMessageTemplateModal()"
+            (editTemplate)="openEditMessageTemplateModal($event)"
+            (toggleTemplate)="onToggleMessageTemplate($event)"
+            (resetDefaults)="onResetDefaultTemplates()">
+          </app-tab-message-templates>
         }
 
       </div>
@@ -269,4 +299,16 @@
 
     </div>
   </div>
+}
+
+@if (showMessageTemplateModal()) {
+  <app-message-template-modal
+    [form]="messageTemplateForm"
+    [isEdit]="isMessageTemplateEdit()"
+    [isSubmitted]="isMessageTemplateSubmitted()"
+    [errorMessage]="modalErrorMessage()"
+    [isLoading]="isLoadingTemplates()"
+    (close)="closeMessageTemplateModal()"
+    (submitForm)="onMessageTemplateSubmit()">
+  </app-message-template-modal>
 }

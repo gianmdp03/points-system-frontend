@@ -27,6 +27,14 @@ export class PointsAccountService {
     return this.http.get<Page<PointsAccountDetailDTO>>(`${this.apiUrl}/${companyId}`, { params });
   }
 
+  listInactiveClients(companyId: number, days = 30, page = 0, size = 10): Observable<Page<PointsAccountDetailDTO>> {
+    const params = new HttpParams()
+      .set('days', days.toString())
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<Page<PointsAccountDetailDTO>>(`${this.apiUrl}/${companyId}/inactive`, { params });
+  }
+
   getTransactionHistory(
     clientId: number,
     companyId: number,

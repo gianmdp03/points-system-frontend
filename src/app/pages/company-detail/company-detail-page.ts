@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -10,6 +10,7 @@ import { PromotionService } from '../../core/services/promotion-service';
 import { RewardService } from '../../core/services/reward-service';
 import { SaleService } from '../../core/services/sale-service';
 import { PointsAccountService } from '../../core/services/points-account-service';
+import { MessageTemplateService } from '../../core/services/message-template-service';
 import {
   CompanyDetailDTO,
   Role,
@@ -26,7 +27,12 @@ import {
   RewardUpdateDTO,
   SaleRequestDTO,
   PointsAccountRequestDTO,
-  RewardRedeemDTO
+  PointsAccountDetailDTO,
+  RewardRedeemDTO,
+  MessageTemplateListDTO,
+  MessageTemplateRequestDTO,
+  MessageTemplateUpdateDTO,
+  NotificationType
 } from '../../core/models';
 
 import { CompanyDetailHeaderComponent } from './components/company-detail-header/company-detail-header';
@@ -36,6 +42,8 @@ import { TabProductsComponent } from './components/tab-products/tab-products';
 import { TabPromotionsComponent } from './components/tab-promotions/tab-promotions';
 import { TabRewardsComponent } from './components/tab-rewards/tab-rewards';
 import { TabSalesComponent } from './components/tab-sales/tab-sales';
+import { TabInactiveClientsComponent } from './components/tab-inactive-clients/tab-inactive-clients';
+import { TabMessageTemplatesComponent } from './components/tab-message-templates/tab-message-templates';
 import { EditCompanyModalComponent } from './components/modals/edit-company-modal/edit-company-modal';
 import { ProductModalComponent } from './components/modals/product-modal/product-modal';
 import { PromotionModalComponent } from './components/modals/promotion-modal/promotion-modal';
@@ -43,6 +51,7 @@ import { RewardModalComponent } from './components/modals/reward-modal/reward-mo
 import { SaleModalComponent } from './components/modals/sale-modal/sale-modal';
 import { ClientModalComponent } from './components/modals/client-modal/client-modal';
 import { RedeemModalComponent } from './components/modals/redeem-modal/redeem-modal';
+import { MessageTemplateModalComponent } from './components/modals/message-template-modal/message-template-modal';
 import { CheckPointsModalComponent } from '../../components/company-quick-actions/modals/check-points-modal/check-points-modal';
 import { QrGeneratorComponent } from '../../components/qr-generator/qr-generator';
 
@@ -58,7 +67,10 @@ import { QrGeneratorComponent } from '../../components/qr-generator/qr-generator
     TabPromotionsComponent,
     TabRewardsComponent,
     TabSalesComponent,
+    TabInactiveClientsComponent,
+    TabMessageTemplatesComponent,
     EditCompanyModalComponent,
+    MessageTemplateModalComponent,
     ProductModalComponent,
     PromotionModalComponent,
     RewardModalComponent,
@@ -85,16 +97,31 @@ export class CompanyDetailPage implements OnInit {
   protected readonly rewardService = inject(RewardService);
   protected readonly saleService = inject(SaleService);
   protected readonly pointsAccountService = inject(PointsAccountService);
+  protected readonly messageTemplateService = inject(MessageTemplateService);
 
   readonly RoleEnum = Role;
 
   readonly company = signal<CompanyDetailDTO | null>(null);
   readonly sales = signal<SaleListDTO[]>([]);
+  readonly inactiveClients = signal<PointsAccountDetailDTO[]>([]);
+  readonly inactiveClientsTotal = signal<number>(0);
+  readonly inactiveClientsTotalPages = signal<number>(1);
+  readonly inactiveClientsPage = signal<number>(0);
+  readonly inactiveClientsDays = signal<number>(30);
+  readonly messageTemplates = signal<MessageTemplateListDTO[]>([]);
   readonly isLoading = signal<boolean>(true);
   readonly isLoadingSales = signal<boolean>(false);
+  readonly isLoadingInactiveClients = signal<boolean>(false);
+  readonly isLoadingTemplates = signal<boolean>(false);
+  readonly isResettingTemplates = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
   readonly modalErrorMessage = signal<string | null>(null);
   readonly activeTab = signal<CompanyDetailTab>('overview');
+
+  readonly showMessageTemplateModal = signal<boolean>(false);
+  readonly isMessageTemplateEdit = signal<boolean>(false);
+  readonly isMessageTemplateSubmitted = signal<boolean>(false);
+  readonly selectedTemplateForEdit = signal<MessageTemplateListDTO | null>(null);
 
   // Visibilidad de Modales
   readonly showQrModal = signal<boolean>(false);
@@ -209,6 +236,14 @@ export class CompanyDetailPage implements OnInit {
     dni: ['', [Validators.required, Validators.maxLength(20)]]
   });
 
+  messageTemplateForm = this.fb.group({
+    id: [null as number | null],
+    name: ['', [Validators.required, Validators.maxLength(150)]],
+    type: [NotificationType.WELCOME_NOTIFICATION, [Validators.required]],
+    subject: ['', [Validators.maxLength(200)]],
+    content: ['', [Validators.required, Validators.maxLength(4000)]]
+  });
+
   readonly currentRole = this.authService.currentRole;
 
   private setupExpirationValidators(): void {
@@ -245,11 +280,11 @@ export class CompanyDetailPage implements OnInit {
     this.setupExpirationValidators();
 
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
-    if (tabParam && ['overview', 'products', 'promotions', 'rewards', 'sales'].includes(tabParam)) {
+    if (tabParam && ['overview', 'products', 'promotions', 'rewards', 'sales', 'inactive-clients', 'templates'].includes(tabParam)) {
       this.activeTab.set(tabParam as CompanyDetailTab);
     }
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
-      if (params['tab'] && ['overview', 'products', 'promotions', 'rewards', 'sales'].includes(params['tab'])) {
+      if (params['tab'] && ['overview', 'products', 'promotions', 'rewards', 'sales', 'inactive-clients', 'templates'].includes(params['tab'])) {
         this.activeTab.set(params['tab'] as CompanyDetailTab);
       }
     });
@@ -278,6 +313,10 @@ export class CompanyDetailPage implements OnInit {
         this.company.set(data);
         this.isLoading.set(false);
         this.fetchCompanySales(id);
+        this.fetchMessageTemplates(id);
+        if (this.activeTab() === 'inactive-clients') {
+          this.fetchInactiveClients(id);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -304,10 +343,50 @@ export class CompanyDetailPage implements OnInit {
     });
   }
 
+  fetchInactiveClients(companyId: number, days: number = this.inactiveClientsDays(), page: number = 0): void {
+    this.isLoadingInactiveClients.set(true);
+    this.inactiveClientsDays.set(days);
+    this.inactiveClientsPage.set(page);
+    this.pointsAccountService.listInactiveClients(companyId, days, page, 10).subscribe({
+      next: (res) => {
+        this.inactiveClients.set(res?.content || []);
+        this.inactiveClientsTotal.set(res?.page?.totalElements ?? res?.totalElements ?? 0);
+        this.inactiveClientsTotalPages.set(res?.page?.totalPages ?? res?.totalPages ?? 1);
+        this.isLoadingInactiveClients.set(false);
+      },
+      error: () => {
+        this.isLoadingInactiveClients.set(false);
+      }
+    });
+  }
+
+  onInactiveDaysChange(days: number): void {
+    const comp = this.company();
+    if (comp) {
+      this.fetchInactiveClients(comp.id, days, 0);
+    }
+  }
+
+  onInactivePageChange(page: number): void {
+    const comp = this.company();
+    if (comp) {
+      this.fetchInactiveClients(comp.id, this.inactiveClientsDays(), page);
+    }
+  }
+
+  onInactiveClientSale(data: { dni: string; country: string }): void {
+    this.openAddSaleModal();
+    this.addSaleForm.patchValue({ dni: data.dni, country: data.country });
+  }
+
   setTab(tab: CompanyDetailTab): void {
     this.activeTab.set(tab);
     if (tab === 'sales' && this.company()) {
       this.fetchCompanySales(this.company()!.id);
+    } else if (tab === 'inactive-clients' && this.company()) {
+      this.fetchInactiveClients(this.company()!.id);
+    } else if (tab === 'templates' && this.company()) {
+      this.fetchMessageTemplates(this.company()!.id);
     }
   }
 
@@ -731,5 +810,122 @@ export class CompanyDetailPage implements OnInit {
       }
     });
   }
-}
 
+  // TEMPLATES MANAGEMENT METHODS
+  fetchMessageTemplates(companyId: number): void {
+    this.isLoadingTemplates.set(true);
+    this.messageTemplateService.listTemplates(companyId).subscribe({
+      next: (page) => {
+        this.messageTemplates.set(page?.content || []);
+        this.isLoadingTemplates.set(false);
+      },
+      error: () => {
+        this.isLoadingTemplates.set(false);
+      }
+    });
+  }
+
+  openAddMessageTemplateModal(): void {
+    this.isMessageTemplateEdit.set(false);
+    this.selectedTemplateForEdit.set(null);
+    this.messageTemplateForm.reset({
+      id: null,
+      name: '',
+      type: NotificationType.WELCOME_NOTIFICATION,
+      subject: '',
+      content: ''
+    });
+    this.isMessageTemplateSubmitted.set(false);
+    this.modalErrorMessage.set(null);
+    this.showMessageTemplateModal.set(true);
+  }
+
+  openEditMessageTemplateModal(tpl: MessageTemplateListDTO): void {
+    this.isMessageTemplateEdit.set(true);
+    this.selectedTemplateForEdit.set(tpl);
+    this.messageTemplateForm.patchValue({
+      id: tpl.id,
+      name: tpl.name,
+      type: tpl.type,
+      subject: tpl.subject || '',
+      content: tpl.content
+    });
+    this.isMessageTemplateSubmitted.set(false);
+    this.modalErrorMessage.set(null);
+    this.showMessageTemplateModal.set(true);
+  }
+
+  closeMessageTemplateModal(): void {
+    this.showMessageTemplateModal.set(false);
+    this.modalErrorMessage.set(null);
+  }
+
+  onMessageTemplateSubmit(): void {
+    this.isMessageTemplateSubmitted.set(true);
+    if (this.messageTemplateForm.invalid || !this.company()) {
+      this.messageTemplateForm.markAllAsTouched();
+      return;
+    }
+    const compId = this.company()!.id;
+    const val = this.messageTemplateForm.getRawValue();
+
+    if (this.isMessageTemplateEdit() && val.id) {
+      const dto: MessageTemplateUpdateDTO = {
+        name: val.name!,
+        type: val.type!,
+        subject: val.subject || '',
+        content: val.content!
+      };
+      this.messageTemplateService.updateTemplate(compId, val.id, dto).subscribe({
+        next: () => {
+          this.closeMessageTemplateModal();
+          this.fetchMessageTemplates(compId);
+        },
+        error: (err) => this.modalErrorMessage.set(err.error?.message || 'Error al actualizar plantilla.')
+      });
+    } else {
+      const dto: MessageTemplateRequestDTO = {
+        name: val.name!,
+        type: val.type!,
+        subject: val.subject || '',
+        content: val.content!,
+        companyId: compId
+      };
+      this.messageTemplateService.addTemplate(dto).subscribe({
+        next: () => {
+          this.closeMessageTemplateModal();
+          this.fetchMessageTemplates(compId);
+        },
+        error: (err) => this.modalErrorMessage.set(err.error?.message || 'Error al crear plantilla.')
+      });
+    }
+  }
+
+  onToggleMessageTemplate(tpl: MessageTemplateListDTO): void {
+    if (!this.company()) return;
+    this.messageTemplateService.enableOrDisableTemplate(this.company()!.id, tpl.id).subscribe({
+      next: () => {
+        this.fetchMessageTemplates(this.company()!.id);
+      },
+      error: (err) => alert(err.error?.message || 'Error al modificar estado de la plantilla.')
+    });
+  }
+
+  onResetDefaultTemplates(): void {
+    if (!this.company()) return;
+    const confirmReset = confirm('¿Deseas restaurar las 6 plantillas oficiales sugeridas por el sistema? Se reemplazarán las actuales.');
+    if (!confirmReset) return;
+
+    this.isResettingTemplates.set(true);
+    this.messageTemplateService.resetDefaultTemplates(this.company()!.id).subscribe({
+      next: () => {
+        this.isResettingTemplates.set(false);
+        this.fetchMessageTemplates(this.company()!.id);
+      },
+      error: (err) => {
+        this.isResettingTemplates.set(false);
+        alert(err.error?.message || 'Error al restaurar plantillas por defecto.');
+      }
+    });
+  }
+}

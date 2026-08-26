@@ -1,4 +1,4 @@
-﻿import { CompanyListDTO } from './company.model';
+import { CompanyListDTO } from './company.model';
 import { ClientDetailDTO } from './client.model';
 
 export enum TransactionType {
@@ -16,6 +16,7 @@ export interface PointsTransactionDetailDTO {
 export interface PointsAccountDetailDTO {
   id: number;
   balance: number;
+  lastActivityDate?: string;
   company: CompanyListDTO;
   client: ClientDetailDTO;
 }

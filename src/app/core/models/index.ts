@@ -8,3 +8,4 @@ export * from './promotion.model';
 export * from './reward.model';
 export * from './sale.model';
 export * from './subscription.model';
+export * from './message-template.model';

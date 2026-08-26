@@ -1,4 +1,4 @@
-﻿<div class="min-h-screen bg-[#F8F9FA] dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] py-8 sm:py-16 px-4 flex items-center justify-center transition-colors">
+<div class="min-h-screen bg-[#F8F9FA] dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] py-8 sm:py-16 px-4 flex items-center justify-center transition-colors">
   
   <div class="w-full max-w-lg">
     
@@ -203,6 +203,23 @@
                 formControlName="phone"
                 placeholder="Ej. +54 9 11 1234-5678"
                 class="w-full h-12 px-4 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-2xl text-xs sm:text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none focus:border-[#1A73E8] dark:focus:border-[#8AB4F8] transition" />
+            </div>
+
+            <!-- Habilitar Notificaciones -->
+            <div class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333]">
+              <label for="clientJoinNotification" class="cursor-pointer select-none">
+                <span class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3] mb-0.5">
+                  Recibir Notificaciones
+                </span>
+                <span class="block text-xs text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
+                  Avisos de puntos acumulados, canjes disponibles y promociones exclusivas.
+                </span>
+              </label>
+              <input 
+                id="clientJoinNotification"
+                type="checkbox" 
+                formControlName="isNotificationEnabled"
+                class="w-5 h-5 rounded border-[#C4C7C5] text-[#1A73E8] focus:ring-[#1A73E8] cursor-pointer flex-shrink-0" />
             </div>
 
             <!-- Submit Button -->

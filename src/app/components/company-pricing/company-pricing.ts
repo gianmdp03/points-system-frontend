@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, ChangeDetectionStrategy, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
@@ -82,18 +82,35 @@ export class CompanyPricing implements OnInit {
     });
   });
 
+  private lastFetchedPlan: SubscriptionPlan | null = null;
+  private isFetchingProrations = false;
+
   constructor() {
     effect(() => {
-      if (this.isLoggedIn() && this.isSubscribed()) {
-        this.loadProrations();
+      const loggedIn = this.isLoggedIn();
+      const subscribed = this.isSubscribed();
+      const plan = this.currentPlan();
+
+      if (loggedIn && subscribed && plan !== SubscriptionPlan.NONE) {
+        untracked(() => {
+          if (this.lastFetchedPlan !== plan && !this.isFetchingProrations) {
+            this.lastFetchedPlan = plan;
+            this.loadProrations();
+          }
+        });
+      } else {
+        untracked(() => {
+          if (this.lastFetchedPlan !== null) {
+            this.lastFetchedPlan = null;
+            this.prorationPreviews.set({});
+          }
+        });
       }
     });
   }
 
   ngOnInit(): void {
-    if (this.isLoggedIn() && this.isSubscribed()) {
-      this.loadProrations();
-    }
+    // Relies on constructor effect with deduplication
   }
 
   setBillingPeriod(period: BillingPeriod): void {
@@ -259,26 +276,30 @@ export class CompanyPricing implements OnInit {
   }
 
   async loadProrations(): Promise<void> {
-    if (!this.isLoggedIn() || !this.isSubscribed()) return;
+    if (!this.isLoggedIn() || !this.isSubscribed() || this.isFetchingProrations) return;
     const higher = this.higherPlans();
     if (higher.length === 0) return;
 
+    this.isFetchingProrations = true;
     this.loadingProrations.set(true);
-    const updatedMap = { ...this.prorationPreviews() };
 
-    for (const p of higher) {
-      try {
-        const preview = await this.subscriptionState.getProrationPreview(p.plan);
-        if (preview) {
-          updatedMap[p.plan] = preview;
+    try {
+      const updatedMap: Record<string, ProrationPreviewResponseDTO> = {};
+      for (const p of higher) {
+        try {
+          const preview = await this.subscriptionState.getProrationPreview(p.plan);
+          if (preview) {
+            updatedMap[p.plan] = preview;
+          }
+        } catch (e) {
+          console.warn(`[CompanyPricing] No se pudo cargar preview de prorrateo para ${p.plan}:`, e);
         }
-      } catch (e) {
-        console.warn(`[CompanyPricing] No se pudo cargar preview de prorrateo para ${p.plan}:`, e);
       }
+      this.prorationPreviews.set(updatedMap);
+    } finally {
+      this.isFetchingProrations = false;
+      this.loadingProrations.set(false);
     }
-
-    this.prorationPreviews.set(updatedMap);
-    this.loadingProrations.set(false);
   }
 
   /**

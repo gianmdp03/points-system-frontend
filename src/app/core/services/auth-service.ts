@@ -65,10 +65,15 @@ export class AuthService {
     return this.isLoggedIn();
   }
 
+  private lastLoadedUserId: string | null = null;
+
   private setSessionData(user: any) {
+    const userId = user.id ?? null;
+    const isNewUser = this.lastLoadedUserId !== userId;
+
     this.isLoggedIn.set(true);
     this.userEmail.set(user.email ?? null);
-    this.userId.set(user.id ?? null);
+    this.userId.set(userId);
 
     const metaName = user.user_metadata?.name || user.user_metadata?.full_name || user.user_metadata?.user_name;
     if (metaName) {
@@ -90,30 +95,36 @@ export class AuthService {
       this.currentRole.set(roleFromMetadata as Role);
     }
 
-    // Fetch exact role and profile from Spring Boot Backend
-    this.userService.getMyProfile().subscribe({
-      next: (profile: UserDetailDTO) => {
-        if (profile?.role && Object.values(Role).includes(profile.role)) {
-          this.currentRole.set(profile.role);
-        }
-        if (profile?.name) {
-          this.userName.set(profile.name);
-        }
-        if (profile?.dni && profile.dni !== 'No registrado' && profile.dni.trim().length > 0) {
-          this.userDni.set(profile.dni.trim());
-          this.needsDni.set(false);
-        }
-      },
-      error: (err) => {
-        console.warn('Could not fetch user profile from backend API', err);
-      }
-    });
+    // Fetch backend data only once per user session
+    if (isNewUser) {
+      this.lastLoadedUserId = userId;
 
-    // Load subscription details for the logged in user
-    this.subscriptionState.loadSubscription();
+      // Fetch exact role and profile from Spring Boot Backend
+      this.userService.getMyProfile().subscribe({
+        next: (profile: UserDetailDTO) => {
+          if (profile?.role && Object.values(Role).includes(profile.role)) {
+            this.currentRole.set(profile.role);
+          }
+          if (profile?.name) {
+            this.userName.set(profile.name);
+          }
+          if (profile?.dni && profile.dni !== 'No registrado' && profile.dni.trim().length > 0) {
+            this.userDni.set(profile.dni.trim());
+            this.needsDni.set(false);
+          }
+        },
+        error: (err) => {
+          console.warn('Could not fetch user profile from backend API', err);
+        }
+      });
+
+      // Load subscription details for the logged in user
+      this.subscriptionState.loadSubscription();
+    }
   }
 
   private clearSessionData() {
+    this.lastLoadedUserId = null;
     this.isLoggedIn.set(false);
     this.userEmail.set(null);
     this.userId.set(null);

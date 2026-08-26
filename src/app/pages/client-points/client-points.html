@@ -1,4 +1,4 @@
-﻿<main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+<main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
   
   <!-- Encabezado de la Sección Pública -->
   <div class="text-center max-w-2xl mx-auto space-y-3">
@@ -321,6 +321,39 @@
                 <span>Inactividad: <strong>{{ catalog.inactiveClientPurgeDays }}d</strong></span>
               </span>
             }
+          </div>
+
+          <!-- Fila 3: Control de Notificaciones para el Cliente -->
+          <div class="p-3 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="p-2 rounded-lg bg-[#E8F0FE] dark:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">Notificaciones de Puntos</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold" [class]="catalog.isNotificationEnabled !== false ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">
+                    {{ catalog.isNotificationEnabled !== false ? 'Habilitadas' : 'Deshabilitadas' }}
+                  </span>
+                </div>
+                <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] truncate">
+                  {{ catalog.isNotificationEnabled !== false ? 'Recibirás avisos al sumar puntos o canjear premios.' : 'No recibirás avisos sobre tus puntos en este comercio.' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Switch Toggle -->
+            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+              <input 
+                type="checkbox" 
+                [checked]="catalog.isNotificationEnabled !== false" 
+                [disabled]="isUpdatingNotifications()"
+                (change)="toggleNotifications($event)"
+                class="sr-only peer" />
+              <div class="w-11 h-6 bg-[#C4C7C5] dark:bg-[#333333] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1A73E8] dark:peer-checked:bg-[#8AB4F8]"></div>
+            </label>
           </div>
 
           <!-- Fila 3: Tabs de Navegación a lo largo de todo el Card y Centradas -->

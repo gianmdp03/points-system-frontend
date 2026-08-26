@@ -105,6 +105,12 @@
               <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">
                 DNI: {{ form.get('dni')?.value }} • {{ form.get('country')?.value }}
               </p>
+              @if (result.isNotificationEnabled !== undefined) {
+                <span class="inline-flex items-center gap-1.5 mt-1 text-[11px] font-medium" [class]="result.isNotificationEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'">
+                  <span class="w-1.5 h-1.5 rounded-full" [class]="result.isNotificationEnabled ? 'bg-emerald-500' : 'bg-gray-400'"></span>
+                  {{ result.isNotificationEnabled ? 'Notificaciones activas' : 'Sin notificaciones' }}
+                </span>
+              }
             </div>
 
             <!-- Puntos Badge -->
