@@ -114,7 +114,10 @@ export class CompanyPricing implements OnInit {
   }
 
   ngOnInit(): void {
-    // Relies on constructor effect with deduplication
+    if (this.authService.isLoggedIn()) {
+      this.authService.refreshProfile();
+      this.subscriptionState.loadSubscription();
+    }
   }
 
   setBillingPeriod(period: BillingPeriod): void {

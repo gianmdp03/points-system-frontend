@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, inject, computed } from '@angul
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CompanyListDTO, SubscriptionPlan } from '../../../../core/models';
+import { AuthService } from '../../../../core/services/auth-service';
 import { SubscriptionStateService } from '../../../../core/services/subscription-state-service';
 import { PlanLimitModalService } from '../../../../core/services/plan-limit-modal-service';
 
@@ -12,6 +13,7 @@ import { PlanLimitModalService } from '../../../../core/services/plan-limit-moda
   templateUrl: './role-admin-view.html'
 })
 export class RoleAdminViewComponent {
+  protected readonly authService = inject(AuthService);
   protected readonly subscriptionState = inject(SubscriptionStateService);
   protected readonly planLimitModalService = inject(PlanLimitModalService);
 
@@ -34,6 +36,13 @@ export class RoleAdminViewComponent {
   });
 
   onAddCompanyClick(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     if (this.currentPlan() === SubscriptionPlan.NONE) {
       this.planLimitModalService.open({
         title: 'Sin Plan Activo',

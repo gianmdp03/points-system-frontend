@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, inject, computed } from '@angul
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PromotionListDTO, Role, SubscriptionPlan } from '../../../../core/models';
+import { AuthService } from '../../../../core/services/auth-service';
 import { SubscriptionStateService } from '../../../../core/services/subscription-state-service';
 import { PlanLimitModalService } from '../../../../core/services/plan-limit-modal-service';
 
@@ -13,6 +14,7 @@ import { PlanLimitModalService } from '../../../../core/services/plan-limit-moda
   host: { class: 'block' }
 })
 export class TabPromotionsComponent {
+  protected readonly authService = inject(AuthService);
   protected readonly subscriptionState = inject(SubscriptionStateService);
   protected readonly planLimitModalService = inject(PlanLimitModalService);
 
@@ -34,6 +36,13 @@ export class TabPromotionsComponent {
   readonly currentPlan = computed(() => this.subscriptionState.currentPlan());
 
   onAddPromotionClick(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     if (!this.canCreatePromotions()) {
       const isNone = this.currentPlan() === SubscriptionPlan.NONE;
       this.planLimitModalService.open({

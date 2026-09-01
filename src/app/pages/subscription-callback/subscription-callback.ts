@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { SubscriptionStateService } from '../../core/services/subscription-state-service';
@@ -49,15 +49,20 @@ export class SubscriptionCallbackPage implements OnInit {
     }
 
     try {
-      // 100% Solo lectura: consulta al backend si el webhook ya actualizó el estado a ACTIVE
-      const result = await this.subscriptionState.verifySubscriptionUntilActive(8, 2000);
+      // 100% Solo lectura: consulta al backend si el webhook ya actualizó el estado a ACTIVE y limpió deuda
+      const result = await this.subscriptionState.verifySubscriptionUntilActive(10, 2000, async () => {
+        await this.authService.refreshProfile();
+      });
+
+      await this.authService.refreshProfile();
 
       this.isVerifying.set(false);
-      if (result.active) {
+      const isCleared = !this.authService.isSuspendedForChargeback() && this.authService.pendingDebtArs() === 0;
+      if (result.active || isCleared) {
         this.isSuccess.set(true);
       } else {
         this.isSuccess.set(false);
-        this.verificationError.set('Se está confirmando la operación. Tu plan se actualizará automáticamente en unos instantes.');
+        this.verificationError.set('Se está confirmando la operación con Mercado Pago. Tu cuenta se actualizará automáticamente.');
       }
     } catch (e: any) {
       this.isVerifying.set(false);

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -143,8 +143,20 @@ export class CompanyQuickActionsComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  constructor() {
     this.setupExpirationValidators();
+
+    effect(() => {
+      const isAdm = this.isCompanyAdmin();
+      if (isAdm) {
+        untracked(() => {
+          this.loadCompanies();
+        });
+      }
+    });
+  }
+
+  ngOnInit(): void {
     if (this.isCompanyAdmin()) {
       this.loadCompanies();
     }
@@ -205,6 +217,13 @@ export class CompanyQuickActionsComponent implements OnInit {
   openAddClientModal(): void {
     const comp = this.selectedCompany();
     if (!comp) return;
+
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
 
     if (this.subscriptionState.currentPlan() === SubscriptionPlan.NONE) {
       this.planLimitModalService.open({
@@ -271,6 +290,13 @@ export class CompanyQuickActionsComponent implements OnInit {
   openAddSaleModal(initialData?: { dni?: string; country?: string }): void {
     const comp = this.selectedCompany();
     if (!comp) return;
+
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
 
     if (this.subscriptionState.currentPlan() === SubscriptionPlan.NONE) {
       this.planLimitModalService.open({
@@ -345,6 +371,13 @@ export class CompanyQuickActionsComponent implements OnInit {
   }
 
   openAddCompanyModal(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     if (this.subscriptionState.currentPlan() === SubscriptionPlan.NONE) {
       this.planLimitModalService.open({
         title: 'Sin Plan Activo',

@@ -49,9 +49,35 @@ export class AuthService {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.initPromise = this.initSession();
+      this.setupAutoSyncOnFocus();
     } else {
       this.initPromise = Promise.resolve(false);
     }
+  }
+
+  private setupAutoSyncOnFocus(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    let lastSyncTime = 0;
+    const handleSync = () => {
+      const now = Date.now();
+      // Debounce syncs at least 4 seconds apart
+      if (now - lastSyncTime < 4000) return;
+      lastSyncTime = now;
+
+      if (!this.isLoggedIn() || !this.userId()) return;
+
+      // When the tab regains focus or becomes visible, sync profile & subscription automatically
+      this.refreshProfile();
+      this.subscriptionState.loadSubscription();
+    };
+
+    window.addEventListener('focus', handleSync);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        handleSync();
+      }
+    });
   }
 
   private async initSession(): Promise<boolean> {
@@ -82,25 +108,29 @@ export class AuthService {
 
   private lastLoadedUserId: string | null = null;
 
-  refreshProfile(): void {
-    if (!this.userId()) return;
-    this.userService.getMyProfile().subscribe({
-      next: (profile: UserDetailDTO) => {
-        this.userProfile.set(profile);
-        if (profile?.role && Object.values(Role).includes(profile.role)) {
-          this.currentRole.set(profile.role);
+  refreshProfile(): Promise<UserDetailDTO | null> {
+    if (!this.userId()) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      this.userService.getMyProfile().subscribe({
+        next: (profile: UserDetailDTO) => {
+          this.userProfile.set(profile);
+          if (profile?.role && Object.values(Role).includes(profile.role)) {
+            this.currentRole.set(profile.role);
+          }
+          if (profile?.name) {
+            this.userName.set(profile.name);
+          }
+          if (profile?.dni && profile.dni !== 'No registrado' && profile.dni.trim().length > 0) {
+            this.userDni.set(profile.dni.trim());
+            this.needsDni.set(false);
+          }
+          resolve(profile);
+        },
+        error: (err) => {
+          console.warn('Could not refresh user profile from backend API', err);
+          resolve(null);
         }
-        if (profile?.name) {
-          this.userName.set(profile.name);
-        }
-        if (profile?.dni && profile.dni !== 'No registrado' && profile.dni.trim().length > 0) {
-          this.userDni.set(profile.dni.trim());
-          this.needsDni.set(false);
-        }
-      },
-      error: (err) => {
-        console.warn('Could not refresh user profile from backend API', err);
-      }
+      });
     });
   }
 

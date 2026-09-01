@@ -88,6 +88,7 @@ export class SubscriptionManagementPage implements OnInit {
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
+      this.authService.refreshProfile();
       this.subscriptionState.loadSubscription();
     }
   }

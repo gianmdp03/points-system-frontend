@@ -11,6 +11,7 @@ import { RewardService } from '../../core/services/reward-service';
 import { SaleService } from '../../core/services/sale-service';
 import { PointsAccountService } from '../../core/services/points-account-service';
 import { MessageTemplateService } from '../../core/services/message-template-service';
+import { PlanLimitModalService } from '../../core/services/plan-limit-modal-service';
 import {
   CompanyDetailDTO,
   Role,
@@ -100,6 +101,7 @@ export class CompanyDetailPage implements OnInit {
   protected readonly saleService = inject(SaleService);
   protected readonly pointsAccountService = inject(PointsAccountService);
   protected readonly messageTemplateService = inject(MessageTemplateService);
+  protected readonly planLimitModalService = inject(PlanLimitModalService);
 
   readonly RoleEnum = Role;
 
@@ -418,6 +420,13 @@ export class CompanyDetailPage implements OnInit {
   }
 
   openEditCompanyModal(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     const comp = this.company();
     if (comp) {
       this.editCompanyForm.patchValue({
@@ -444,6 +453,13 @@ export class CompanyDetailPage implements OnInit {
   closeEditCompanyModal(): void { this.showEditCompanyModal.set(false); }
 
   openAddProductModal(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     this.addProductForm.reset({ name: '', description: '', price: 0, image: '' });
     this.modalErrorMessage.set(null);
     this.isAddProductSubmitted.set(false);
@@ -470,6 +486,13 @@ export class CompanyDetailPage implements OnInit {
   closeEditProductModal(): void { this.showEditProductModal.set(false); }
 
   openAddPromotionModal(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     this.addPromotionForm.reset({ name: '', description: '', multiplier: 2, startDate: '', endDate: '' });
     this.modalErrorMessage.set(null);
     this.isAddPromotionSubmitted.set(false);
@@ -497,6 +520,13 @@ export class CompanyDetailPage implements OnInit {
   closeEditPromotionModal(): void { this.showEditPromotionModal.set(false); }
 
   openAddRewardModal(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     this.addRewardForm.reset({ name: '', description: '', costInPoints: 100 });
     this.modalErrorMessage.set(null);
     this.isAddRewardSubmitted.set(false);
@@ -522,6 +552,13 @@ export class CompanyDetailPage implements OnInit {
   closeEditRewardModal(): void { this.showEditRewardModal.set(false); }
 
   openAddSaleModal(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     this.addSaleForm.reset({ country: 'Argentina', dni: '', amount: 1000 });
     this.modalErrorMessage.set(null);
     this.isAddSaleSubmitted.set(false);
@@ -530,6 +567,13 @@ export class CompanyDetailPage implements OnInit {
   closeAddSaleModal(): void { this.showAddSaleModal.set(false); }
 
   openAddClientModal(): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     this.addClientForm.reset({ name: '', country: 'Argentina', dni: '', email: '', phone: '', isNotificationEnabled: true });
     this.modalErrorMessage.set(null);
     this.isAddClientSubmitted.set(false);
@@ -538,6 +582,13 @@ export class CompanyDetailPage implements OnInit {
   closeAddClientModal(): void { this.showAddClientModal.set(false); }
 
   openRedeemModal(reward: RewardListDTO): void {
+    if (this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0) {
+      this.planLimitModalService.openChargeback({
+        pendingDebtArs: this.authService.pendingDebtArs()
+      });
+      return;
+    }
+
     this.selectedRewardForRedeem.set(reward);
     this.redeemForm.reset({ country: 'Argentina', dni: '' });
     this.modalErrorMessage.set(null);

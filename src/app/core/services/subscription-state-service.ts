@@ -237,8 +237,9 @@ export class SubscriptionStateService {
   }
 
   async verifySubscriptionUntilActive(
-    maxAttempts = 8,
-    delayMs = 2000
+    maxAttempts = 10,
+    delayMs = 2000,
+    onPoll?: () => void | Promise<any>
   ): Promise<{ active: boolean; subscription: SubscriptionDetailDTO | null }> {
     this.isVerifying.set(true);
     let attempts = 0;
@@ -246,6 +247,14 @@ export class SubscriptionStateService {
     while (attempts < maxAttempts) {
       attempts++;
       try {
+        if (onPoll) {
+          try {
+            await Promise.resolve(onPoll());
+          } catch (pe) {
+            console.warn('Error executing onPoll during subscription verification:', pe);
+          }
+        }
+
         const sub = await firstValueFrom(this.subscriptionService.getCurrentSubscription());
         if (sub) {
           this.currentSubscription.set(sub);

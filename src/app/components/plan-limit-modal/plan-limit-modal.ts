@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { PlanLimitModalService } from '../../core/services/plan-limit-modal-service';
 
 @Component({
   selector: 'app-plan-limit-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DecimalPipe],
   templateUrl: './plan-limit-modal.html'
 })
 export class PlanLimitModalComponent {
@@ -17,9 +17,14 @@ export class PlanLimitModalComponent {
     this.modalService.close();
   }
 
-  goToUpgrade(): void {
+  onActionClick(): void {
     const route = this.modalService.upgradeRoute();
     this.modalService.close();
     this.router.navigate([route]);
   }
+
+  goToUpgrade(): void {
+    this.onActionClick();
+  }
 }
+

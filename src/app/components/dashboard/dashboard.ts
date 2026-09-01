@@ -1,9 +1,10 @@
-﻿import { Component, OnInit, inject, signal, effect, computed, DestroyRef, ChangeDetectionStrategy, untracked } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, computed, DestroyRef, ChangeDetectionStrategy, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { CompanyService } from '../../core/services/company-service';
 import { AuthService } from '../../core/services/auth-service';
+import { SubscriptionStateService } from '../../core/services/subscription-state-service';
 import { CompanyListDTO, Role, CompanyRequestDTO, CompanyUpdateDTO } from '../../core/models';
 import { isFieldInvalid, getFieldError } from '../../core/utils/form-utils';
 
@@ -33,6 +34,7 @@ import { DashboardEditCompanyModalComponent } from './components/modals/edit-com
 export class Dashboard implements OnInit {
   protected readonly companyService = inject(CompanyService);
   protected readonly authService = inject(AuthService);
+  protected readonly subscriptionState = inject(SubscriptionStateService);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -221,7 +223,10 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    // Rely on constructor effect
+    if (this.authService.isLoggedIn()) {
+      this.authService.refreshProfile();
+      this.subscriptionState.loadSubscription();
+    }
   }
 
   setRole(role: Role): void {
@@ -383,5 +388,3 @@ export class Dashboard implements OnInit {
     });
   }
 }
-
-
