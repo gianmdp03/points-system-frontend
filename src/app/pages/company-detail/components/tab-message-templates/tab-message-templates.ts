@@ -1,55 +1,114 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+﻿import { Component, input, output, ChangeDetectionStrategy, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MessageTemplateListDTO, NotificationType, Role } from '../../../../core/models';
+import { FormsModule } from '@angular/forms';
+import {
+  MessageTemplateListDTO,
+  MessageTemplateDetailDTO,
+  NotificationType,
+  NOTIFICATION_TYPE_CONFIG,
+  NotificationTypeMetadata,
+  Role,
+  CompanyDetailDTO
+} from '../../../../core/models';
+
+export interface CategoryGroup {
+  type: NotificationType;
+  metadata: NotificationTypeMetadata;
+  templates: MessageTemplateListDTO[];
+  activeCount: number;
+  totalCount: number;
+}
 
 @Component({
   selector: 'app-tab-message-templates',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './tab-message-templates.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' }
 })
 export class TabMessageTemplatesComponent {
-  @Input({ required: true }) templates: MessageTemplateListDTO[] = [];
-  @Input() isLoading: boolean = false;
-  @Input() currentRole: Role | null = null;
-  @Input() isResettingDefaults: boolean = false;
+  readonly company = input<CompanyDetailDTO | null>(null);
+  readonly templates = input<MessageTemplateListDTO[]>([]);
+  readonly isLoading = input<boolean>(false);
+  readonly currentRole = input<Role | null>(null);
+  readonly isResettingDefaults = input<boolean>(false);
 
-  @Output() addTemplate = new EventEmitter<void>();
-  @Output() editTemplate = new EventEmitter<MessageTemplateListDTO>();
-  @Output() toggleTemplate = new EventEmitter<MessageTemplateListDTO>();
-  @Output() resetDefaults = new EventEmitter<void>();
+  readonly addTemplate = output<void>();
+  readonly addTemplateWithType = output<NotificationType>();
+  readonly editTemplate = output<MessageTemplateListDTO>();
+  readonly toggleTemplate = output<MessageTemplateListDTO>();
+  readonly deleteTemplate = output<MessageTemplateListDTO>();
+  readonly resetDefaults = output<void>();
+  readonly updateRetentionSettings = output<{ enabled: boolean; days: number }>();
 
   readonly RoleEnum = Role;
   readonly NotificationTypeEnum = NotificationType;
+  readonly typeConfigs = NOTIFICATION_TYPE_CONFIG;
 
   readonly selectedFilter = signal<string>('ALL');
+  readonly searchTerm = signal<string>('');
   readonly previewedTemplateId = signal<number | null>(null);
+  readonly randomPickedTemplateId = signal<{ [key in NotificationType]?: number }>({});
+  readonly randomPickNotice = signal<{ [key in NotificationType]?: string }>({});
 
-  readonly filteredTemplates = computed(() => {
-    const list = this.templates;
-    const filter = this.selectedFilter();
-    if (filter === 'ALL') return list;
-    return list.filter(t => t.type === filter);
+  // Retention Inline Configuration Signals
+  readonly retentionDaysDraft = signal<number>(20);
+  readonly retentionEnabledDraft = signal<boolean>(false);
+
+  constructor() {
+    effect(() => {
+      const comp = this.company();
+      if (comp) {
+        this.retentionEnabledDraft.set(comp.isClientRetentionEnabled ?? false);
+        this.retentionDaysDraft.set(comp.clientRetentionDays ?? 20);
+      }
+    });
+  }
+
+  readonly allCategories: NotificationType[] = [
+    NotificationType.WELCOME_NOTIFICATION,
+    NotificationType.ALMOST_THERE_NOTIFICATION,
+    NotificationType.CLIENT_RETENTION_NOTIFICATION,
+    NotificationType.POINTS_EXPIRATION_NOTIFICATION,
+    NotificationType.PROMOTION_NOTIFICATION,
+    NotificationType.CUSTOM_NOTIFICATION
+  ];
+
+  readonly totalActiveTemplates = computed(() => {
+    return this.templates().filter(t => t.isEnabled).length;
   });
 
-  getTypeBadge(type: NotificationType): { label: string; icon: string; bg: string; text: string } {
-    switch (type) {
-      case NotificationType.WELCOME_NOTIFICATION:
-        return { label: 'WELCOME_NOTIFICATION', icon: '🚀', bg: 'bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800', text: 'text-blue-700 dark:text-blue-300' };
-      case NotificationType.ALMOST_THERE_NOTIFICATION:
-        return { label: 'ALMOST_THERE_NOTIFICATION', icon: '🎯', bg: 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800', text: 'text-emerald-700 dark:text-emerald-300' };
-      case NotificationType.CLIENT_RETENTION_NOTIFICATION:
-        return { label: 'CLIENT_RETENTION_NOTIFICATION', icon: '⏰', bg: 'bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800', text: 'text-amber-700 dark:text-amber-300' };
-      case NotificationType.POINTS_EXPIRATION_NOTIFICATION:
-        return { label: 'POINTS_EXPIRATION_NOTIFICATION', icon: '⏳', bg: 'bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800', text: 'text-rose-700 dark:text-rose-300' };
-      case NotificationType.PROMOTION_NOTIFICATION:
-        return { label: 'PROMOTION_NOTIFICATION', icon: '🔥', bg: 'bg-orange-50 dark:bg-orange-950/60 border-orange-200 dark:border-orange-800', text: 'text-orange-700 dark:text-orange-300' };
-      default:
-        return { label: 'CUSTOM_NOTIFICATION', icon: '💬', bg: 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700', text: 'text-gray-700 dark:text-gray-300' };
-    }
-  }
+  readonly categoryGroups = computed<CategoryGroup[]>(() => {
+    const list = this.templates();
+    const filter = this.selectedFilter();
+    const search = this.searchTerm().trim().toLowerCase();
+
+    return this.allCategories
+      .filter(cat => filter === 'ALL' || filter === cat)
+      .map(cat => {
+        const metadata = this.typeConfigs[cat];
+        const allCategoryTemplates = list.filter(t => t.type === cat);
+        const activeCount = allCategoryTemplates.filter(t => t.isEnabled).length;
+
+        let filteredTemplates = allCategoryTemplates;
+        if (search) {
+          filteredTemplates = filteredTemplates.filter(t =>
+            t.name.toLowerCase().includes(search) ||
+            (t.subject && t.subject.toLowerCase().includes(search)) ||
+            t.content.toLowerCase().includes(search)
+          );
+        }
+
+        return {
+          type: cat,
+          metadata,
+          templates: filteredTemplates,
+          activeCount,
+          totalCount: allCategoryTemplates.length
+        };
+      });
+  });
 
   togglePreview(id: number): void {
     if (this.previewedTemplateId() === id) {
@@ -59,13 +118,56 @@ export class TabMessageTemplatesComponent {
     }
   }
 
+  saveRetentionSettings(): void {
+    const enabled = this.retentionEnabledDraft();
+    const days = Math.max(1, this.retentionDaysDraft() || 20);
+    this.updateRetentionSettings.emit({ enabled, days });
+  }
+
+  testRandomSelection(group: CategoryGroup): void {
+    const activeList = group.templates.filter(t => t.isEnabled);
+    if (activeList.length === 0) {
+      alert('No hay variantes activas en esta categoría para seleccionar.');
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * activeList.length);
+    const chosen = activeList[randomIndex];
+
+    this.randomPickedTemplateId.update(prev => ({ ...prev, [group.type]: chosen.id }));
+    this.randomPickNotice.update(prev => ({
+      ...prev,
+      [group.type]: `🎲 ¡Selección aleatoria: "${chosen.name}" (${randomIndex + 1} de ${activeList.length} activas)!`
+    }));
+
+    // Auto-expand preview of chosen template
+    this.previewedTemplateId.set(chosen.id);
+
+    setTimeout(() => {
+      this.randomPickNotice.update(prev => {
+        const next = { ...prev };
+        delete next[group.type];
+        return next;
+      });
+    }, 4500);
+  }
+
+  getSimulatedSubject(subject?: string): string {
+    if (!subject) return 'Notificación del Club de Fidelización';
+    return this.applyReplacements(subject);
+  }
+
   getSimulatedContent(content: string): string {
-    return content
+    if (!content) return '';
+    return this.applyReplacements(content);
+  }
+
+  private applyReplacements(text: string): string {
+    return text
       .replace(/\{nombre\}/g, 'María')
       .replace(/\{empresa\}/g, 'Café Martínez')
-      .replace(/\{local\}/g, 'Café Martínez')
+      .replace(/\{local\}/g, 'Sucursal Centro')
       .replace(/\{puntos\}/g, '450')
       .replace(/\{puntos_faltantes\}/g, '50')
-      .replace(/\{dias\}/g, '7');
+      .replace(/\{dias\}/g, '30');
   }
 }

@@ -43,7 +43,11 @@
                   ({{ subscriptionState.currentPlan() }})
                 }
               </span>
-              @if (subscriptionState.currentPlan() === 'NONE') {
+              @if (authService.isSuspendedForChargeback() || authService.pendingDebtArs() > 0) {
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800">
+                  Suspendida por Deuda
+                </span>
+              } @else if (subscriptionState.currentPlan() === 'NONE') {
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
                   Sin Plan
                 </span>

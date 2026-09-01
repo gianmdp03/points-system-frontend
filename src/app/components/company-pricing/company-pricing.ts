@@ -55,6 +55,10 @@ export class CompanyPricing implements OnInit {
   readonly currentSub = computed(() => this.subscriptionState.currentSubscription());
   readonly currentPlanConfig = computed(() => this.subscriptionState.currentPlanConfig());
 
+  readonly isSuspendedOrInDebt = computed(() => {
+    return this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0;
+  });
+
   // Higher plans for upgrade section (strictly targetTier > currentTier)
   readonly higherPlans = computed(() => {
     return this.plansList().filter(p => this.isUpgrade(p.plan));
@@ -372,6 +376,28 @@ export class CompanyPricing implements OnInit {
       }
     } catch (err: any) {
       this.errorMessage.set(err?.message || 'Error al preparar la pasarela de pago.');
+    } finally {
+      this.loadingPlan.set(null);
+    }
+  }
+
+  /**
+   * Action for Suspended / Indebted User: Pay chargeback debt via Mercado Pago Checkout Pro
+   */
+  async onRegularizeAccount(): Promise<void> {
+    this.errorMessage.set(null);
+    const plan = this.currentPlan() !== SubscriptionPlan.NONE ? this.currentPlan() : SubscriptionPlan.BASIC;
+    this.loadingPlan.set(plan);
+
+    try {
+      const res = await this.subscriptionState.subscribe(plan, BillingPeriod.MONTHLY);
+      if (res.success && res.data?.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      } else if (!res.success) {
+        this.errorMessage.set(res.error || 'No se pudo iniciar el proceso de regularización con Mercado Pago.');
+      }
+    } catch (err: any) {
+      this.errorMessage.set(err?.message || 'Error al conectar con Mercado Pago para regularizar la cuenta.');
     } finally {
       this.loadingPlan.set(null);
     }

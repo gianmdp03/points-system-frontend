@@ -42,6 +42,8 @@ export class Dashboard implements OnInit {
 
   // Signals for state
   readonly currentRole = computed(() => this.authService.currentRole());
+  readonly isSuspendedForChargeback = computed(() => this.authService.isSuspendedForChargeback());
+  readonly pendingDebtArs = computed(() => this.authService.pendingDebtArs());
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
 
   readonly adminCompanies = signal<CompanyListDTO[]>([]);
@@ -71,6 +73,8 @@ export class Dashboard implements OnInit {
     pointsExpirationDays: [null as number | null],
     isInactiveClientPurgeEnabled: [false],
     inactiveClientPurgeDays: [null as number | null],
+    isClientRetentionEnabled: [false],
+    clientRetentionDays: [null as number | null],
     address: ['', [Validators.required]],
     city: ['', [Validators.required]],
     province: ['', [Validators.required]],
@@ -88,6 +92,8 @@ export class Dashboard implements OnInit {
     pointsExpirationDays: [null as number | null],
     isInactiveClientPurgeEnabled: [false],
     inactiveClientPurgeDays: [null as number | null],
+    isClientRetentionEnabled: [false],
+    clientRetentionDays: [null as number | null],
     address: ['', [Validators.required]],
     city: ['', [Validators.required]],
     province: ['', [Validators.required]],
@@ -123,6 +129,19 @@ export class Dashboard implements OnInit {
       }
       daysControl?.updateValueAndValidity();
     });
+    form.get('isClientRetentionEnabled')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((enabled: boolean | null) => {
+      const daysControl = form.get('clientRetentionDays');
+      if (enabled) {
+        daysControl?.setValidators([Validators.required, Validators.min(1)]);
+        if (!daysControl?.value) {
+          daysControl?.setValue(20);
+        }
+      } else {
+        daysControl?.clearValidators();
+        daysControl?.setValue(null);
+      }
+      daysControl?.updateValueAndValidity();
+    });
   }
 
   openAddCompanyModal(): void {
@@ -136,6 +155,8 @@ export class Dashboard implements OnInit {
       pointsExpirationDays: null,
       isInactiveClientPurgeEnabled: false,
       inactiveClientPurgeDays: null,
+      isClientRetentionEnabled: false,
+      clientRetentionDays: null,
       address: '',
       city: '',
       province: '',
@@ -167,6 +188,8 @@ export class Dashboard implements OnInit {
         pointsExpirationDays: comp.pointsExpirationDays ?? null,
         isInactiveClientPurgeEnabled: comp.isInactiveClientPurgeEnabled ?? false,
         inactiveClientPurgeDays: comp.inactiveClientPurgeDays ?? null,
+        isClientRetentionEnabled: comp.isClientRetentionEnabled ?? false,
+        clientRetentionDays: comp.clientRetentionDays ?? null,
         address: comp.companyDetails?.address || '',
         city: comp.companyDetails?.city || '',
         province: comp.companyDetails?.province || '',
@@ -280,6 +303,8 @@ export class Dashboard implements OnInit {
       pointsExpirationDays: val.isPointsExpirationEnabled ? Number(val.pointsExpirationDays) : null,
       isInactiveClientPurgeEnabled: !!val.isInactiveClientPurgeEnabled,
       inactiveClientPurgeDays: val.isInactiveClientPurgeEnabled ? Number(val.inactiveClientPurgeDays) : null,
+      isClientRetentionEnabled: !!val.isClientRetentionEnabled,
+      clientRetentionDays: val.isClientRetentionEnabled ? Number(val.clientRetentionDays) : null,
       companyDetails: {
         country: val.country!,
         province: val.province!,
@@ -319,6 +344,8 @@ export class Dashboard implements OnInit {
       pointsExpirationDays: val.isPointsExpirationEnabled ? Number(val.pointsExpirationDays) : null,
       isInactiveClientPurgeEnabled: !!val.isInactiveClientPurgeEnabled,
       inactiveClientPurgeDays: val.isInactiveClientPurgeEnabled ? Number(val.inactiveClientPurgeDays) : null,
+      isClientRetentionEnabled: !!val.isClientRetentionEnabled,
+      clientRetentionDays: val.isClientRetentionEnabled ? Number(val.clientRetentionDays) : null,
       companyDetails: {
         country: val.country!,
         province: val.province!,
@@ -356,4 +383,5 @@ export class Dashboard implements OnInit {
     });
   }
 }
+
 

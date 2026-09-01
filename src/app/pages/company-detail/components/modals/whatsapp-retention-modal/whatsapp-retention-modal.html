@@ -1,0 +1,162 @@
+<div class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+  <div (click)="close.emit()" class="absolute inset-0"></div>
+
+  <div class="relative w-full max-w-xl bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-3xl p-6 sm:p-8 border border-[#C4C7C5] dark:border-[#333333] shadow-2xl z-10 max-h-[92vh] overflow-y-auto space-y-5">
+    
+    <!-- Close Button -->
+    <button 
+      (click)="close.emit()"
+      type="button"
+      class="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F8F9FA] hover:bg-[#C4C7C5] dark:bg-[#131314] dark:hover:bg-[#333333] text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] flex items-center justify-center transition cursor-pointer"
+      aria-label="Cerrar modal">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Modal Header -->
+    <div class="flex items-start sm:items-center gap-3.5 pr-8">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center flex-shrink-0 shadow-2xs">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-xl sm:text-2xl font-black text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+          Enviar WhatsApp de Retención
+        </h3>
+        <p class="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-0.5">
+          Genera un enlace directo a WhatsApp para reconectar con tu cliente inactivo.
+        </p>
+      </div>
+    </div>
+
+    <!-- Client Info Summary Card -->
+    <div class="bg-[#F8F9FA] dark:bg-[#131314] rounded-2xl p-4 border border-[#C4C7C5]/70 dark:border-[#333333] flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="space-y-1">
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] block">
+          Cliente Inactivo
+        </span>
+        <h4 class="text-sm font-black text-[#1F1F1F] dark:text-[#E3E3E3]">
+          {{ account().client.name }}
+        </h4>
+        <p class="text-[11px] font-medium text-[#5F6368] dark:text-[#9AA0A6]">
+          DNI: {{ account().client.dni }} &bull; {{ account().client.country }}
+        </p>
+      </div>
+
+      <div class="flex items-center gap-4 text-right">
+        <div>
+          <span class="text-[10px] font-bold text-[#5F6368] dark:text-[#9AA0A6] block">Inactivo hace</span>
+          <span class="text-xs font-black text-amber-600 dark:text-amber-400">
+            {{ inactiveDays() }} días
+          </span>
+        </div>
+        <div class="pl-3 border-l border-[#C4C7C5]/60 dark:border-[#333333]/60">
+          <span class="text-[10px] font-bold text-[#5F6368] dark:text-[#9AA0A6] block">Saldo</span>
+          <span class="text-sm font-black text-[#1A73E8] dark:text-[#8AB4F8]">
+            {{ account().balance }} pts
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone Number Field -->
+    <div class="space-y-1.5">
+      <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3]">
+        Número de WhatsApp Destino *
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+          <span>+</span>
+        </div>
+        <input
+          type="tel"
+          [ngModel]="phoneNumberInput()"
+          (ngModelChange)="phoneNumberInput.set($event)"
+          placeholder="Ej. 5491123456789"
+          class="w-full h-11 pl-8 pr-4 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-xl text-xs font-mono font-bold text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-emerald-500 transition" />
+      </div>
+      <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
+        Asegúrate de que incluya código de país (ej. <strong>549</strong> para Argentina sin el 15 ni el 0).
+      </p>
+    </div>
+
+    <!-- Template Variant Selector (If multiple templates exist) -->
+    @if (currentTemplatesList().length > 1) {
+      <div class="space-y-1.5">
+        <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3]">
+          Seleccionar Variante de Retención
+        </label>
+        <div class="flex flex-wrap gap-2">
+          @for (tpl of currentTemplatesList(); track tpl.id; let idx = $index) {
+            <button
+              type="button"
+              (click)="selectTemplate(idx)"
+              [class]="selectedTemplateIndex() === idx ? 'bg-emerald-500 text-white font-black shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] font-bold hover:border-emerald-500'"
+              class="px-3.5 py-1.5 rounded-xl text-xs transition cursor-pointer">
+              {{ tpl.name }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Editable Message Body Area -->
+    <div class="space-y-1.5">
+      <div class="flex items-center justify-between">
+        <label class="block text-xs font-bold uppercase tracking-wider text-[#1F1F1F] dark:text-[#E3E3E3]">
+          Mensaje Personalizado
+        </label>
+        <span class="text-[11px] font-mono text-[#5F6368] dark:text-[#9AA0A6]">
+          {{ messageText().length }} caracteres
+        </span>
+      </div>
+      <textarea
+        rows="4"
+        [ngModel]="messageText()"
+        (ngModelChange)="messageText.set($event)"
+        placeholder="Escribe el mensaje para WhatsApp..."
+        class="w-full p-3.5 bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] rounded-2xl text-xs font-sans text-[#1F1F1F] dark:text-[#E3E3E3] focus:outline-none focus:border-emerald-500 leading-relaxed resize-none transition"></textarea>
+      <p class="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
+        Puedes ajustar el texto aquí libremente antes de enviar el WhatsApp.
+      </p>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="pt-3 border-t border-[#C4C7C5]/60 dark:border-[#333333]/60 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      
+      <!-- Copy text button -->
+      <button
+        type="button"
+        (click)="copyMessage()"
+        class="min-h-[44px] px-4 py-2 bg-[#F8F9FA] hover:bg-[#E8F0FE] dark:bg-[#131314] dark:hover:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] font-bold text-xs rounded-xl border border-[#C4C7C5] dark:border-[#333333] transition cursor-pointer flex items-center justify-center gap-1.5">
+        @if (isCopied()) {
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span class="text-emerald-600 font-bold">¡Mensaje Copiado!</span>
+        } @else {
+          <svg class="w-4 h-4 text-[#5F6368] dark:text-[#9AA0A6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+          <span>Copiar Mensaje</span>
+        }
+      </button>
+
+      <!-- Open WhatsApp Button -->
+      <button
+        type="button"
+        (click)="openWhatsApp()"
+        [disabled]="!isValidPhone() || !messageText().trim()"
+        class="min-h-[44px] px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-extrabold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
+        <span>Abrir en WhatsApp</span>
+      </button>
+
+    </div>
+
+  </div>
+</div>

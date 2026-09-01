@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
@@ -51,6 +51,12 @@ export class SubscriptionManagementPage implements OnInit {
     return PLAN_CONFIGS[this.displayPlan()] || PLAN_CONFIGS[SubscriptionPlan.NONE];
   });
 
+  readonly isSuspendedOrInDebt = computed(() => {
+    return this.authService.isSuspendedForChargeback() || this.authService.pendingDebtArs() > 0;
+  });
+  readonly loadingRegularization = signal<boolean>(false);
+  readonly regularizeError = signal<string | null>(null);
+
   getBillingPeriodLabel(period?: BillingPeriod | null): string {
     switch (period) {
       case BillingPeriod.MONTHLY: return '1 mes (30 días)';
@@ -58,6 +64,25 @@ export class SubscriptionManagementPage implements OnInit {
       case BillingPeriod.SEMIANNUAL: return '6 meses (180 días)';
       case BillingPeriod.YEARLY: return '12 meses (365 días)';
       default: return 'periodo';
+    }
+  }
+
+  async onRegularizeAccount(): Promise<void> {
+    this.regularizeError.set(null);
+    this.loadingRegularization.set(true);
+    const plan = this.currentPlan() !== SubscriptionPlan.NONE ? this.currentPlan() : SubscriptionPlan.BASIC;
+
+    try {
+      const res = await this.subscriptionState.subscribe(plan, BillingPeriod.MONTHLY);
+      if (res.success && res.data?.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      } else if (!res.success) {
+        this.regularizeError.set(res.error || 'No se pudo iniciar el proceso de regularización con Mercado Pago.');
+      }
+    } catch (err: any) {
+      this.regularizeError.set(err?.message || 'Error al conectar con Mercado Pago para regularizar la cuenta.');
+    } finally {
+      this.loadingRegularization.set(false);
     }
   }
 

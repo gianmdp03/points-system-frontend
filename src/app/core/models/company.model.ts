@@ -1,4 +1,4 @@
-import { PointsAccountDetailDTO } from './points-account.model';
+﻿import { PointsAccountDetailDTO } from './points-account.model';
 import { ProductListDTO } from './product.model';
 import { PromotionListDTO } from './promotion.model';
 import { RewardListDTO } from './reward.model';
@@ -22,6 +22,8 @@ export interface CompanyListDTO {
   pointsExpirationDays?: number | null;
   isInactiveClientPurgeEnabled?: boolean;
   inactiveClientPurgeDays?: number | null;
+  isClientRetentionEnabled?: boolean;
+  clientRetentionDays?: number | null;
 }
 
 export interface CompanyDetailDTO {
@@ -35,6 +37,8 @@ export interface CompanyDetailDTO {
   pointsExpirationDays?: number | null;
   isInactiveClientPurgeEnabled?: boolean;
   inactiveClientPurgeDays?: number | null;
+  isClientRetentionEnabled?: boolean;
+  clientRetentionDays?: number | null;
   appAdminOwner?: string;
   pointsAccounts?: PointsAccountDetailDTO[];
   products?: ProductListDTO[];
@@ -51,6 +55,8 @@ export interface CompanyRequestDTO {
   pointsExpirationDays?: number | null;
   isInactiveClientPurgeEnabled?: boolean;
   inactiveClientPurgeDays?: number | null;
+  isClientRetentionEnabled?: boolean;
+  clientRetentionDays?: number | null;
 }
 
 export interface CompanyUpdateDTO {
@@ -62,6 +68,8 @@ export interface CompanyUpdateDTO {
   pointsExpirationDays?: number | null;
   isInactiveClientPurgeEnabled?: boolean;
   inactiveClientPurgeDays?: number | null;
+  isClientRetentionEnabled?: boolean;
+  clientRetentionDays?: number | null;
 }
 
 export interface CompanyPublicDetailDTO {
@@ -78,8 +86,9 @@ export interface CompanyPublicDetailDTO {
   pointsExpirationDays?: number | null;
   isInactiveClientPurgeEnabled?: boolean;
   inactiveClientPurgeDays?: number | null;
+  isClientRetentionEnabled?: boolean;
+  clientRetentionDays?: number | null;
   products: ProductListDTO[];
   activePromotions: PromotionListDTO[];
   rewards: RewardListDTO[];
 }
-

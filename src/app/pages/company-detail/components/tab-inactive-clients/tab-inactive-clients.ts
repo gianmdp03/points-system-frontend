@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PointsAccountDetailDTO } from '../../../../core/models';
@@ -12,29 +12,29 @@ import { PointsAccountDetailDTO } from '../../../../core/models';
   host: { class: 'block' }
 })
 export class TabInactiveClientsComponent {
-  @Input({ required: true }) inactiveAccounts: PointsAccountDetailDTO[] = [];
-  @Input() totalElements: number = 0;
-  @Input() totalPages: number = 1;
-  @Input() currentPage: number = 0;
-  @Input() selectedDays: number = 30;
-  @Input() isLoading: boolean = false;
+  readonly inactiveAccounts = input<PointsAccountDetailDTO[]>([]);
+  readonly totalElements = input<number>(0);
+  readonly totalPages = input<number>(1);
+  readonly currentPage = input<number>(0);
+  readonly selectedDays = input<number>(30);
+  readonly isLoading = input<boolean>(false);
 
-  @Output() daysChange = new EventEmitter<number>();
-  @Output() pageChange = new EventEmitter<number>();
-  @Output() registerSale = new EventEmitter<{ dni: string; country: string }>();
+  readonly daysChange = output<number>();
+  readonly pageChange = output<number>();
+  readonly openWhatsappRetention = output<PointsAccountDetailDTO>();
 
   readonly presetDays: number[] = [7, 15, 30, 60, 90, 180];
   readonly customDaysInput = signal<number>(30);
 
   onSelectPreset(days: number): void {
-    if (this.selectedDays === days && !this.isLoading) return;
+    if (this.selectedDays() === days && !this.isLoading()) return;
     this.customDaysInput.set(days);
     this.daysChange.emit(days);
   }
 
   onCustomDaysSubmit(): void {
     const days = Number(this.customDaysInput());
-    if (!isNaN(days) && days > 0 && days !== this.selectedDays) {
+    if (!isNaN(days) && days > 0 && days !== this.selectedDays()) {
       this.daysChange.emit(days);
     }
   }

@@ -1,4 +1,5 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Role, UserDetailDTO } from '../models';
 import { SupabaseService } from './supabase-service';
 import { UserService } from './user-service';
@@ -11,6 +12,7 @@ export class AuthService {
   private readonly supabase = inject(SupabaseService);
   private readonly userService = inject(UserService);
   private readonly subscriptionState = inject(SubscriptionStateService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly isLoggedIn = signal<boolean>(false);
   readonly currentRole = signal<Role>(Role.COMPANY_ADMIN);
@@ -18,6 +20,15 @@ export class AuthService {
   readonly userId = signal<string | null>(null);
   readonly userName = signal<string | null>(null);
   readonly userDni = signal<string | null>(null);
+  readonly userProfile = signal<UserDetailDTO | null>(null);
+
+  readonly isSuspendedForChargeback = computed<boolean>(() => {
+    return !!this.userProfile()?.isSuspendedForChargeback;
+  });
+
+  readonly pendingDebtArs = computed<number>(() => {
+    return this.userProfile()?.pendingDebtArs || 0;
+  });
 
   // Indica si el usuario inició con Google y necesita completar su DNI
   readonly needsDni = signal<boolean>(false);
@@ -36,7 +47,11 @@ export class AuthService {
   }
 
   constructor() {
-    this.initPromise = this.initSession();
+    if (isPlatformBrowser(this.platformId)) {
+      this.initPromise = this.initSession();
+    } else {
+      this.initPromise = Promise.resolve(false);
+    }
   }
 
   private async initSession(): Promise<boolean> {
@@ -66,6 +81,28 @@ export class AuthService {
   }
 
   private lastLoadedUserId: string | null = null;
+
+  refreshProfile(): void {
+    if (!this.userId()) return;
+    this.userService.getMyProfile().subscribe({
+      next: (profile: UserDetailDTO) => {
+        this.userProfile.set(profile);
+        if (profile?.role && Object.values(Role).includes(profile.role)) {
+          this.currentRole.set(profile.role);
+        }
+        if (profile?.name) {
+          this.userName.set(profile.name);
+        }
+        if (profile?.dni && profile.dni !== 'No registrado' && profile.dni.trim().length > 0) {
+          this.userDni.set(profile.dni.trim());
+          this.needsDni.set(false);
+        }
+      },
+      error: (err) => {
+        console.warn('Could not refresh user profile from backend API', err);
+      }
+    });
+  }
 
   private setSessionData(user: any) {
     const userId = user.id ?? null;
@@ -102,6 +139,7 @@ export class AuthService {
       // Fetch exact role and profile from Spring Boot Backend
       this.userService.getMyProfile().subscribe({
         next: (profile: UserDetailDTO) => {
+          this.userProfile.set(profile);
           if (profile?.role && Object.values(Role).includes(profile.role)) {
             this.currentRole.set(profile.role);
           }
@@ -130,6 +168,7 @@ export class AuthService {
     this.userId.set(null);
     this.userName.set(null);
     this.userDni.set(null);
+    this.userProfile.set(null);
     this.needsDni.set(false);
     this.currentRole.set(Role.COMPANY_ADMIN);
     this.subscriptionState.clearSubscription();

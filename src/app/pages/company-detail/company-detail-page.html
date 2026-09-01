@@ -124,7 +124,7 @@
             [isLoading]="isLoadingInactiveClients()"
             (daysChange)="onInactiveDaysChange($event)"
             (pageChange)="onInactivePageChange($event)"
-            (registerSale)="onInactiveClientSale($event)">
+            (openWhatsappRetention)="openWhatsappRetentionModal($event)">
           </app-tab-inactive-clients>
         }
 
@@ -136,8 +136,10 @@
             [isResettingDefaults]="isResettingTemplates()"
             [currentRole]="currentRole()"
             (addTemplate)="openAddMessageTemplateModal()"
+            (addTemplateWithType)="openAddMessageTemplateModal($event)"
             (editTemplate)="openEditMessageTemplateModal($event)"
             (toggleTemplate)="onToggleMessageTemplate($event)"
+            (deleteTemplate)="onDeleteMessageTemplate($event)"
             (resetDefaults)="onResetDefaultTemplates()">
           </app-tab-message-templates>
         }
@@ -308,7 +310,18 @@
     [isSubmitted]="isMessageTemplateSubmitted()"
     [errorMessage]="modalErrorMessage()"
     [isLoading]="isLoadingTemplates()"
+    [companyName]="company()?.name || 'Mi Comercio'"
     (close)="closeMessageTemplateModal()"
     (submitForm)="onMessageTemplateSubmit()">
   </app-message-template-modal>
 }
+
+@if (showWhatsappModal() && selectedInactiveAccountForWhatsapp(); as selectedAccount) {
+  <app-whatsapp-retention-modal
+    [account]="selectedAccount"
+    [companyName]="company()?.name || 'Mi Comercio'"
+    [retentionTemplates]="retentionTemplates()"
+    (close)="closeWhatsappRetentionModal()">
+  </app-whatsapp-retention-modal>
+}
+

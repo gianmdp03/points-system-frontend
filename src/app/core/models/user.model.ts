@@ -1,4 +1,4 @@
-import { SubscriptionPlan } from './subscription.model';
+﻿import { SubscriptionPlan } from './subscription.model';
 
 export enum Role {
   COMPANY_ADMIN = 'COMPANY_ADMIN',
@@ -16,4 +16,6 @@ export interface UserDetailDTO {
   isFreeTrialOver?: boolean;
   freeTrialStartTime?: string;
   freeTrialEndTime?: string;
+  isSuspendedForChargeback?: boolean;
+  pendingDebtArs?: number;
 }

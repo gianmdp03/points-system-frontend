@@ -7,7 +7,10 @@ import {
   MessageTemplateDetailDTO,
   MessageTemplateListDTO,
   MessageTemplateRequestDTO,
-  MessageTemplateUpdateDTO
+  MessageTemplateUpdateDTO,
+  CreateMessageTemplateDTO,
+  UpdateMessageTemplateDTO,
+  NotificationType
 } from '../models';
 
 @Injectable({
@@ -17,11 +20,19 @@ export class MessageTemplateService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/message-templates`;
 
-  addTemplate(dto: MessageTemplateRequestDTO): Observable<MessageTemplateDetailDTO> {
+  getAllByCompany(companyId: number): Observable<MessageTemplateDetailDTO[]> {
+    return this.http.get<MessageTemplateDetailDTO[]>(`${this.apiUrl}/${companyId}/all`);
+  }
+
+  createTemplate(dto: CreateMessageTemplateDTO): Observable<MessageTemplateDetailDTO> {
     return this.http.post<MessageTemplateDetailDTO>(this.apiUrl, dto);
   }
 
-  updateTemplate(companyId: number, id: number, dto: MessageTemplateUpdateDTO): Observable<MessageTemplateDetailDTO> {
+  addTemplate(dto: MessageTemplateRequestDTO): Observable<MessageTemplateDetailDTO> {
+    return this.createTemplate(dto);
+  }
+
+  updateTemplate(companyId: number, id: number, dto: UpdateMessageTemplateDTO): Observable<MessageTemplateDetailDTO> {
     return this.http.put<MessageTemplateDetailDTO>(`${this.apiUrl}/${companyId}/${id}`, dto);
   }
 
@@ -36,11 +47,28 @@ export class MessageTemplateService {
     return this.http.get<MessageTemplateDetailDTO>(`${this.apiUrl}/${companyId}/${id}`);
   }
 
+  toggleTemplate(companyId: number, id: number): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/${companyId}/${id}/toggle`, {});
+  }
+
   enableOrDisableTemplate(companyId: number, id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${companyId}/${id}`);
+    return this.toggleTemplate(companyId, id);
+  }
+
+  deleteTemplate(companyId: number, id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${companyId}/${id}/permanent`);
+  }
+
+  resetDefaults(companyId: number): Observable<MessageTemplateDetailDTO[]> {
+    return this.http.post<MessageTemplateDetailDTO[]>(`${this.apiUrl}/${companyId}/reset-defaults`, {});
   }
 
   resetDefaultTemplates(companyId: number): Observable<MessageTemplateDetailDTO[]> {
-    return this.http.post<MessageTemplateDetailDTO[]>(`${this.apiUrl}/${companyId}/reset-defaults`, {});
+    return this.resetDefaults(companyId);
+  }
+
+  getRandomPreview(companyId: number, type: NotificationType): Observable<MessageTemplateDetailDTO> {
+    const params = new HttpParams().set('type', type);
+    return this.http.get<MessageTemplateDetailDTO>(`${this.apiUrl}/${companyId}/random-preview`, { params });
   }
 }

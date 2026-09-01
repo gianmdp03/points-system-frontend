@@ -23,7 +23,7 @@
       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#C4C7C5] dark:border-[#333333] self-start sm:self-auto">
         <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
         <span class="text-xs font-bold text-[#1F1F1F] dark:text-[#E3E3E3]">
-          {{ totalElements }} {{ totalElements === 1 ? 'cliente detectado' : 'clientes detectados' }}
+          {{ totalElements() }} {{ totalElements() === 1 ? 'cliente detectado' : 'clientes detectados' }}
         </span>
       </div>
     </div>
@@ -41,8 +41,8 @@
             <button
               type="button"
               (click)="onSelectPreset(days)"
-              [disabled]="isLoading"
-              [class]="selectedDays === days ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8] dark:hover:border-[#8AB4F8]'"
+              [disabled]="isLoading()"
+              [class]="selectedDays() === days ? 'bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#131314] shadow-xs' : 'bg-[#F8F9FA] dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:border-[#1A73E8] dark:hover:border-[#8AB4F8]'"
               class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer disabled:opacity-50">
               {{ days }} días
             </button>
@@ -70,7 +70,7 @@
           </div>
           <button
             type="submit"
-            [disabled]="isLoading"
+            [disabled]="isLoading()"
             class="h-9 px-4 bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#131314] font-bold text-xs rounded-xl shadow-xs transition cursor-pointer disabled:opacity-50">
             Aplicar
           </button>
@@ -81,7 +81,7 @@
   </div>
 
   <!-- State 1: Loading Skeleton -->
-  @if (isLoading) {
+  @if (isLoading()) {
     <div class="space-y-3 animate-pulse">
       @for (i of [1, 2, 3, 4]; track i) {
         <div class="h-24 bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] p-4 flex items-center justify-between">
@@ -96,7 +96,7 @@
   }
 
   <!-- State 2: No Inactive Clients Found -->
-  @else if (inactiveAccounts.length === 0) {
+  @else if (inactiveAccounts().length === 0) {
     <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-12 text-center border border-[#C4C7C5] dark:border-[#333333] shadow-xs space-y-4">
       <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-800">
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@
           ¡Excelente actividad!
         </h4>
         <p class="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
-          No se encontraron clientes con más de <strong>{{ selectedDays }} días</strong> sin interacción. Todos tus clientes registrados están activos en tu comercio.
+          No se encontraron clientes con más de <strong>{{ selectedDays() }} días</strong> sin interacción. Todos tus clientes registrados están activos en tu comercio.
         </p>
       </div>
     </div>
@@ -117,7 +117,7 @@
   <!-- State 3: Inactive Clients List -->
   @else {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      @for (account of inactiveAccounts; track account.id) {
+      @for (account of inactiveAccounts(); track account.id) {
         <div class="bg-[#FFFFFF] dark:bg-[#1E1E1E] rounded-2xl p-5 border border-[#C4C7C5] dark:border-[#333333] shadow-xs flex flex-col justify-between space-y-4 hover:border-[#1A73E8]/50 dark:hover:border-[#8AB4F8]/50 transition-all">
           
           <!-- Top Row: Client Info & Balance -->
@@ -197,17 +197,37 @@
             </div>
           </div>
 
-          <!-- Bottom Action: Quick Sale / Reactivation -->
+          <!-- Bottom Action: WhatsApp Retention or Notification status -->
           <div class="pt-2">
-            <button
-              type="button"
-              (click)="registerSale.emit({ dni: account.client.dni, country: account.client.country })"
-              class="w-full min-h-[40px] py-2 px-4 bg-[#F8F9FA] hover:bg-[#E8F0FE] dark:bg-[#131314] dark:hover:bg-[#1E1E1E] text-[#1A73E8] dark:text-[#8AB4F8] hover:text-[#1557B0] dark:hover:text-[#AECBFA] font-bold text-xs rounded-xl border border-[#C4C7C5]/60 dark:border-[#333333]/60 hover:border-[#1A73E8]/40 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              <span>Registrar Venta / Sumar Puntos</span>
-            </button>
+            @if (account.client.isNotificationEnabled && account.client.phone) {
+              <button
+                type="button"
+                (click)="openWhatsappRetention.emit(account)"
+                class="w-full min-h-[42px] py-2 px-4 bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs rounded-xl border border-emerald-300 dark:border-emerald-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs">
+                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                </svg>
+                <span>Contactar por WhatsApp</span>
+              </button>
+            } @else if (!account.client.isNotificationEnabled) {
+              <div class="py-2.5 px-3 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#C4C7C5]/50 dark:border-[#333333] text-center">
+                <span class="text-[11px] font-semibold text-[#5F6368] dark:text-[#9AA0A6] flex items-center justify-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                  Notificaciones desactivadas por el cliente
+                </span>
+              </div>
+            } @else {
+              <div class="py-2.5 px-3 bg-[#F8F9FA] dark:bg-[#131314] rounded-xl border border-[#C4C7C5]/50 dark:border-[#333333] text-center">
+                <span class="text-[11px] font-semibold text-[#5F6368] dark:text-[#9AA0A6] flex items-center justify-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  Sin número de teléfono registrado
+                </span>
+              </div>
+            }
           </div>
 
         </div>
@@ -215,23 +235,23 @@
     </div>
 
     <!-- Pagination Controls -->
-    @if (totalPages > 1) {
+    @if (totalPages() > 1) {
       <div class="flex items-center justify-between pt-4 border-t border-[#C4C7C5] dark:border-[#333333]">
         <span class="text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6]">
-          Página {{ currentPage + 1 }} de {{ totalPages }} ({{ totalElements }} clientes)
+          Página {{ currentPage() + 1 }} de {{ totalPages() }} ({{ totalElements() }} clientes)
         </span>
         <div class="flex items-center gap-2">
           <button
             type="button"
-            [disabled]="currentPage === 0 || isLoading"
-            (click)="pageChange.emit(currentPage - 1)"
+            [disabled]="currentPage() === 0 || isLoading()"
+            (click)="pageChange.emit(currentPage() - 1)"
             class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] transition disabled:opacity-40 cursor-pointer">
             &larr; Anterior
           </button>
           <button
             type="button"
-            [disabled]="currentPage >= totalPages - 1 || isLoading"
-            (click)="pageChange.emit(currentPage + 1)"
+            [disabled]="currentPage() >= totalPages() - 1 || isLoading()"
+            (click)="pageChange.emit(currentPage() + 1)"
             class="min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#F8F9FA] dark:bg-[#1E1E1E] text-[#1F1F1F] dark:text-[#E3E3E3] border border-[#C4C7C5] dark:border-[#333333] hover:bg-[#FFFFFF] dark:hover:bg-[#131314] transition disabled:opacity-40 cursor-pointer">
             Siguiente &rarr;
           </button>

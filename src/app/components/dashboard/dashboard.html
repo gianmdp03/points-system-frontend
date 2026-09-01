@@ -1,10 +1,12 @@
-<section id="mi-panel" class="py-8 my-6 bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] p-6 md:p-10 transition-all duration-300">
+﻿<section id="mi-panel" class="py-8 my-6 bg-[#F8F9FA] dark:bg-[#1E1E1E] rounded-2xl border border-[#C4C7C5] dark:border-[#333333] p-6 md:p-10 transition-all duration-300">
   
   <!-- Header: badge de conexión, título, rol, login banner, error alert -->
   <app-dashboard-header
     [currentRole]="currentRole()"
     [isLoggedIn]="isLoggedIn()"
     [errorMessage]="errorMessage()"
+    [isSuspendedForChargeback]="isSuspendedForChargeback()"
+    [pendingDebtArs]="pendingDebtArs()"
     (retryLoad)="loadRoleData(currentRole(), 0)">
   </app-dashboard-header>
 

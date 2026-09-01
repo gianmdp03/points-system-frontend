@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -52,6 +52,7 @@ import { SaleModalComponent } from './components/modals/sale-modal/sale-modal';
 import { ClientModalComponent } from './components/modals/client-modal/client-modal';
 import { RedeemModalComponent } from './components/modals/redeem-modal/redeem-modal';
 import { MessageTemplateModalComponent } from './components/modals/message-template-modal/message-template-modal';
+import { WhatsappRetentionModalComponent } from './components/modals/whatsapp-retention-modal/whatsapp-retention-modal';
 import { CheckPointsModalComponent } from '../../components/company-quick-actions/modals/check-points-modal/check-points-modal';
 import { QrGeneratorComponent } from '../../components/qr-generator/qr-generator';
 
@@ -71,6 +72,7 @@ import { QrGeneratorComponent } from '../../components/qr-generator/qr-generator
     TabMessageTemplatesComponent,
     EditCompanyModalComponent,
     MessageTemplateModalComponent,
+    WhatsappRetentionModalComponent,
     ProductModalComponent,
     PromotionModalComponent,
     RewardModalComponent,
@@ -109,6 +111,10 @@ export class CompanyDetailPage implements OnInit {
   readonly inactiveClientsPage = signal<number>(0);
   readonly inactiveClientsDays = signal<number>(30);
   readonly messageTemplates = signal<MessageTemplateListDTO[]>([]);
+  readonly showWhatsappModal = signal<boolean>(false);
+  readonly selectedInactiveAccountForWhatsapp = signal<PointsAccountDetailDTO | null>(null);
+  readonly retentionTemplates = computed(() => this.messageTemplates().filter(t => t.type === NotificationType.CLIENT_RETENTION_NOTIFICATION && t.isEnabled));
+  
   readonly isLoading = signal<boolean>(true);
   readonly isLoadingSales = signal<boolean>(false);
   readonly isLoadingInactiveClients = signal<boolean>(false);
@@ -173,6 +179,8 @@ export class CompanyDetailPage implements OnInit {
     pointsExpirationDays: [null as number | null],
     isInactiveClientPurgeEnabled: [false],
     inactiveClientPurgeDays: [null as number | null],
+    isClientRetentionEnabled: [false],
+    clientRetentionDays: [null as number | null],
     address: ['', [Validators.required]],
     city: ['', [Validators.required]],
     province: ['', [Validators.required]],
@@ -374,9 +382,14 @@ export class CompanyDetailPage implements OnInit {
     }
   }
 
-  onInactiveClientSale(data: { dni: string; country: string }): void {
-    this.openAddSaleModal();
-    this.addSaleForm.patchValue({ dni: data.dni, country: data.country });
+  openWhatsappRetentionModal(account: PointsAccountDetailDTO): void {
+    this.selectedInactiveAccountForWhatsapp.set(account);
+    this.showWhatsappModal.set(true);
+  }
+
+  closeWhatsappRetentionModal(): void {
+    this.showWhatsappModal.set(false);
+    this.selectedInactiveAccountForWhatsapp.set(null);
   }
 
   setTab(tab: CompanyDetailTab): void {
@@ -415,6 +428,8 @@ export class CompanyDetailPage implements OnInit {
         pointsExpirationDays: comp.pointsExpirationDays ?? null,
         isInactiveClientPurgeEnabled: comp.isInactiveClientPurgeEnabled ?? false,
         inactiveClientPurgeDays: comp.inactiveClientPurgeDays ?? null,
+        isClientRetentionEnabled: comp.isClientRetentionEnabled ?? false,
+        clientRetentionDays: comp.clientRetentionDays ?? null,
         address: comp.companyDetails?.address || '',
         city: comp.companyDetails?.city || '',
         province: comp.companyDetails?.province || '',
@@ -586,6 +601,8 @@ export class CompanyDetailPage implements OnInit {
       pointsExpirationDays: val.isPointsExpirationEnabled ? Number(val.pointsExpirationDays) : null,
       isInactiveClientPurgeEnabled: !!val.isInactiveClientPurgeEnabled,
       inactiveClientPurgeDays: val.isInactiveClientPurgeEnabled ? Number(val.inactiveClientPurgeDays) : null,
+      isClientRetentionEnabled: !!val.isClientRetentionEnabled,
+      clientRetentionDays: val.isClientRetentionEnabled ? Number(val.clientRetentionDays) : null,
       companyDetails: {
         country: val.country!,
         province: val.province!,
@@ -814,9 +831,9 @@ export class CompanyDetailPage implements OnInit {
   // TEMPLATES MANAGEMENT METHODS
   fetchMessageTemplates(companyId: number): void {
     this.isLoadingTemplates.set(true);
-    this.messageTemplateService.listTemplates(companyId).subscribe({
-      next: (page) => {
-        this.messageTemplates.set(page?.content || []);
+    this.messageTemplateService.getAllByCompany(companyId).subscribe({
+      next: (list) => {
+        this.messageTemplates.set(list || []);
         this.isLoadingTemplates.set(false);
       },
       error: () => {
@@ -825,13 +842,13 @@ export class CompanyDetailPage implements OnInit {
     });
   }
 
-  openAddMessageTemplateModal(): void {
+  openAddMessageTemplateModal(preselectedType?: NotificationType): void {
     this.isMessageTemplateEdit.set(false);
     this.selectedTemplateForEdit.set(null);
     this.messageTemplateForm.reset({
       id: null,
       name: '',
-      type: NotificationType.WELCOME_NOTIFICATION,
+      type: preselectedType || NotificationType.WELCOME_NOTIFICATION,
       subject: '',
       content: ''
     });
@@ -903,11 +920,21 @@ export class CompanyDetailPage implements OnInit {
 
   onToggleMessageTemplate(tpl: MessageTemplateListDTO): void {
     if (!this.company()) return;
-    this.messageTemplateService.enableOrDisableTemplate(this.company()!.id, tpl.id).subscribe({
+    this.messageTemplateService.toggleTemplate(this.company()!.id, tpl.id).subscribe({
       next: () => {
         this.fetchMessageTemplates(this.company()!.id);
       },
       error: (err) => alert(err.error?.message || 'Error al modificar estado de la plantilla.')
+    });
+  }
+
+  onDeleteMessageTemplate(tpl: MessageTemplateListDTO): void {
+    if (!this.company() || !confirm(`¿Estás seguro de eliminar la variante "${tpl.name}"?`)) return;
+    this.messageTemplateService.deleteTemplate(this.company()!.id, tpl.id).subscribe({
+      next: () => {
+        this.fetchMessageTemplates(this.company()!.id);
+      },
+      error: (err) => alert(err.error?.message || 'Error al eliminar plantilla.')
     });
   }
 
@@ -917,7 +944,7 @@ export class CompanyDetailPage implements OnInit {
     if (!confirmReset) return;
 
     this.isResettingTemplates.set(true);
-    this.messageTemplateService.resetDefaultTemplates(this.company()!.id).subscribe({
+    this.messageTemplateService.resetDefaults(this.company()!.id).subscribe({
       next: () => {
         this.isResettingTemplates.set(false);
         this.fetchMessageTemplates(this.company()!.id);
@@ -925,6 +952,28 @@ export class CompanyDetailPage implements OnInit {
       error: (err) => {
         this.isResettingTemplates.set(false);
         alert(err.error?.message || 'Error al restaurar plantillas por defecto.');
+      }
+    });
+  }
+
+  onUpdateRetentionSettings(settings: { enabled: boolean; days: number }): void {
+    const comp = this.company();
+    if (!comp) return;
+
+    const dto: CompanyUpdateDTO = {
+      isClientRetentionEnabled: settings.enabled,
+      clientRetentionDays: settings.enabled ? settings.days : null
+    };
+
+    this.companyService.updateCompany(comp.id, dto).subscribe({
+      next: (updatedComp) => {
+        this.company.set(updatedComp);
+        alert(settings.enabled
+          ? ('¡Retención automática activada! Se enviarán recordatorios cada ' + settings.days + ' días de inactividad.')
+          : 'Retención automática de clientes pausada.');
+      },
+      error: (err) => {
+        alert('Error al actualizar la configuración de retención: ' + (err.error?.message || err.message));
       }
     });
   }

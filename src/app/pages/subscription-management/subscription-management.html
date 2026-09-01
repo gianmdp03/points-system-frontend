@@ -39,6 +39,58 @@
       </div>
     </div>
 
+    <!-- Alerta de Suspensión por Contracargo / Deuda Pendiente -->
+    @if (isSuspendedOrInDebt()) {
+      <div class="p-5 bg-rose-50 dark:bg-rose-950/60 border-2 border-rose-400 dark:border-rose-700 rounded-2xl text-xs sm:text-sm font-medium text-rose-950 dark:text-rose-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-md">
+        <div class="flex items-start gap-3.5">
+          <div class="p-2.5 bg-rose-100 dark:bg-rose-900/80 rounded-xl text-rose-600 dark:text-rose-300 flex-shrink-0 mt-0.5">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-rose-600 text-white">
+                Cuenta Suspendida
+              </span>
+              <strong class="font-extrabold text-sm sm:text-base text-rose-900 dark:text-rose-100">
+                Saldo Deudor por Contracargo Bancario
+              </strong>
+            </div>
+            <p class="text-xs text-rose-800 dark:text-rose-200">
+              Se ha registrado un desconocimiento de pago en tu cuenta. Para reactivar tus sucursales y recuperar la cobertura de días a favor, es necesario abonar el saldo deudor pendiente de <strong>${{ authService.pendingDebtArs() | number }} ARS</strong>.
+            </p>
+          </div>
+        </div>
+
+        <button 
+          type="button"
+          (click)="onRegularizeAccount()"
+          [disabled]="loadingRegularization()"
+          class="w-full md:w-auto flex-shrink-0 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs sm:text-sm px-6 py-3 rounded-full transition shadow cursor-pointer flex items-center justify-center gap-2 min-h-[44px] disabled:opacity-50">
+          @if (loadingRegularization()) {
+            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span>Conectando Mercado Pago...</span>
+          } @else {
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            <span>Pagar y Regularizar Cuenta (${{ authService.pendingDebtArs() | number }} ARS)</span>
+          }
+        </button>
+      </div>
+    }
+
+    <!-- Alerta de Error de Regularización -->
+    @if (regularizeError()) {
+      <div class="p-4 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 rounded-2xl text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-semibold flex items-center gap-3 shadow-xs">
+        <svg class="w-5 h-5 flex-shrink-0 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span>{{ regularizeError() }}</span>
+      </div>
+    }
+
     <!-- Alerta de Éxito Global -->
     @if (subscriptionState.successMessage()) {
       <div class="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 rounded-2xl text-xs sm:text-sm font-semibold text-emerald-800 dark:text-emerald-200 flex items-center gap-2.5 shadow-xs">
@@ -102,10 +154,16 @@
 
             <!-- Badge de Estado -->
             <div class="self-start sm:self-auto">
-              <span 
-                [class]="'px-3.5 py-1.5 rounded-full text-xs font-bold border ' + getSubscriptionStatusBadgeClass(status())">
-                {{ getSubscriptionStatusLabel(status()) }}
-              </span>
+              @if (isSuspendedOrInDebt()) {
+                <span class="px-3.5 py-1.5 rounded-full text-xs font-bold border bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 dark:border-rose-800">
+                  Suspendida por Deuda
+                </span>
+              } @else {
+                <span 
+                  [class]="'px-3.5 py-1.5 rounded-full text-xs font-bold border ' + getSubscriptionStatusBadgeClass(status())">
+                  {{ getSubscriptionStatusLabel(status()) }}
+                </span>
+              }
             </div>
           </div>
 
@@ -158,25 +216,34 @@
 
           <!-- Botones de Acción -->
           <div class="pt-4 border-t border-[#E3E3E3] dark:border-[#333333] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-              <a 
-                routerLink="/pricing"
-                class="w-full sm:w-auto bg-[#009EE3] hover:bg-[#0081B9] text-white font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] shadow-xs flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            @if (isSuspendedOrInDebt()) {
+              <div class="w-full p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-xl text-amber-900 dark:text-amber-200 text-xs font-semibold flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                <span>Recargar / Extender Días</span>
-              </a>
+                <span>Las recargas y cambios de plan están deshabilitados temporalmente hasta saldar la deuda pendiente.</span>
+              </div>
+            } @else {
+              <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <a 
+                  routerLink="/pricing"
+                  class="w-full sm:w-auto bg-[#009EE3] hover:bg-[#0081B9] text-white font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] shadow-xs flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Recargar / Extender Días</span>
+                </a>
 
-              <a 
-                routerLink="/pricing"
-                class="w-full sm:w-auto border border-[#E3E3E3] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-[#009EE3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-                <span>Mejorar Plan (Upgrade)</span>
-              </a>
-            </div>
+                <a 
+                  routerLink="/pricing"
+                  class="w-full sm:w-auto border border-[#E3E3E3] dark:border-[#333333] hover:bg-black/5 dark:hover:bg-white/5 text-[#1F1F1F] dark:text-[#E3E3E3] font-bold py-3 px-6 rounded-full transition cursor-pointer text-xs sm:text-sm min-h-[44px] flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4 text-[#009EE3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                  <span>Mejorar Plan (Upgrade)</span>
+                </a>
+              </div>
+            }
           </div>
 
         </div>
